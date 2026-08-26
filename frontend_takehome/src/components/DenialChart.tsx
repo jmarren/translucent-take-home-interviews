@@ -27,7 +27,8 @@ export default function DenialChart({ data }: DenialChartProps) {
   }, [data]);
 
   return (
-    <section className="reason-chart-card" aria-label="Denial breakdown chart">
+    <section className="reason-chart-card chart-card-exhibit" aria-label="Denial breakdown chart">
+      <p className="chart-card-tag">Exhibit A</p>
       <h2 className="chart-card-title">Reasons</h2>
       <div className="chart-card-body">
         {chartData.length === 0 ? (
@@ -48,12 +49,13 @@ export default function DenialChart({ data }: DenialChartProps) {
                 />
                 <YAxis type="category" dataKey="reason" width={140} tick={{ fontSize: 13 }} />
                 <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-                <Bar dataKey="amount" fill="#5b7fa6" name="Denied amount" />
+                <Bar dataKey="amount" fill="#5b7fa6" name="Denied amount" radius={[0, 3, 3, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
       </div>
+      <p className="chart-card-caption">Total denied dollars grouped by stated denial reason.</p>
     </section>
   );
 }

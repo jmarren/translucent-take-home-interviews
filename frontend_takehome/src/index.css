@@ -127,13 +127,36 @@ label {
   width: 800px;
 }
 
-.chart-card-title {
-  margin: 0;
-  padding: 16px 16px;
-  text-align: left;
+/* "Exhibit" treatment (ported from the dossier-redesign explorations):
+   a small case-file tag above the title, and an italic caption below the
+   chart, applied to the two chart cards only. The surrounding card
+   (.charts-row > section) keeps its existing concrete height/border/shadow
+   from add-department-pie-chart, so the ResponsiveContainer sizing chain
+   established there is untouched. */
+.chart-card-exhibit {
+  padding: 16px 16px 12px;
+}
+
+.chart-card-tag {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: #fcfcfb;
-  background-color: var(--dark-slate-grey);
-  border-radius: 7px 7px 0 0;
+  background-color: var(--iron-grey);
+  display: inline-block;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+
+.chart-card-title {
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  text-align: left;
+  color: var(--dark-slate-grey);
+  border-bottom: 1px solid var(--grey-olive);
 }
 
 .chart-card-body {
@@ -143,7 +166,14 @@ label {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px 40px 40px;
+  padding: 8px 24px 16px;
+}
+
+.chart-card-caption {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--iron-grey);
 }
 
 .denial-records-section {

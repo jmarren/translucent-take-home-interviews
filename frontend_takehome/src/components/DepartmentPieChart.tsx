@@ -49,7 +49,8 @@ export default function DepartmentPieChart({ data }: DepartmentPieChartProps) {
   );
 
   return (
-    <section aria-label="Denial breakdown by department chart">
+    <section className="chart-card-exhibit" aria-label="Denial breakdown by department chart">
+      <p className="chart-card-tag">Exhibit B</p>
       <h2 className="chart-card-title">Departments</h2>
       <div className="chart-card-body">
         {chartData.length === 0 ? (
@@ -83,6 +84,7 @@ export default function DepartmentPieChart({ data }: DepartmentPieChartProps) {
           </div>
         )}
       </div>
+      <p className="chart-card-caption">Total denied dollars grouped by department, filed vs. total.</p>
     </section>
   );
 }
