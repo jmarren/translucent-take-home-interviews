@@ -27,13 +27,13 @@ export default function DenialChart({ data }: DenialChartProps) {
   }, [data]);
 
   return (
-    <section className="reason-chart-card" aria-label="Denial breakdown chart">
+    <section aria-label="Denial breakdown chart">
       <h2 className="chart-card-title">Reasons</h2>
       <div className="chart-card-body">
         {chartData.length === 0 ? (
           <p>No denial data to display.</p>
         ) : (
-          <div style={{ width: '100%', maxWidth: 576 }}>
+          <div style={{ width: '100%', maxWidth: 432 }}>
             <ResponsiveContainer width="100%" aspect={1}>
               <BarChart data={chartData} margin={{ top: 8, right: 24, left: 16, bottom: 48 }}>
                 <CartesianGrid strokeDasharray="3 3" />
