@@ -49,7 +49,7 @@ export default function Dashboard() {
 	const [department, setDepartment] = useState<string>('');
 	const [period, setPeriod] = useState<PeriodId>('all');
 	const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
-	const { font, setFont, palette, setPalette } = useThemePreferences();
+	const { font, setFont, palette, setPalette, radius, setRadius } = useThemePreferences();
 
 	const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(
 		DENIALS_QUERY,
@@ -79,6 +79,8 @@ export default function Dashboard() {
 							onFontChange={setFont}
 							palette={palette}
 							onPaletteChange={setPalette}
+							radius={radius}
+							onRadiusChange={setRadius}
 						/>
 					) : (
 						<>

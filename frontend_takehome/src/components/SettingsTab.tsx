@@ -1,12 +1,15 @@
 import React from 'react';
 import { FONT_GROUPS } from '../fonts';
 import { PALETTE_GROUPS, Palette, paletteSwatchGradient } from '../palettes';
+import { RADIUS_OPTIONS } from '../radii';
 
 interface SettingsTabProps {
   font: string;
   onFontChange: (value: string) => void;
   palette: Palette;
   onPaletteChange: (palette: Palette) => void;
+  radius: number;
+  onRadiusChange: (value: number) => void;
 }
 
 export default function SettingsTab({
@@ -14,6 +17,8 @@ export default function SettingsTab({
   onFontChange,
   palette,
   onPaletteChange,
+  radius,
+  onRadiusChange,
 }: SettingsTabProps) {
   return (
     <div className="settings-tab">
@@ -71,6 +76,33 @@ export default function SettingsTab({
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="settings-section" aria-label="Border radius settings">
+        <h2 className="settings-section-title">Border Radius</h2>
+        <p className="settings-section-description">
+          Choose how rounded cards, buttons, and controls appear.
+        </p>
+        <div className="settings-group">
+          <div className="settings-options">
+            {RADIUS_OPTIONS.map((r) => (
+              <button
+                key={r.label}
+                type="button"
+                className="settings-option settings-radius-option"
+                aria-pressed={r.value === radius}
+                onClick={() => onRadiusChange(r.value)}
+              >
+                <span
+                  className="settings-radius-swatch"
+                  aria-hidden="true"
+                  style={{ borderRadius: `${r.value}px` }}
+                />
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );

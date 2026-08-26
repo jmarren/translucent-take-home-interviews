@@ -8,6 +8,9 @@
   --tertiary-1: #8a5a44;
   --tertiary-2: #5b7fa6;
   --font-family: 'Rajdhani', sans-serif;
+  --radius: 8px;
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-xs: calc(var(--radius) * 0.25);
 }
 
 html,
@@ -58,7 +61,7 @@ h2 {
   color: var(--dark-slate-grey);
   background-color: #fcfcfb;
   border: 1px solid var(--grey-olive);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 6px 10px;
   cursor: pointer;
 }
@@ -79,7 +82,7 @@ h2 {
 .department-select-content {
   background-color: #fcfcfb;
   border: 1px solid var(--grey-olive);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
   overflow: hidden;
   z-index: 10;
@@ -121,7 +124,7 @@ h2 {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--silver);
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
 }
 
@@ -171,7 +174,7 @@ h2 {
 .denial-records-section {
   margin-top: 32px;
   background-color: rgba(197, 197, 197, 0.2);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 20px 24px;
 }
 
@@ -190,7 +193,7 @@ h2 {
   align-content: flex-start;
   margin-bottom: 24px;
   background-color: var(--dark-slate-grey);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -308,7 +311,7 @@ tbody tr:nth-child(even) {
   background-color: var(--beige);
   margin: 0 0 24px 24px;
   padding: 24px 32px 24px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   position: relative;
   z-index: 0;
 }
@@ -334,7 +337,7 @@ tbody tr:nth-child(even) {
   color: var(--iron-grey);
   background: none;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
   cursor: pointer;
 }
@@ -358,7 +361,7 @@ tbody tr:nth-child(even) {
   background-color: #fcfcfb;
   margin: 0 24px 24px -24px;
   padding: 24px 32px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: -2px 0 6px rgba(44, 66, 63, 0.12);
   position: relative;
   z-index: 1;
@@ -419,7 +422,7 @@ tbody tr:nth-child(even) {
   color: var(--dark-slate-grey);
   background-color: #fcfcfb;
   border: 1px solid var(--silver);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 8px 14px;
   cursor: pointer;
 }
@@ -439,8 +442,16 @@ tbody tr:nth-child(even) {
   flex-shrink: 0;
   width: 32px;
   height: 14px;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.settings-radius-swatch {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background-color: var(--iron-grey);
+  border: none;
 }
 
 /* Temporary dev tool for trying out fonts -- remove before shipping. */
