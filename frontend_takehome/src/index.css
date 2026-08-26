@@ -5,6 +5,8 @@
   --grey-olive-2: #949b96;
   --dark-slate-grey: #2c423f;
   --beige: #e8e0d0;
+  --tertiary-1: #8a5a44;
+  --tertiary-2: #5b7fa6;
   --font-family: 'Rajdhani', sans-serif;
 }
 
@@ -282,15 +284,23 @@ tbody tr:nth-child(even) {
   background-color: rgba(148, 155, 150, 0.15);
 }
 
-.dashboard h1 {
-  color: #fcfcfb;
-  margin: 24px 24px 4px;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .dashboard-layout {
   display: flex;
   align-items: stretch;
   flex: 1;
+  margin-top: 24px;
 }
 
 .sidebar {
@@ -356,6 +366,81 @@ tbody tr:nth-child(even) {
 
 .coming-soon {
   color: var(--iron-grey);
+}
+
+.settings-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 900px;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-section-title {
+  margin: 0;
+  color: var(--dark-slate-grey);
+}
+
+.settings-section-description {
+  margin: 0 0 12px;
+  color: var(--iron-grey);
+  font-size: 0.9rem;
+}
+
+.settings-group {
+  margin-top: 12px;
+}
+
+.settings-group-label {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--iron-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.settings-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--dark-slate-grey);
+  background-color: #fcfcfb;
+  border: 1px solid var(--silver);
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.settings-option:hover {
+  border-color: var(--grey-olive);
+}
+
+.settings-option[aria-pressed='true'] {
+  background-color: var(--dark-slate-grey);
+  border-color: var(--dark-slate-grey);
+  color: #fcfcfb;
+  font-weight: 600;
+}
+
+.settings-palette-swatch {
+  flex-shrink: 0;
+  width: 32px;
+  height: 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 /* Temporary dev tool for trying out fonts -- remove before shipping. */

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
-import { PieChart, Landmark, TrendingUp, Table } from 'lucide-react';
+import { PieChart, Landmark, TrendingUp, Table, Settings } from 'lucide-react';
 import DenialChart from './DenialChart';
 import DepartmentPieChart from './DepartmentPieChart';
 import DenialsTable from './DenialsTable';
@@ -8,10 +8,12 @@ import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
 import SummaryStats from './SummaryStats';
 import TrendSparkline from './TrendSparkline';
+import SettingsTab from './SettingsTab';
 import Sidebar, { SidebarTab } from './Sidebar';
 import ComingSoon from './ComingSoon';
 import { Denial } from '../types';
 import { PeriodId, filterByPeriod, getReferenceDate } from '../periods';
+import { useThemePreferences } from '../useThemePreferences';
 
 export const DENIALS_QUERY = gql`
   query Denials($department: String) {
@@ -31,6 +33,7 @@ const TABS: SidebarTab[] = [
 	{ id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
 	{ id: 'trends', label: 'Trends Over Time', icon: TrendingUp },
 	{ id: 'records', label: 'Denial Records', icon: Table },
+	{ id: 'settings', label: 'Settings', icon: Settings },
 ];
 
 const TAB_DESCRIPTIONS: Record<string, string> = {
@@ -46,6 +49,7 @@ export default function Dashboard() {
 	const [department, setDepartment] = useState<string>('');
 	const [period, setPeriod] = useState<PeriodId>('all');
 	const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
+	const { font, setFont, palette, setPalette } = useThemePreferences();
 
 	const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(
 		DENIALS_QUERY,
@@ -63,37 +67,48 @@ export default function Dashboard() {
 
 	return (
 		<div className="dashboard">
-			<h1>Denials</h1>
+			<h1 className="visually-hidden">Denials</h1>
 
 			<div className="dashboard-layout">
 				<Sidebar tabs={TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
 
 				<div className="dashboard-content">
-					<div className="filter-bar">
-						<DepartmentSelect value={department} onChange={setDepartment} />
-						<PeriodSelect value={period} onChange={setPeriod} />
-					</div>
-
-					{loading && !previousData && !data ? (
-						<p>Loading...</p>
-					) : activeTab === 'reason-breakdown' ? (
-						<>
-							<SummaryStats data={filteredDenials} />
-							<div className="charts-row">
-								<DenialChart data={filteredDenials} />
-								<DepartmentPieChart data={filteredDenials} />
-								<TrendSparkline data={filteredDenials} />
-							</div>
-							<div className="denial-records-section">
-								<h2 className="denial-records-heading">Denial-Level Detail</h2>
-								<DenialsTable data={filteredDenials} />
-							</div>
-						</>
-					) : (
-						<ComingSoon
-							title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
-							description={TAB_DESCRIPTIONS[activeTab]}
+					{activeTab === 'settings' ? (
+						<SettingsTab
+							font={font}
+							onFontChange={setFont}
+							palette={palette}
+							onPaletteChange={setPalette}
 						/>
+					) : (
+						<>
+							<div className="filter-bar">
+								<DepartmentSelect value={department} onChange={setDepartment} />
+								<PeriodSelect value={period} onChange={setPeriod} />
+							</div>
+
+							{loading && !previousData && !data ? (
+								<p>Loading...</p>
+							) : activeTab === 'reason-breakdown' ? (
+								<>
+									<SummaryStats data={filteredDenials} />
+									<div className="charts-row">
+										<DenialChart data={filteredDenials} />
+										<DepartmentPieChart data={filteredDenials} />
+										<TrendSparkline data={filteredDenials} />
+									</div>
+									<div className="denial-records-section">
+										<h2 className="denial-records-heading">Denial-Level Detail</h2>
+										<DenialsTable data={filteredDenials} />
+									</div>
+								</>
+							) : (
+								<ComingSoon
+									title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
+									description={TAB_DESCRIPTIONS[activeTab]}
+								/>
+							)}
+						</>
 					)}
 				</div>
 			</div>
