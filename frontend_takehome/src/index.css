@@ -105,6 +105,28 @@ label {
   min-width: 0;
 }
 
+.at-a-glance-panel {
+  background-color: rgba(232, 224, 208, 0.35);
+  border: 1px solid var(--silver);
+  border-radius: 8px;
+  padding: 20px 24px 8px;
+}
+
+.denial-records-section {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--silver);
+}
+
+.denial-records-heading {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--iron-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .summary-cards {
   flex: 0 0 220px;
   display: flex;

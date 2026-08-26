@@ -77,8 +77,13 @@ export default function Dashboard() {
 					) : activeTab === 'reason-breakdown' ? (
 						<div className="reason-breakdown-layout">
 							<div className="reason-breakdown-main">
-								<DenialChart data={filteredDenials} />
-								<DenialsTable data={filteredDenials} />
+								<div className="at-a-glance-panel">
+									<DenialChart data={filteredDenials} />
+								</div>
+								<div className="denial-records-section">
+									<h2 className="denial-records-heading">Denial-Level Detail</h2>
+									<DenialsTable data={filteredDenials} />
+								</div>
 							</div>
 							<SummaryCards data={filteredDenials} />
 						</div>
