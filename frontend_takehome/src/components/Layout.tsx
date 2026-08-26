@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Outlet, useLocation, useNavigate, useSearchParams, NavigateFunction } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
 import SidebarShell from './SidebarShell';
@@ -7,17 +7,9 @@ import PaletteShell from './PaletteShell';
 import { PeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
 import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
 import { useDashboardFilters, DashboardFilters } from '../useDashboardFilters';
+import { useNavigation, Navigation } from '../useNavigation';
 import { Modal, useCommandPalette } from '../useCommandPalette';
 import { buildCommands, Command, CommandContext } from '../commands';
-
-// Curried so the "stable" router handles (navigate, current search params)
-// are supplied once and partially applied outside the component -- only the
-// final, per-call `id` argument is provided at the actual call site inside
-// Layout, instead of a fresh navigateToTab closure being declared on every
-// render.
-const makeNavigateToTab =
-	(navigate: NavigateFunction, searchParams: URLSearchParams) => (id: string) =>
-		navigate({ pathname: `/${id}`, search: searchParams.toString() });
 
 // The dep list is every field of `ctx`, taken via Object.values() rather
 // than named one-by-one, so CommandContext's field list (in ../commands.ts)
@@ -43,11 +35,6 @@ function makeFilterSummaryMemoParams(
 	}, [filters.department, filters.period]]
 }
 
-type Navigation = {
-	activeTab: string,
-	switchTo: (tabId: string) => void,
-}
-
 type CommandPalette = {
 	modal: Modal,
 	commands: Command[],
@@ -69,14 +56,8 @@ export type LayoutState = {
 const TABS_WITHOUT_FILTER_BAR = new Set(['settings']);
 
 export default function Layout() {
-	// url info
-	const location = useLocation();
-	const [searchParams] = useSearchParams();
-
 	// navigation
-	const activeTab = location.pathname.slice(1);
-	const navigate = useNavigate();
-	const navigateToTab = makeNavigateToTab(navigate, searchParams);
+	const navigation = useNavigation();
 
 	// data
 	const filters = useDashboardFilters();
@@ -87,19 +68,16 @@ export default function Layout() {
 	const commands = useMemo(...makeCommandsMemoParams({
 		filters,
 		theme,
-		activeTab,
-		navigateToTab,
+		activeTab: navigation.activeTab,
+		navigateToTab: navigation.switchTo,
 		close: paletteModal.close,
 	}));
 
 	const layoutState: LayoutState = {
 		filters,
-		filterSummary: activeTab === 'settings' ? null : filterSummary,
+		filterSummary: navigation.activeTab === 'settings' ? null : filterSummary,
 		theme,
-		navigation: {
-			activeTab,
-			switchTo: navigateToTab,
-		},
+		navigation,
 		commandPalette: {
 			modal: paletteModal,
 			commands,
