@@ -424,8 +424,14 @@ th {
   background-color: rgba(252, 252, 251, 0.12);
 }
 
+/* Fixed width (rather than shrinking to nothing when unsorted) so the
+   arrow appearing/disappearing doesn't reflow the header label next to it
+   or change the row's overall width. */
 .sort-indicator {
+  display: inline-block;
+  width: 0.7rem;
   font-size: 0.7rem;
+  text-align: center;
 }
 
 td {
