@@ -145,11 +145,102 @@ h2 {
 }
 
 .chart-card-title {
-  margin: 0 0 12px;
-  padding: 0 0 10px;
+  margin: 0;
   text-align: left;
   color: var(--dark-slate-grey);
+}
+
+/* Houses the title plus the per-card chart-type dropdown on one row, with
+   the border-bottom that used to live on .chart-card-title moved here so
+   it still separates the header from the body regardless of which control
+   sits next to the title. */
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
   border-bottom: 1px solid var(--grey-olive);
+}
+
+.chart-type-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--iron-grey);
+  background-color: transparent;
+  border: 1px solid var(--grey-olive);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.chart-type-select-trigger:hover {
+  border-color: var(--iron-grey);
+  color: var(--dark-slate-grey);
+}
+
+.chart-type-select-trigger:focus-visible {
+  outline: 2px solid var(--dark-slate-grey);
+  outline-offset: 1px;
+}
+
+.chart-type-select-icon {
+  color: inherit;
+}
+
+.chart-type-select-content {
+  background-color: #fcfcfb;
+  border: 1px solid var(--grey-olive);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.chart-type-select-item {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--dark-slate-grey);
+  padding: 6px 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.chart-type-select-item[data-highlighted] {
+  background-color: var(--dark-slate-grey);
+  color: #fcfcfb;
+}
+
+.chart-card-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.chart-card-table th,
+.chart-card-table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--silver);
+}
+
+.chart-card-table th {
+  color: var(--iron-grey);
+  background-color: transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chart-card-table td:last-child,
+.chart-card-table th:last-child {
+  text-align: right;
 }
 
 .chart-card-body {
