@@ -17,6 +17,14 @@ body,
   height: 100%;
 }
 
+/* Reserves the vertical scrollbar's width whether or not the page is
+   currently tall enough to need one, so content doesn't shift left/right
+   when a filter change (e.g. narrowing the denials table) toggles the
+   scrollbar on or off. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family: var(--font-family);
   color: var(--dark-slate-grey);
