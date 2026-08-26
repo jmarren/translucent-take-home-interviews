@@ -50,37 +50,39 @@ export default function DepartmentPieChart({ data }: DepartmentPieChartProps) {
 
   return (
     <section aria-label="Denial breakdown by department chart">
-      <h2>Denial Breakdown by Department</h2>
-      {chartData.length === 0 ? (
-        <p>No denial data to display.</p>
-      ) : (
-        <div style={{ width: '100%', maxWidth: 432 }}>
-          <ResponsiveContainer width="100%" aspect={1}>
-            <PieChart margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
-              <Pie
-                data={chartData}
-                dataKey="amount"
-                nameKey="department"
-                cx="50%"
-                cy="50%"
-                outerRadius="70%"
-                label={({ department, amount }) =>
-                  `${department}: ${((amount / total) * 100).toFixed(0)}%`
-                }
-              >
-                {chartData.map((entry) => (
-                  <Cell
-                    key={entry.department}
-                    fill={DEPARTMENT_COLORS[entry.department] ?? FALLBACK_COLOR}
-                  />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      <h2 className="chart-card-title">Denial Breakdown by Department</h2>
+      <div className="chart-card-body">
+        {chartData.length === 0 ? (
+          <p>No denial data to display.</p>
+        ) : (
+          <div style={{ width: '100%', maxWidth: 432 }}>
+            <ResponsiveContainer width="100%" aspect={1}>
+              <PieChart margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
+                <Pie
+                  data={chartData}
+                  dataKey="amount"
+                  nameKey="department"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="70%"
+                  label={({ department, amount }) =>
+                    `${department}: ${((amount / total) * 100).toFixed(0)}%`
+                  }
+                >
+                  {chartData.map((entry) => (
+                    <Cell
+                      key={entry.department}
+                      fill={DEPARTMENT_COLORS[entry.department] ?? FALLBACK_COLOR}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
     </section>
   );
 }
