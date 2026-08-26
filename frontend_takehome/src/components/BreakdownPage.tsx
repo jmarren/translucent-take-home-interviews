@@ -10,8 +10,8 @@ import { useDenials } from '../useDenials';
 import { DashboardOutletContext } from './Layout';
 
 export default function BreakdownPage() {
-	const { department, period } = useOutletContext<DashboardOutletContext>();
-	const { filteredDenials, isInitialLoad, error } = useDenials(department, period);
+	const { filters } = useOutletContext<DashboardOutletContext>();
+	const { filteredDenials, isInitialLoad, error } = useDenials(filters.department, filters.period);
 
 	if (error) return <p role="alert">Error loading denials.</p>;
 

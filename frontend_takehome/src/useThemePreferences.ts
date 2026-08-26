@@ -51,7 +51,18 @@ function loadStoredNavMode(): NavMode {
   return DEFAULT_NAV_MODE;
 }
 
-export function useThemePreferences() {
+export interface ThemePreferences {
+  font: string;
+  setFont: (value: string) => void;
+  palette: Palette;
+  setPalette: (value: Palette) => void;
+  radius: number;
+  setRadius: (value: number) => void;
+  navMode: NavMode;
+  setNavMode: (value: NavMode) => void;
+}
+
+export function useThemePreferences(): ThemePreferences {
   const [font, setFontState] = useState<string>(loadStoredFont);
   const [palette, setPaletteState] = useState<Palette>(loadStoredPalette);
   const [radius, setRadiusState] = useState<number>(loadStoredRadius);

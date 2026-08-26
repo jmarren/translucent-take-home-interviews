@@ -5,12 +5,10 @@ import PeriodSelect from './PeriodSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
 import { PeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
-import { useThemePreferences } from '../useThemePreferences';
-import { useDashboardFilters } from '../useDashboardFilters';
+import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
+import { useDashboardFilters, DashboardFilters } from '../useDashboardFilters';
 import { useCommandPalette } from '../useCommandPalette';
 import { buildCommands, Command, CommandContext } from '../commands';
-import { Palette } from '../palettes';
-import { NavMode } from '../navModes';
 
 // Curried so the "stable" router handles (navigate, current search params)
 // are supplied once and partially applied outside the component -- only the
@@ -21,51 +19,21 @@ const makeNavigateToTab =
 	(navigate: NavigateFunction, searchParams: URLSearchParams) => (id: string) =>
 		navigate({ pathname: `/${id}`, search: searchParams.toString() });
 
-type CommandsMemoDeps = [
-	CommandContext['activeTab'],
-	CommandContext['department'],
-	CommandContext['period'],
-	CommandContext['font'],
-	CommandContext['paletteLabel'],
-	CommandContext['radius'],
-	CommandContext['navigateToTab'],
-	CommandContext['setDepartment'],
-	CommandContext['setPeriod'],
-	CommandContext['setFont'],
-	CommandContext['setPalette'],
-	CommandContext['setRadius'],
-	CommandContext['close'],
-];
-
-function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], CommandsMemoDeps] {
-	return [() => buildCommands(ctx), [
-		ctx.activeTab,
-		ctx.department,
-		ctx.period,
-		ctx.font,
-		ctx.paletteLabel,
-		ctx.radius,
-		ctx.navigateToTab,
-		ctx.setDepartment,
-		ctx.setPeriod,
-		ctx.setFont,
-		ctx.setPalette,
-		ctx.setRadius,
-		ctx.close,
-	]];
+// The dep list is every field of `ctx`, taken via Object.values() rather
+// than named one-by-one, so CommandContext's field list (in ../commands.ts)
+// stays the single place enumerating them -- adding/removing a field there
+// automatically changes what useMemo re-runs on, with nothing to keep in
+// sync here.
+function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], unknown[]] {
+	return [() => buildCommands(ctx), Object.values(ctx)];
 }
 
+// Passed through Outlet's context as the two cohesive objects the hooks
+// already return, rather than flattening every field out individually --
+// each child page pulls out just the one it needs (filters or theme).
 export interface DashboardOutletContext {
-	department: string;
-	period: PeriodId;
-	font: string;
-	setFont: (value: string) => void;
-	palette: Palette;
-	setPalette: (value: Palette) => void;
-	radius: number;
-	setRadius: (value: number) => void;
-	navMode: NavMode;
-	setNavMode: (value: NavMode) => void;
+	filters: DashboardFilters;
+	theme: ThemePreferences;
 }
 
 function makeFilterSummaryMemoParams(
@@ -95,57 +63,38 @@ export default function Layout() {
 	const [searchParams] = useSearchParams();
 	const activeTab = location.pathname.slice(1);
 
-	const { department, period, setDepartment, setPeriod } = useDashboardFilters();
-	const { font, setFont, palette, setPalette, radius, setRadius, navMode, setNavMode } =
-		useThemePreferences();
-	const { paletteOpen, setPaletteOpen, closePalette } = useCommandPalette(navMode === 'palette');
+	const filters = useDashboardFilters();
+	const theme = useThemePreferences();
+	const { paletteOpen, setPaletteOpen, closePalette } = useCommandPalette(theme.navMode === 'palette');
 
 	const navigateToTab = makeNavigateToTab(navigate, searchParams);
 
-	const filterSummary = useMemo(...makeFilterSummaryMemoParams(department, period));
+	const filterSummary = useMemo(...makeFilterSummaryMemoParams(filters.department, filters.period));
 
 	const commands = useMemo(...makeCommandsMemoParams({
+		...filters,
+		...theme,
 		activeTab,
-		department,
-		period,
-		font,
-		paletteLabel: palette.label,
-		radius,
+		paletteLabel: theme.palette.label,
 		navigateToTab,
-		setDepartment,
-		setPeriod,
-		setFont,
-		setPalette,
-		setRadius,
 		close: closePalette,
 	}));
 
-	const outletContext: DashboardOutletContext = {
-		department,
-		period,
-		font,
-		setFont,
-		palette,
-		setPalette,
-		radius,
-		setRadius,
-		navMode,
-		setNavMode,
-	};
+	const outletContext: DashboardOutletContext = { filters, theme };
 
 	const mainContent = (
 		<>
 			{!TABS_WITHOUT_FILTER_BAR.has(activeTab) && (
 				<div className="filter-bar">
-					<DepartmentSelect value={department} onChange={setDepartment} />
-					<PeriodSelect value={period} onChange={setPeriod} />
+					<DepartmentSelect value={filters.department} onChange={filters.setDepartment} />
+					<PeriodSelect value={filters.period} onChange={filters.setPeriod} />
 				</div>
 			)}
 			<Outlet context={outletContext} />
 		</>
 	);
 
-	if (navMode === 'sidebar') {
+	if (theme.navMode === 'sidebar') {
 		return (
 			<SidebarShell activeTab={activeTab} onSelectTab={navigateToTab}>
 				{mainContent}
