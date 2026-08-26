@@ -128,7 +128,8 @@ label {
   margin: 0;
   padding: 16px 24px;
   text-align: left;
-  background-color: var(--beige);
+  color: #fcfcfb;
+  background-color: var(--dark-slate-grey);
 }
 
 .chart-card-body {
