@@ -7,13 +7,16 @@ import DenialChart from '../components/DenialChart';
 import DepartmentPieChart from '../components/DepartmentPieChart';
 import PayerPieChart from '../components/PayerPieChart';
 import Dashboard, { DENIALS_QUERY } from '../components/Dashboard';
+import { TABS } from '../tabs';
 
 function renderDashboard(mocks: MockedResponse[], initialPath = '/reason-breakdown') {
 	return render(
 		<MockedProvider mocks={mocks}>
 			<MemoryRouter initialEntries={[initialPath]}>
 				<Routes>
-					<Route path="/:tabId" element={<Dashboard />} />
+					{TABS.map((tab) => (
+						<Route key={tab.id} path={`/${tab.id}`} element={<Dashboard />} />
+					))}
 				</Routes>
 			</MemoryRouter>
 		</MockedProvider>

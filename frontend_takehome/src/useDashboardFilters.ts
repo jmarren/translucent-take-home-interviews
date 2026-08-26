@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { PeriodId, isValidPeriodId, DEFAULT_PERIOD } from './periods';
 import { isValidTabId } from './tabs';
 
@@ -11,13 +11,18 @@ export interface DashboardFilters {
 	setPeriod: (value: PeriodId) => void;
 }
 
-// Returns null when the route's tabId isn't valid, signaling the caller
-// should render a redirect -- kept as a plain value instead of JSX so this
-// hook has no rendering concerns of its own.
+// Returns null when the route's path isn't a recognized tab, signaling the
+// caller should render a redirect -- kept as a plain value instead of JSX
+// so this hook has no rendering concerns of its own.
 export function useDashboardFilters(): DashboardFilters | null {
-	const { tabId } = useParams<{ tabId: string }>();
+	const location = useLocation();
 	const navigate = useNavigate();
 	const [searchParams, setSearchParams] = useSearchParams();
+
+	// Tabs are now static routes (e.g. /settings, /reason-breakdown) rather
+	// than a single dynamic /:tabId segment, so the active tab is derived
+	// from the pathname itself instead of a route param.
+	const tabId = location.pathname.slice(1);
 
 	if (!isValidTabId(tabId)) {
 		return null;
