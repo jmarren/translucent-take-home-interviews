@@ -3,6 +3,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import DenialChart from './DenialChart';
 import DepartmentPieChart from './DepartmentPieChart';
+import PayerPieChart from './PayerPieChart';
 import DenialsTable from './DenialsTable';
 import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
@@ -152,6 +153,7 @@ export default function Dashboard() {
 							<div className="charts-row">
 								<DenialChart data={filteredDenials} />
 								<DepartmentPieChart data={filteredDenials} />
+								<PayerPieChart data={filteredDenials} />
 								<TrendSparkline data={filteredDenials} />
 							</div>
 							<div className="denial-records-section">
