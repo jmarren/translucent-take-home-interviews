@@ -4,7 +4,6 @@ import {
   Pie,
   Cell,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { Denial } from '../types';
@@ -77,7 +76,6 @@ export default function DepartmentPieChart({ data }: DepartmentPieChartProps) {
                   ))}
                 </Pie>
                 <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
