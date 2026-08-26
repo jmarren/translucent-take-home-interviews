@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface FontOption {
   label: string;
@@ -61,32 +61,54 @@ const FONT_GROUPS: FontGroup[] = [
 
 export default function FontExperiment() {
   const [font, setFont] = useState(FONT_GROUPS[0].fonts[0].value);
+  const [open, setOpen] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--font-family', font);
   }, [font]);
 
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
   return (
-    <div className="font-experiment">
-      <label htmlFor="font-experiment-select" className="font-experiment-label">
-        Font
-      </label>
-      <select
-        id="font-experiment-select"
-        className="font-experiment-select"
-        value={font}
-        onChange={(e) => setFont(e.target.value)}
+    <div className="font-experiment" ref={containerRef}>
+      <button
+        type="button"
+        className="font-experiment-toggle"
+        onClick={() => setOpen((o) => !o)}
       >
-        {FONT_GROUPS.map((group) => (
-          <optgroup key={group.label} label={group.label}>
-            {group.fonts.map((f) => (
-              <option key={f.value} value={f.value}>
-                {f.label}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
+        Font: {FONT_GROUPS.flatMap((g) => g.fonts).find((f) => f.value === font)?.label}
+      </button>
+
+      {open && (
+        <div className="font-experiment-panel">
+          {FONT_GROUPS.map((group) => (
+            <div key={group.label} className="font-experiment-group">
+              <p className="font-experiment-group-label">{group.label}</p>
+              {group.fonts.map((f) => (
+                <button
+                  key={f.value}
+                  type="button"
+                  className="font-experiment-option"
+                  aria-pressed={f.value === font}
+                  onClick={() => setFont(f.value)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
