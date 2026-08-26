@@ -19,7 +19,7 @@
 
 ## Accessibility
 
-- The department filter (a Radix `Select`) has a properly associated `<label htmlFor>` plus an explicit `aria-label`, and Radix handles the underlying keyboard navigation/focus management/ARIA roles for the listbox itself.
+- Both filters (Radix `Select`s, via the shared `LabeledSelect`) have a properly associated, visible `<label htmlFor>` plus an explicit `aria-label`, and Radix handles the underlying keyboard navigation/focus management/ARIA roles for the listbox itself.
 - Each chart is wrapped in its own `<section aria-label="...">` with a real, visible `<h2>` heading (not just a styled div), so its purpose is announced to assistive tech, not just implied visually. `DepartmentPieChart` mirrors this pattern from `DenialChart`.
 - Recharts renders plain SVG with limited built-in ARIA semantics in this version (2.6.2) — in particular, tooltips are mouse/focus-triggered and not reliably read by screen readers. The existing denials table is left in place alongside the charts and exposes the same underlying data in a natively accessible, keyboard-navigable form, so no information is chart-only. `DepartmentPieChart` additionally never relies on its tooltip for slice identity — direct labels and a legend cover that instead (see above).
 - The error state uses `role="alert"` for assertive announcement of query failures.

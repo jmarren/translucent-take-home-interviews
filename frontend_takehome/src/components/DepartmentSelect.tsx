@@ -13,6 +13,7 @@ export default function DepartmentSelect({ value, onChange }: DepartmentSelectPr
   return (
     <LabeledSelect
       id="department-filter"
+      label="Department"
       ariaLabel="Department"
       value={value || ALL_DEPARTMENTS}
       onChange={(next) => onChange(next === ALL_DEPARTMENTS ? '' : next)}

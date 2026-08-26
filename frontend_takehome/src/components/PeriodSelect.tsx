@@ -11,6 +11,7 @@ export default function PeriodSelect({ value, onChange }: PeriodSelectProps) {
   return (
     <LabeledSelect
       id="period-filter"
+      label="Period"
       ariaLabel="Period"
       value={value}
       onChange={(next) => onChange(next as PeriodId)}

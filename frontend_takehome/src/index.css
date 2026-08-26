@@ -30,9 +30,18 @@ h2 {
   color: var(--dark-slate-grey);
 }
 
-label {
+.labeled-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.labeled-select-label {
   color: var(--iron-grey);
+  font-size: 0.78rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .department-select-trigger {
@@ -89,7 +98,7 @@ label {
 
 .filter-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 16px;
   margin-bottom: 20px;
 }
