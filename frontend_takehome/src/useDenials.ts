@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { gql, useQuery, ApolloError } from '@apollo/client';
 import { Denial } from './types';
-import { PeriodId, filterByPeriod, getReferenceDate } from './periods';
+import { filterByPeriod, getReferenceDate } from './periods';
+import { DashboardFilters } from './useDashboardFilters';
 
 export const DENIALS_QUERY = gql`
   query Denials($department: String) {
@@ -22,19 +23,18 @@ export interface UseDenialsResult {
   error: ApolloError | undefined;
 }
 
-export function useDenials(department: string, period: PeriodId): UseDenialsResult {
-	const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(
-		DENIALS_QUERY,
-		{ variables: { department: department || undefined } }
-	);
+export function useDenials(filters: DashboardFilters): UseDenialsResult {
+  const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(DENIALS_QUERY, {
+    variables: { department: filters.department || undefined },
+  });
 
-	const denials = data?.denials ?? previousData?.denials ?? [];
-	const isInitialLoad = loading && !previousData && !data;
+  const denials = data?.denials ?? previousData?.denials ?? [];
+  const isInitialLoad = loading && !previousData && !data;
 
-	const filteredDenials = useMemo(() => {
-		const referenceDate = getReferenceDate(denials);
-		return filterByPeriod(denials, period, referenceDate);
-	}, [denials, period]);
+  const filteredDenials = useMemo(() => {
+    const referenceDate = getReferenceDate(denials);
+    return filterByPeriod(denials, filters.period, referenceDate);
+  }, [denials, filters.period]);
 
-	return { filteredDenials, isInitialLoad, error };
+  return { filteredDenials, isInitialLoad, error };
 }

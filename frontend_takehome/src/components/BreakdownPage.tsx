@@ -5,7 +5,7 @@ import TimeSeriesCard, { TimeSeriesCardConfig } from './TimeSeriesCard';
 import DenialsTable from './DenialsTable';
 import SummaryStats from './SummaryStats';
 import { useDenials } from '../useDenials';
-import { DashboardOutletContext } from './Layout';
+import { LayoutState } from './Layout';
 
 // Extends the app's existing low-chroma palette (index.css `:root`) with a
 // small number of additional restrained hues. The base palette alone
@@ -77,7 +77,7 @@ const TREND_CARD: TimeSeriesCardConfig = {
 };
 
 export default function BreakdownPage() {
-	const { filters } = useOutletContext<DashboardOutletContext>();
+	const { filters } = useOutletContext<LayoutState>();
 	const { filteredDenials, isInitialLoad, error } = useDenials(filters);
 
 	if (error) return <p role="alert">Error loading denials.</p>;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 import SettingsTab from './SettingsTab';
-import { DashboardOutletContext } from './Layout';
+import { LayoutState } from './Layout';
 
 export default function SettingsPage() {
-	const { theme } = useOutletContext<DashboardOutletContext>();
+	const { theme } = useOutletContext<LayoutState>();
 
 	return (
 		<SettingsTab

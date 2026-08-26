@@ -29,7 +29,7 @@ export interface Command {
 
 export interface CommandContext {
   theme: ThemePreferences;
-  dashboardFilters: DashboardFilters;
+  filters: DashboardFilters;
   activeTab: string;
   navigateToTab: (id: string) => void;
   close: () => void;
@@ -64,9 +64,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
     group: 'Filter by Department',
     icon: Filter,
     keywords: ['department', 'filter', 'clear'],
-    hint: ctx.dashboardFilters.department === '' ? 'Active' : undefined,
+    hint: ctx.filters.department === '' ? 'Active' : undefined,
     perform: () => {
-      ctx.dashboardFilters.setDepartment('');
+      ctx.filters.setDepartment('');
       ctx.close();
     },
   });
@@ -77,9 +77,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Filter by Department',
       icon: Filter,
       keywords: ['department', 'filter', dept.toLowerCase()],
-      hint: ctx.dashboardFilters.department === dept ? 'Active' : undefined,
+      hint: ctx.filters.department === dept ? 'Active' : undefined,
       perform: () => {
-        ctx.dashboardFilters.setDepartment(dept);
+        ctx.filters.setDepartment(dept);
         ctx.close();
       },
     });
@@ -92,9 +92,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Filter by Period',
       icon: Calendar,
       keywords: ['period', 'time', 'range'],
-      hint: ctx.dashboardFilters.period === period.id ? 'Active' : undefined,
+      hint: ctx.filters.period === period.id ? 'Active' : undefined,
       perform: () => {
-        ctx.dashboardFilters.setPeriod(period.id);
+        ctx.filters.setPeriod(period.id);
         ctx.close();
       },
     });

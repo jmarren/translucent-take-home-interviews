@@ -7,7 +7,7 @@ import PaletteShell from './PaletteShell';
 import { PeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
 import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
 import { useDashboardFilters, DashboardFilters } from '../useDashboardFilters';
-import { useCommandPalette } from '../useCommandPalette';
+import { Modal, useCommandPalette } from '../useCommandPalette';
 import { buildCommands, Command, CommandContext } from '../commands';
 
 // Curried so the "stable" router handles (navigate, current search params)
@@ -28,14 +28,6 @@ function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], unknown[
 	return [() => buildCommands(ctx), Object.values(ctx)];
 }
 
-// Passed through Outlet's context as the two cohesive objects the hooks
-// already return, rather than flattening every field out individually --
-// each child page pulls out just the one it needs (filters or theme).
-export interface DashboardOutletContext {
-	filters: DashboardFilters;
-	theme: ThemePreferences;
-}
-
 function makeFilterSummaryMemoParams(
 	filters: DashboardFilters
 ): [() => string | null, [string, PeriodId]] {
@@ -51,6 +43,24 @@ function makeFilterSummaryMemoParams(
 	}, [filters.department, filters.period]]
 }
 
+type Navigation = {
+	activeTab: string,
+	switchTo: (tabId: string) => void,
+}
+
+type CommandPalette = {
+	modal: Modal,
+	commands: Command[],
+}
+
+export type LayoutState = {
+	filters: DashboardFilters,
+	filterSummary: string | null,
+	theme: ThemePreferences,
+	navigation: Navigation,
+	commandPalette: CommandPalette,
+}
+
 // The settings/coming-soon tabs render even when the Settings tab is active
 // (they don't need the department/period filter bar), so this list is the
 // one place that decides which routes get it. Kept alongside the layout
@@ -59,58 +69,65 @@ function makeFilterSummaryMemoParams(
 const TABS_WITHOUT_FILTER_BAR = new Set(['settings']);
 
 export default function Layout() {
+	// url info
 	const location = useLocation();
 	const [searchParams] = useSearchParams();
+
+	// navigation
 	const activeTab = location.pathname.slice(1);
 	const navigate = useNavigate();
-
-	const dashboardFilters = useDashboardFilters();
-	const theme = useThemePreferences();
-	const { paletteOpen, setPaletteOpen, closePalette } = useCommandPalette(theme.navMode === 'palette');
-
 	const navigateToTab = makeNavigateToTab(navigate, searchParams);
 
-	const filterSummary = useMemo(...makeFilterSummaryMemoParams(dashboardFilters));
+	// data
+	const filters = useDashboardFilters();
+	const theme = useThemePreferences();
+	const paletteModal = useCommandPalette(theme.navMode === 'palette');
+	const filterSummary = useMemo(...makeFilterSummaryMemoParams(filters));
 
 	const commands = useMemo(...makeCommandsMemoParams({
-		dashboardFilters,
+		filters,
 		theme,
 		activeTab,
 		navigateToTab,
-		close: closePalette,
+		close: paletteModal.close,
 	}));
 
-	const outletContext: DashboardOutletContext = { filters: dashboardFilters, theme };
+	const layoutState: LayoutState = {
+		filters,
+		filterSummary: activeTab === 'settings' ? null : filterSummary,
+		theme,
+		navigation: {
+			activeTab,
+			switchTo: navigateToTab,
+		},
+		commandPalette: {
+			modal: paletteModal,
+			commands,
+		},
+	};
 
 	const mainContent = (
 		<>
 			{!TABS_WITHOUT_FILTER_BAR.has(activeTab) && (
 				<div className="filter-bar">
-					<DepartmentSelect value={dashboardFilters.department} onChange={dashboardFilters.setDepartment} />
-					<PeriodSelect value={dashboardFilters.period} onChange={dashboardFilters.setPeriod} />
+					<DepartmentSelect value={filters.department} onChange={filters.setDepartment} />
+					<PeriodSelect value={filters.period} onChange={filters.setPeriod} />
 				</div>
 			)}
-			<Outlet context={outletContext} />
+			<Outlet context={layoutState} />
 		</>
 	);
 
 	if (theme.navMode === 'sidebar') {
 		return (
-			<SidebarShell activeTab={activeTab} onSelectTab={navigateToTab}>
+			<SidebarShell layoutState={layoutState}>
 				{mainContent}
 			</SidebarShell>
 		);
 	}
 
 	return (
-		<PaletteShell
-			activeTab={activeTab}
-			filterSummary={activeTab === 'settings' ? null : filterSummary}
-			paletteOpen={paletteOpen}
-			onOpenPalette={() => setPaletteOpen(true)}
-			onPaletteOpenChange={setPaletteOpen}
-			commands={commands}
-		>
+		<PaletteShell layoutState={layoutState}>
 			{mainContent}
 		</PaletteShell>
 	);
