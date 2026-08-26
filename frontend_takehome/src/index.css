@@ -165,41 +165,40 @@ label {
 .summary-cards {
   flex: 1;
   min-width: 220px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  align-content: start;
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  background-color: var(--dark-slate-grey);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .summary-card {
+  flex: 1 1 160px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  background-color: #fcfcfb;
-  border: 1px solid var(--silver);
-  border-left: 3px solid var(--dark-slate-grey);
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
-  padding: 16px 20px;
+  gap: 4px;
+  padding: 20px 24px;
+  border-right: 1px solid rgba(252, 252, 251, 0.15);
 }
 
 .summary-card-label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--iron-grey);
+  color: var(--silver);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .summary-card-value {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: var(--dark-slate-grey);
-  line-height: 1.1;
+  color: #fcfcfb;
+  line-height: 1.15;
 }
 
 .summary-card-value-text {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
 }
 
 table {
