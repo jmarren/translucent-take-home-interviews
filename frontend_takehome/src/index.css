@@ -105,18 +105,11 @@ label {
   min-width: 0;
 }
 
-.at-a-glance-panel {
-  background-color: #fcfcfb;
-  border: 1px solid var(--silver);
-  border-radius: 8px;
-  padding: 20px 24px 8px;
-  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
-}
-
 .denial-records-section {
   margin-top: 32px;
-  padding-top: 20px;
-  border-top: 1px solid var(--silver);
+  background-color: rgba(232, 224, 208, 0.35);
+  border-radius: 8px;
+  padding: 20px 24px;
 }
 
 .denial-records-heading {
