@@ -48,7 +48,7 @@ export default function DenialChart({ data }: DenialChartProps) {
                 />
                 <YAxis type="category" dataKey="reason" width={140} tick={{ fontSize: 13 }} />
                 <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-                <Bar dataKey="amount" fill="#2c423f" name="Denied amount" />
+                <Bar dataKey="amount" fill="#5b7fa6" name="Denied amount" />
               </BarChart>
             </ResponsiveContainer>
           </div>
