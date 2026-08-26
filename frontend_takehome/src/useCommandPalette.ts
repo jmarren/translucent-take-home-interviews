@@ -1,4 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import { buildCommands, Command, CommandContext } from "./commands";
 
 export interface Modal {
@@ -23,16 +30,12 @@ function makeCommandsMemoParams(
   return [() => buildCommands(ctx), Object.values(ctx)];
 }
 
-// The global Cmd+K/Ctrl+K listener only makes sense in palette nav mode --
-// callers pass `enabled` rather than this hook reaching into theme
-// preferences itself, so it stays independent of nav-mode internals.
-export function useCommandPalette(
-  context: Omit<CommandContext, "close">,
-): CommandPalette {
-  const [isOpen, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (context.theme.navMode !== "palette") return;
+function makeCommandEffectParams(
+  ctx: Omit<CommandContext, "close">,
+  setOpen: Dispatch<SetStateAction<boolean>>,
+): Parameters<typeof useEffect> {
+  let callback = () => {
+    if (ctx.theme.navMode !== "palette") return;
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
@@ -41,11 +44,24 @@ export function useCommandPalette(
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [context.theme.navMode]);
+  };
+
+  return [callback, [ctx.theme.navMode]];
+}
+
+// The global Cmd+K/Ctrl+K listener only makes sense in palette nav mode --
+// callers pass `enabled` rather than this hook reaching into theme
+// preferences itself, so it stays independent of nav-mode internals.
+export function useCommandPalette(
+  ctx: Omit<CommandContext, "close">,
+): CommandPalette {
+  const [isOpen, setOpen] = useState<boolean>(false);
+
+  useEffect(...makeCommandEffectParams(ctx, setOpen));
 
   const close = useCallback(() => setOpen(false), []);
 
-  const commands = useMemo(...makeCommandsMemoParams({ ...context, close }));
+  const commands = useMemo(...makeCommandsMemoParams({ ...ctx, close }));
 
   return { modal: { isOpen, setOpen, close }, commands };
 }

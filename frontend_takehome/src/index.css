@@ -115,9 +115,7 @@ h2 {
 }
 
 .charts-row > section {
-  flex: 0 1 auto;
-  width: 432px;
-  max-width: 100%;
+  flex: 1 1 auto;
   height: 576px;
   display: flex;
   flex-direction: column;
@@ -126,13 +124,6 @@ h2 {
   box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
 }
 
-.charts-row > .reason-chart-card {
-  width: 800px;
-}
-
-.charts-row > .trend-sparkline-card {
-  width: 800px;
-}
 
 /* Shared chart-card padding rhythm: the bar/pie chart cards (.charts-row >
    section) and the trend sparkline card (.trend-sparkline-card) all apply
@@ -250,7 +241,6 @@ h2 {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 24px 16px;
 }
 
 .chart-card-caption {
@@ -377,13 +367,14 @@ h2 {
 .trend-sparkline-body {
   box-sizing: border-box;
   width: 100%;
-  flex: 1;
+  flex: stretch;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 8px 16px 16px;
+  padding: 16px;
+  /* padding: 8px 16px 16px; */
 }
 
 table {

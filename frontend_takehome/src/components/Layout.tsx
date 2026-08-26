@@ -11,7 +11,6 @@ import { useCommandPalette, CommandPalette } from '../useCommandPalette';
 
 export type LayoutState = {
 	filters: DashboardFilters,
-	filterSummary: string | null,
 	theme: ThemePreferences,
 	navigation: Navigation,
 	commandPalette: CommandPalette,
@@ -40,7 +39,6 @@ export default function Layout() {
 
 	const layoutState: LayoutState = {
 		filters,
-		filterSummary: navigation.activeTab === 'settings' ? null : filters.summary,
 		theme,
 		navigation,
 		commandPalette,

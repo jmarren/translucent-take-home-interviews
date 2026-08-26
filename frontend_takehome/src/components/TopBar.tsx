@@ -24,8 +24,8 @@ export default function TopBar({ layoutState }: TopBarProps) {
 			<div className="top-bar-current" aria-live="polite">
 				{CurrentIcon && <CurrentIcon className="top-bar-current-icon" size={20} aria-hidden="true" />}
 				<span className="top-bar-current-label">{current?.label ?? ''}</span>
-				{layoutState.filterSummary && (
-					<span className="top-bar-filter-summary">{layoutState.filterSummary}</span>
+				{layoutState.filters.summary && (
+					<span className="top-bar-filter-summary">{layoutState.filters.summary}</span>
 				)}
 			</div>
 
