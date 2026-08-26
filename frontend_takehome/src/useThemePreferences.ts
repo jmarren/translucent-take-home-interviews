@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { ALL_FONTS, DEFAULT_FONT, applyFont } from './fonts';
 import { ALL_PALETTES, DEFAULT_PALETTE, Palette, applyPalette } from './palettes';
 import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from './radii';
+import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from './navModes';
 
 const FONT_STORAGE_KEY = 'denial-dashboard:font';
 const PALETTE_STORAGE_KEY = 'denial-dashboard:palette-label';
 const RADIUS_STORAGE_KEY = 'denial-dashboard:radius';
+const NAV_MODE_STORAGE_KEY = 'denial-dashboard:nav-mode';
 
 function loadStoredFont(): string {
   try {
@@ -39,10 +41,21 @@ function loadStoredRadius(): number {
   return DEFAULT_RADIUS;
 }
 
+function loadStoredNavMode(): NavMode {
+  try {
+    const stored = window.localStorage.getItem(NAV_MODE_STORAGE_KEY);
+    if (NAV_MODES.some((m) => m.value === stored)) return stored as NavMode;
+  } catch {
+    // localStorage unavailable -- fall back to default.
+  }
+  return DEFAULT_NAV_MODE;
+}
+
 export function useThemePreferences() {
   const [font, setFontState] = useState<string>(loadStoredFont);
   const [palette, setPaletteState] = useState<Palette>(loadStoredPalette);
   const [radius, setRadiusState] = useState<number>(loadStoredRadius);
+  const [navMode, setNavModeState] = useState<NavMode>(loadStoredNavMode);
 
   useEffect(() => {
     applyFont(font);
@@ -83,5 +96,23 @@ export function useThemePreferences() {
     }
   }
 
-  return { font, setFont, palette, setPalette, radius, setRadius };
+  function setNavMode(value: NavMode) {
+    setNavModeState(value);
+    try {
+      window.localStorage.setItem(NAV_MODE_STORAGE_KEY, value);
+    } catch {
+      // Ignore write failures.
+    }
+  }
+
+  return {
+    font,
+    setFont,
+    palette,
+    setPalette,
+    radius,
+    setRadius,
+    navMode,
+    setNavMode,
+  };
 }

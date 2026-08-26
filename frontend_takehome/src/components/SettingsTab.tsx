@@ -2,6 +2,7 @@ import React from 'react';
 import { FONT_GROUPS } from '../fonts';
 import { PALETTE_GROUPS, Palette, paletteSwatchGradient } from '../palettes';
 import { RADIUS_OPTIONS } from '../radii';
+import { NAV_MODES, NavMode } from '../navModes';
 
 interface SettingsTabProps {
   font: string;
@@ -10,6 +11,8 @@ interface SettingsTabProps {
   onPaletteChange: (palette: Palette) => void;
   radius: number;
   onRadiusChange: (value: number) => void;
+  navMode: NavMode;
+  onNavModeChange: (value: NavMode) => void;
 }
 
 export default function SettingsTab({
@@ -19,9 +22,34 @@ export default function SettingsTab({
   onPaletteChange,
   radius,
   onRadiusChange,
+  navMode,
+  onNavModeChange,
 }: SettingsTabProps) {
   return (
     <div className="settings-tab">
+      <section className="settings-section" aria-label="Navigation settings">
+        <h2 className="settings-section-title">Navigation</h2>
+        <p className="settings-section-description">
+          Choose how you move between views in the dashboard.
+        </p>
+        <div className="settings-group">
+          <div className="settings-options">
+            {NAV_MODES.map((mode) => (
+              <button
+                key={mode.value}
+                type="button"
+                className="settings-option settings-nav-mode-option"
+                aria-pressed={mode.value === navMode}
+                onClick={() => onNavModeChange(mode.value)}
+              >
+                <span className="settings-nav-mode-label">{mode.label}</span>
+                <span className="settings-nav-mode-description">{mode.description}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="settings-section" aria-label="Font settings">
         <h2 className="settings-section-title">Font</h2>
         <p className="settings-section-description">

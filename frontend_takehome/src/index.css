@@ -396,6 +396,73 @@ tbody tr:nth-child(even) {
   z-index: 1;
 }
 
+/* Sidebar nav mode -- an alternative to the top-bar/command-palette layout
+   above. .dashboard-layout wraps the sidebar + content area side by side;
+   nested here, .dashboard-content gets a different margin/shadow suited to
+   sitting beside a sidebar instead of below a full-width top bar. */
+.dashboard-layout {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  margin-top: 24px;
+}
+
+.sidebar {
+  flex: 0 0 220px;
+  background-color: var(--beige);
+  margin: 0 0 24px 24px;
+  padding: 24px 32px 24px 16px;
+  border-radius: var(--radius);
+  position: relative;
+  z-index: 0;
+}
+
+.sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--iron-grey);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.sidebar-tab-icon {
+  flex-shrink: 0;
+}
+
+.sidebar-tab:hover {
+  background-color: rgba(44, 66, 63, 0.08);
+}
+
+.sidebar-tab[aria-current='page'] {
+  color: #fcfcfb;
+  background-color: var(--dark-slate-grey);
+}
+
+.dashboard-layout .dashboard-content {
+  flex: 1;
+  min-width: 0;
+  margin: 0 24px 24px -24px;
+  box-shadow: -2px 0 6px rgba(44, 66, 63, 0.12);
+}
+
 .coming-soon {
   color: var(--iron-grey);
 }
@@ -481,6 +548,28 @@ tbody tr:nth-child(even) {
   height: 24px;
   background-color: var(--iron-grey);
   border: none;
+}
+
+.settings-nav-mode-option {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 320px;
+  text-align: left;
+}
+
+.settings-nav-mode-label {
+  font-weight: 700;
+}
+
+.settings-nav-mode-description {
+  font-size: 0.8rem;
+  color: var(--iron-grey);
+  font-weight: 400;
+}
+
+.settings-option[aria-pressed='true'] .settings-nav-mode-description {
+  color: #fcfcfb;
 }
 
 /* Temporary dev tool for trying out fonts -- remove before shipping. */
