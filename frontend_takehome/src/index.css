@@ -101,8 +101,7 @@ label {
 }
 
 .reason-breakdown-main {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 auto;
 }
 
 .charts-row {
@@ -164,7 +163,8 @@ label {
 }
 
 .summary-cards {
-  flex: 0 0 220px;
+  flex: 1;
+  min-width: 220px;
   display: flex;
   flex-direction: column;
   gap: 12px;
