@@ -166,6 +166,12 @@ label {
   flex: 1;
   min-width: 220px;
   display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.summary-panel {
+  display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
   background-color: var(--dark-slate-grey);
@@ -199,6 +205,22 @@ label {
 
 .summary-card-value-text {
   font-size: 1.25rem;
+}
+
+.trend-sparkline-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--silver);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
+}
+
+.trend-sparkline-body {
+  flex: 1;
+  min-height: 120px;
+  padding: 16px;
 }
 
 table {
