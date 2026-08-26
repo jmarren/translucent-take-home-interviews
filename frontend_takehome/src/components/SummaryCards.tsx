@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
 import { Denial } from '../types';
 
 interface SummaryCardsProps {
@@ -73,13 +80,21 @@ export default function SummaryCards({ data }: SummaryCardsProps) {
           <h2 className="chart-card-title">Trend</h2>
           <div className="trend-sparkline-body">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trend} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+              <AreaChart data={trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#5b7fa6" stopOpacity={0.35} />
                     <stop offset="100%" stopColor="#5b7fa6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <YAxis
+                  tickFormatter={currency}
+                  tick={{ fontSize: 11 }}
+                  width={64}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <Tooltip
                   formatter={(value: number) => [currency(value), 'Total amount']}
                   labelFormatter={(_, payload) => payload?.[0]?.payload?.month ?? ''}

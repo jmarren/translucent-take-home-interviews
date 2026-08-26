@@ -28,7 +28,6 @@ export default function DenialChart({ data }: DenialChartProps) {
 
   return (
     <section className="reason-chart-card chart-card-exhibit" aria-label="Denial breakdown chart">
-      <p className="chart-card-tag">Exhibit A</p>
       <h2 className="chart-card-title">Reasons</h2>
       <div className="chart-card-body">
         {chartData.length === 0 ? (
