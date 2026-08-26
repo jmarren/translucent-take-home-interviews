@@ -123,7 +123,7 @@ label {
   box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
 }
 
-.reason-chart-card {
+.charts-row > .reason-chart-card {
   width: 576px;
 }
 
