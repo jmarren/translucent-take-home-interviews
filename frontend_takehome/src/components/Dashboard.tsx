@@ -75,16 +75,18 @@ export default function Dashboard() {
 					{loading && !previousData && !data ? (
 						<p>Loading...</p>
 					) : activeTab === 'reason-breakdown' ? (
-						<div className="reason-breakdown-layout">
-							<div className="reason-breakdown-main">
-								<DenialChart data={filteredDenials} />
-								<div className="denial-records-section">
-									<h2 className="denial-records-heading">Denial-Level Detail</h2>
-									<DenialsTable data={filteredDenials} />
+						<>
+							<div className="reason-breakdown-layout">
+								<div className="reason-breakdown-main">
+									<DenialChart data={filteredDenials} />
 								</div>
+								<SummaryCards data={filteredDenials} />
 							</div>
-							<SummaryCards data={filteredDenials} />
-						</div>
+							<div className="denial-records-section">
+								<h2 className="denial-records-heading">Denial-Level Detail</h2>
+								<DenialsTable data={filteredDenials} />
+							</div>
+						</>
 					) : (
 						<ComingSoon
 							title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
