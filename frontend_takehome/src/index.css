@@ -106,8 +106,10 @@ label {
 }
 
 .denial-records-section {
+  box-sizing: border-box;
+  width: 100%;
   margin-top: 32px;
-  background-color: rgba(232, 224, 208, 0.35);
+  background-color: rgba(197, 197, 197, 0.2);
   border-radius: 8px;
   padding: 20px 24px;
 }
