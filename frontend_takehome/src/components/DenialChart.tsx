@@ -35,7 +35,7 @@ export default function DenialChart({ data }: DenialChartProps) {
         ) : (
           <div style={{ width: '100%', maxWidth: 432 }}>
             <ResponsiveContainer width="100%" aspect={1}>
-              <BarChart data={chartData} margin={{ top: 8, right: 16, left: 8, bottom: 48 }}>
+              <BarChart data={chartData} margin={{ top: 8, right: 24, left: 16, bottom: 48 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="reason" angle={-30} textAnchor="end" interval={0} height={70} />
                 <YAxis tickFormatter={currency} domain={[0, (dataMax: number) => dataMax * 1.15]} />

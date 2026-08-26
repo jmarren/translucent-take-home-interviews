@@ -57,14 +57,14 @@ export default function DepartmentPieChart({ data }: DepartmentPieChartProps) {
         ) : (
           <div style={{ width: '100%', maxWidth: 432 }}>
             <ResponsiveContainer width="100%" aspect={1}>
-              <PieChart margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
+              <PieChart margin={{ top: 8, right: 32, left: 32, bottom: 8 }}>
                 <Pie
                   data={chartData}
                   dataKey="amount"
                   nameKey="department"
                   cx="50%"
                   cy="50%"
-                  outerRadius="70%"
+                  outerRadius="55%"
                   label={({ department, amount }) =>
                     `${department}: ${((amount / total) * 100).toFixed(0)}%`
                   }
