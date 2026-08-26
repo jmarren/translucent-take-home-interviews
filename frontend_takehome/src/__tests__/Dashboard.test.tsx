@@ -3,9 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import DenialChart from '../components/DenialChart';
-import DepartmentPieChart from '../components/DepartmentPieChart';
-import PayerPieChart from '../components/PayerPieChart';
+import CategoryCard from '../components/CategoryCard';
+import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD } from '../components/BreakdownPage';
 import Layout from '../components/Layout';
 import ComingSoon from '../components/ComingSoon';
 import { DENIALS_QUERY } from '../useDenials';
@@ -37,19 +36,19 @@ function renderDashboard(mocks: MockedResponse[], initialPath = '/breakdown') {
 }
 
 test('renders chart title', () => {
-	render(<DenialChart data={[]} />);
+	render(<CategoryCard data={[]} config={REASON_CARD} />);
 	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
-	render(<DepartmentPieChart data={[]} />);
+	render(<CategoryCard data={[]} config={DEPARTMENT_CARD} />);
 	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders payer pie chart title', () => {
-	render(<PayerPieChart data={[]} />);
+	render(<CategoryCard data={[]} config={PAYER_CARD} />);
 	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
 });

@@ -15,11 +15,6 @@ import { Denial } from '../types';
 import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from '../chartTypes';
 import ChartTypeSelect from './ChartTypeSelect';
 
-interface TrendSparklineProps {
-  data: Denial[];
-  loading?: boolean;
-}
-
 interface MonthTotal {
   monthKey: string;
   month: string;
@@ -33,18 +28,40 @@ const MONTH_LABELS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
-function useMonthlyTrend(data: Denial[]): MonthTotal[] {
+export interface TimeSeriesCardConfig {
+  /** localStorage key + command-palette identity for this card's chart-type choice. */
+  chartTypeKey: string;
+  defaultChartType: TimeSeriesChartType;
+  title: string;
+  ariaLabel: string;
+  chartTypeAriaLabel: string;
+  caption: string;
+  /** Buckets a denial into a "YYYY-MM" period key -- defaults to grouping by month via `date`. */
+  groupByMonth?: (denial: Denial) => string;
+}
+
+interface TimeSeriesCardProps {
+  data: Denial[];
+  loading?: boolean;
+  config: TimeSeriesCardConfig;
+}
+
+function defaultGroupByMonth(denial: Denial): string {
+  return denial.date.slice(0, 7); // "YYYY-MM"
+}
+
+function useMonthlyTrend(data: Denial[], groupByMonth: (denial: Denial) => string): MonthTotal[] {
   return useMemo(() => {
     const monthTotals = new Map<string, number>();
     for (const d of data) {
-      const monthKey = d.date.slice(0, 7); // "YYYY-MM"
+      const monthKey = groupByMonth(d);
       monthTotals.set(monthKey, (monthTotals.get(monthKey) ?? 0) + d.amount);
     }
     return Array.from(monthTotals, ([monthKey, amount]) => {
       const monthIndex = Number(monthKey.slice(5, 7)) - 1;
       return { monthKey, month: MONTH_LABELS[monthIndex] ?? monthKey, amount };
     }).sort((a, b) => (a.monthKey > b.monthKey ? 1 : -1));
-  }, [data]);
+  }, [data, groupByMonth]);
 }
 
 function AreaView({ trend }: { trend: MonthTotal[] }) {
@@ -131,25 +148,23 @@ function BarByMonthView({ trend }: { trend: MonthTotal[] }) {
   );
 }
 
-export default function TrendSparkline({ data, loading = false }: TrendSparklineProps) {
-  const trend = useMonthlyTrend(data);
+export default function TimeSeriesCard({ data, loading = false, config }: TimeSeriesCardProps) {
+  const groupByMonth = config.groupByMonth ?? defaultGroupByMonth;
+  const trend = useMonthlyTrend(data, groupByMonth);
   const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
-    'trend',
+    config.chartTypeKey,
     TIME_SERIES_CHART_TYPES,
-    'area'
+    config.defaultChartType
   );
 
   if (!loading && trend.length <= 1) return null;
 
   return (
-    <section
-      className="trend-sparkline-card chart-card-exhibit"
-      aria-label="Denied amount trend over time"
-    >
+    <section className="trend-sparkline-card chart-card-exhibit" aria-label={config.ariaLabel}>
       <div className="chart-card-header">
-        <h2 className="chart-card-title">Trend</h2>
+        <h2 className="chart-card-title">{config.title}</h2>
         <ChartTypeSelect
-          ariaLabel="Chart type for Trend"
+          ariaLabel={config.chartTypeAriaLabel}
           value={chartType}
           options={TIME_SERIES_CHART_TYPES}
           onChange={setChartType}
@@ -168,9 +183,7 @@ export default function TrendSparkline({ data, loading = false }: TrendSparkline
           )}
         </div>
       </div>
-      <p className="chart-card-caption">
-        Monthly denied dollar total across the filtered range.
-      </p>
+      <p className="chart-card-caption">{config.caption}</p>
     </section>
   );
 }
