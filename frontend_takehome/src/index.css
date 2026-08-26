@@ -297,70 +297,101 @@ tbody tr:nth-child(even) {
   border: 0;
 }
 
-.dashboard-layout {
+.top-bar {
   display: flex;
-  align-items: stretch;
-  flex: 1;
-  margin-top: 24px;
-}
-
-.sidebar {
-  flex: 0 0 220px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 24px 24px 0;
+  padding: 14px 20px;
   background-color: var(--beige);
-  margin: 0 0 24px 24px;
-  padding: 24px 32px 24px 16px;
   border-radius: var(--radius);
-  position: relative;
-  z-index: 0;
 }
 
-.sidebar-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.sidebar-tab {
+.top-bar-current {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 100%;
-  text-align: left;
-  font-family: inherit;
-  font-size: 1rem;
+  min-width: 0;
+  color: var(--dark-slate-grey);
   font-weight: 600;
-  color: var(--iron-grey);
-  background: none;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  cursor: pointer;
+  font-size: 1.05rem;
 }
 
-.sidebar-tab-icon {
+.top-bar-current-icon {
   flex-shrink: 0;
+  color: var(--iron-grey);
 }
 
-.sidebar-tab:hover {
+.top-bar-current-label {
+  white-space: nowrap;
+}
+
+.top-bar-filter-summary {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--iron-grey);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-bar-filter-summary::before {
+  content: '·';
+  margin-right: 8px;
+}
+
+.command-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--iron-grey);
+  background-color: #fcfcfb;
+  border: 1px solid var(--grey-olive);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+  min-width: 260px;
+  max-width: 100%;
+}
+
+.command-trigger span {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-trigger:hover {
+  border-color: var(--iron-grey);
+}
+
+.command-trigger:focus-visible {
+  outline: 2px solid var(--dark-slate-grey);
+  outline-offset: 1px;
+}
+
+.command-trigger-kbd {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 0.72rem;
+  color: var(--iron-grey);
   background-color: rgba(44, 66, 63, 0.08);
-}
-
-.sidebar-tab[aria-current='page'] {
-  color: #fcfcfb;
-  background-color: var(--dark-slate-grey);
+  border: 1px solid var(--grey-olive);
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
 }
 
 .dashboard-content {
-  flex: 1;
-  min-width: 0;
-  background-color: #fcfcfb;
-  margin: 0 24px 24px -24px;
+  margin: 24px 24px;
   padding: 24px 32px;
+  background-color: #fcfcfb;
   border-radius: var(--radius);
-  box-shadow: -2px 0 6px rgba(44, 66, 63, 0.12);
+  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.12);
   position: relative;
   z-index: 1;
 }
@@ -551,4 +582,148 @@ tbody tr:nth-child(even) {
   height: 14px;
   border-radius: 2px;
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Command palette (cmdk). Command.Dialog renders a Radix Dialog under the hood, so
+   the overlay/content classes below hook into cmdk's own [cmdk-overlay]/[cmdk-dialog]
+   attribute selectors rather than needing custom portal/focus-trap logic. */
+[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(23, 30, 28, 0.55);
+  z-index: 200;
+}
+
+.command-palette-content[cmdk-dialog] {
+  position: fixed;
+  top: 14vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, calc(100vw - 32px));
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fcfcfb;
+  border-radius: var(--radius);
+  box-shadow: 0 16px 48px rgba(20, 28, 26, 0.35);
+  overflow: hidden;
+  z-index: 201;
+  box-sizing: border-box;
+}
+
+.command-palette[cmdk-root] {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  font-family: var(--font-family);
+}
+
+.command-palette-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--silver);
+  flex-shrink: 0;
+}
+
+.command-palette-search-icon {
+  flex-shrink: 0;
+  color: var(--iron-grey);
+}
+
+[cmdk-input] {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 1.05rem;
+  color: var(--dark-slate-grey);
+  background: none;
+  border: none;
+  outline: none;
+}
+
+[cmdk-input]::placeholder {
+  color: var(--grey-olive);
+}
+
+.command-palette-esc-hint {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 0.72rem;
+  color: var(--iron-grey);
+  background-color: rgba(44, 66, 63, 0.08);
+  border: 1px solid var(--grey-olive);
+  border-radius: var(--radius-xs);
+  padding: 2px 6px;
+}
+
+[cmdk-list] {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+  min-height: 0;
+}
+
+[cmdk-group-heading] {
+  margin: 12px 8px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--iron-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+[cmdk-group]:first-child [cmdk-group-heading] {
+  margin-top: 4px;
+}
+
+[cmdk-item] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--dark-slate-grey);
+  cursor: pointer;
+}
+
+[cmdk-item][aria-selected='true'] {
+  background-color: var(--dark-slate-grey);
+  color: #fcfcfb;
+}
+
+[cmdk-item][aria-selected='true'] .command-palette-item-icon {
+  color: #fcfcfb;
+}
+
+.command-palette-item-icon {
+  flex-shrink: 0;
+  color: var(--iron-grey);
+}
+
+.command-palette-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-palette-item-hint {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--grey-olive);
+}
+
+[cmdk-item][aria-selected='true'] .command-palette-item-hint {
+  color: var(--silver);
+}
+
+[cmdk-empty] {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--iron-grey);
+  font-size: 0.9rem;
 }

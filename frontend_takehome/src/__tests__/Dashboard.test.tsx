@@ -89,3 +89,48 @@ test('selecting a period filters out denials outside that range', async () => {
 	await waitFor(() => expect(screen.queryByText('D3')).not.toBeInTheDocument());
 	expect(screen.getByText('D4')).toBeInTheDocument();
 });
+
+test('Cmd+K opens the command palette', async () => {
+	const user = userEvent.setup();
+	renderDashboard(mocks);
+
+	await screen.findByText('D1');
+	expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+	await user.keyboard('{Meta>}k{/Meta}');
+
+	expect(await screen.findByRole('dialog')).toBeInTheDocument();
+	expect(screen.getByPlaceholderText(/search views, filters, and settings/i)).toBeInTheDocument();
+});
+
+test('choosing a "Go to" command in the palette navigates to that view and closes the palette', async () => {
+	const user = userEvent.setup();
+	renderDashboard(mocks);
+
+	await screen.findByText('D1');
+
+	await user.keyboard('{Meta>}k{/Meta}');
+	const input = await screen.findByPlaceholderText(/search views, filters, and settings/i);
+
+	await user.type(input, 'Payer Breakdown');
+	await user.click(await screen.findByText('Go to Payer Breakdown'));
+
+	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+	expect(await screen.findByRole('heading', { name: 'Payer Breakdown' })).toBeInTheDocument();
+});
+
+test('Escape closes the command palette without navigating away', async () => {
+	const user = userEvent.setup();
+	renderDashboard(mocks);
+
+	await screen.findByText('D1');
+
+	await user.keyboard('{Meta>}k{/Meta}');
+	await screen.findByRole('dialog');
+
+	await user.keyboard('{Escape}');
+
+	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+	// Still on the original view -- the underlying dashboard content survived intact.
+	expect(screen.getByText('D1')).toBeInTheDocument();
+});

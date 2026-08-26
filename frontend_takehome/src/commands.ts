@@ -1,0 +1,149 @@
+import { LucideIcon, Search, Filter, Calendar, Palette, Type, Square } from 'lucide-react';
+import { TABS } from './tabs';
+import { DEPARTMENTS } from './types';
+import { PERIODS, PeriodId } from './periods';
+import { ALL_FONTS } from './fonts';
+import { ALL_PALETTES, Palette as PaletteValue } from './palettes';
+import { RADIUS_OPTIONS } from './radii';
+
+export interface Command {
+  id: string;
+  label: string;
+  group: string;
+  icon: LucideIcon;
+  keywords?: string[];
+  /** Extra text shown at the right edge of the row, e.g. the current value. */
+  hint?: string;
+  perform: () => void;
+}
+
+export interface CommandContext {
+  activeTab: string;
+  department: string;
+  period: PeriodId;
+  font: string;
+  paletteLabel: string;
+  radius: number;
+  navigateToTab: (id: string) => void;
+  setDepartment: (value: string) => void;
+  setPeriod: (value: PeriodId) => void;
+  setFont: (value: string) => void;
+  setPalette: (value: PaletteValue) => void;
+  setRadius: (value: number) => void;
+  close: () => void;
+}
+
+/**
+ * Builds the full, flat list of palette commands from current app state. Kept as a
+ * plain function (not a hook) so it stays trivial to unit test and has no rules-of-hooks
+ * concerns -- it's just data derived from props/state already owned by the caller.
+ */
+export function buildCommands(ctx: CommandContext): Command[] {
+  const commands: Command[] = [];
+
+  for (const tab of TABS) {
+    commands.push({
+      id: `go:${tab.id}`,
+      label: `Go to ${tab.label}`,
+      group: 'Navigate',
+      icon: tab.icon,
+      keywords: ['go', 'view', 'open', tab.id],
+      hint: tab.id === ctx.activeTab ? 'Current view' : undefined,
+      perform: () => {
+        ctx.navigateToTab(tab.id);
+        ctx.close();
+      },
+    });
+  }
+
+  commands.push({
+    id: 'filter:department:all',
+    label: 'Filter: All Departments',
+    group: 'Filter by Department',
+    icon: Filter,
+    keywords: ['department', 'filter', 'clear'],
+    hint: ctx.department === '' ? 'Active' : undefined,
+    perform: () => {
+      ctx.setDepartment('');
+      ctx.close();
+    },
+  });
+  for (const dept of DEPARTMENTS) {
+    commands.push({
+      id: `filter:department:${dept}`,
+      label: `Filter: ${dept}`,
+      group: 'Filter by Department',
+      icon: Filter,
+      keywords: ['department', 'filter', dept.toLowerCase()],
+      hint: ctx.department === dept ? 'Active' : undefined,
+      perform: () => {
+        ctx.setDepartment(dept);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const period of PERIODS) {
+    commands.push({
+      id: `filter:period:${period.id}`,
+      label: `Period: ${period.label}`,
+      group: 'Filter by Period',
+      icon: Calendar,
+      keywords: ['period', 'time', 'range'],
+      hint: ctx.period === period.id ? 'Active' : undefined,
+      perform: () => {
+        ctx.setPeriod(period.id);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const font of ALL_FONTS) {
+    commands.push({
+      id: `font:${font.value}`,
+      label: `Font: ${font.label}`,
+      group: 'Appearance — Font',
+      icon: Type,
+      keywords: ['font', 'typeface', 'settings'],
+      hint: font.value === ctx.font ? 'Active' : undefined,
+      perform: () => {
+        ctx.setFont(font.value);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const palette of ALL_PALETTES) {
+    commands.push({
+      id: `palette:${palette.label}`,
+      label: `Palette: ${palette.label}`,
+      group: 'Appearance — Palette',
+      icon: Palette,
+      keywords: ['palette', 'color', 'colour', 'theme', 'settings'],
+      hint: palette.label === ctx.paletteLabel ? 'Active' : undefined,
+      perform: () => {
+        ctx.setPalette(palette);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const radius of RADIUS_OPTIONS) {
+    commands.push({
+      id: `radius:${radius.value}`,
+      label: `Border Radius: ${radius.label}`,
+      group: 'Appearance — Border Radius',
+      icon: Square,
+      keywords: ['radius', 'rounded', 'corners', 'settings'],
+      hint: radius.value === ctx.radius ? 'Active' : undefined,
+      perform: () => {
+        ctx.setRadius(radius.value);
+        ctx.close();
+      },
+    });
+  }
+
+  return commands;
+}
+
+export const PALETTE_SEARCH_ICON = Search;

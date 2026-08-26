@@ -1,7 +1,12 @@
-import { PieChart, Landmark, TrendingUp, Table, Settings } from 'lucide-react';
-import { SidebarTab } from './components/Sidebar';
+import { PieChart, Landmark, TrendingUp, Table, Settings, LucideIcon } from 'lucide-react';
 
-export const TABS: SidebarTab[] = [
+export interface DashboardTab {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+export const TABS: DashboardTab[] = [
   { id: 'reason-breakdown', label: 'Reason Breakdown', icon: PieChart },
   { id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
   { id: 'trends', label: 'Trends Over Time', icon: TrendingUp },
