@@ -35,12 +35,56 @@ label {
   font-weight: 600;
 }
 
-select {
+.department-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 200px;
   font-family: inherit;
+  font-size: 1rem;
   color: var(--dark-slate-grey);
+  background-color: #fcfcfb;
   border: 1px solid var(--grey-olive);
   border-radius: 4px;
   padding: 6px 10px;
+  cursor: pointer;
+}
+
+.department-select-trigger:hover {
+  border-color: var(--iron-grey);
+}
+
+.department-select-trigger:focus-visible {
+  outline: 2px solid var(--dark-slate-grey);
+  outline-offset: 1px;
+}
+
+.department-select-icon {
+  color: var(--iron-grey);
+}
+
+.department-select-content {
+  background-color: #fcfcfb;
+  border: 1px solid var(--grey-olive);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.department-select-item {
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--dark-slate-grey);
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.department-select-item[data-highlighted] {
+  background-color: var(--dark-slate-grey);
+  color: #fcfcfb;
 }
 
 table {
@@ -52,7 +96,30 @@ th {
   color: #fcfcfb;
   background-color: var(--iron-grey);
   text-align: left;
+  padding: 0;
+}
+
+.sortable-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  font: inherit;
+  font-weight: 600;
+  color: inherit;
+  background: none;
+  border: none;
+  text-align: left;
   padding: 8px 12px;
+  cursor: pointer;
+}
+
+.sortable-header:hover {
+  background-color: rgba(252, 252, 251, 0.12);
+}
+
+.sort-indicator {
+  font-size: 0.7rem;
 }
 
 td {
@@ -96,6 +163,9 @@ tbody tr:nth-child(even) {
 }
 
 .sidebar-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
   text-align: left;
   font-family: inherit;
@@ -107,6 +177,10 @@ tbody tr:nth-child(even) {
   border-radius: 4px;
   padding: 10px 12px;
   cursor: pointer;
+}
+
+.sidebar-tab-icon {
+  flex-shrink: 0;
 }
 
 .sidebar-tab:hover {

@@ -10,26 +10,34 @@
   },
   "dependencies": {
     "@apollo/client": "^3.10.0",
+    "@radix-ui/react-select": "^2.3.7",
+    "@tanstack/react-table": "^8.21.3",
     "apollo-server": "^3.13.0",
     "graphql": "^16.8.0",
+    "lucide-react": "^1.34.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "recharts": "^2.6.2"
   },
   "devDependencies": {
-    "typescript": "^5.2.0",
-    "@testing-library/react": "^13.4.0",
     "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/jest": "^27.5.2",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "typescript": "^5.2.0"
   },
   "overrides": {
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.5"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^@radix-ui/primitive/is-development$": "@radix-ui/primitive/dist/internal/is-development.true.js"
+    }
   },
   "browserslist": {
     "production": [

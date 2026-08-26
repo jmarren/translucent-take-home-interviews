@@ -5,6 +5,7 @@
 - **Server-side filtering**: the `denials` query now takes an optional `department` argument, resolved in `server.js` by filtering the in-memory dataset. The client passes the selected department as an Apollo query variable, so Apollo automatically issues a new request (and caches each department's result) when the filter changes, instead of over-fetching all 120 rows and filtering client-side.
 - **Chart dimension**: `DenialChart` aggregates by denial `reason` (sum of `amount`), not `department`. Charting by department would go degenerate once the department filter narrows the dataset to one department — every bar but one would vanish. Aggregating by reason stays meaningful in both states, and answers a more useful question when filtered ("why is Cardiology being denied?").
 - **Hardcoded department list**: the filter's option list comes from a small constant (`src/types.ts`), not from the query results, so the dropdown doesn't shrink to whatever department happens to be selected.
+- **Component library (Radix UI + TanStack Table)**: per the survey in `research/component-libraries/`, the department filter uses `@radix-ui/react-select` and the denials table uses `@tanstack/react-table` for sorting — both headless/unstyled, so the existing custom visual identity (palette, Rajdhani font, layered sidebar) didn't need to be rebuilt around someone else's design system. The cost is that all visual styling for these controls (`index.css`) had to be written by hand rather than coming for free.
 
 ## Performance
 
@@ -15,7 +16,7 @@
 
 ## Accessibility
 
-- The department `<select>` has a properly associated `<label htmlFor>` rather than a bare, unlabeled control.
+- The department filter (a Radix `Select`) has a properly associated `<label htmlFor>` plus an explicit `aria-label`, and Radix handles the underlying keyboard navigation/focus management/ARIA roles for the listbox itself.
 - The chart is wrapped in a `<section aria-label="Denial breakdown chart">` with a real, visible `<h2>` heading (not just a styled div), so its purpose is announced to assistive tech, not just implied visually.
 - Recharts renders plain SVG with limited built-in ARIA semantics in this version (2.6.2) — in particular, tooltips are mouse/focus-triggered and not reliably read by screen readers. The existing denials table is left in place alongside the chart and exposes the same underlying data in a natively accessible, keyboard-navigable form, so no information is chart-only.
 - The error state uses `role="alert"` for assertive announcement of query failures.

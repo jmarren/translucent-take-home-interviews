@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import DenialChart from '../components/DenialChart';
@@ -41,8 +41,9 @@ test('selecting a department filters the table and chart to that department', as
 	expect(await screen.findByText('D1')).toBeInTheDocument();
 	expect(screen.getByText('D2')).toBeInTheDocument();
 
-	await user.selectOptions(screen.getByLabelText(/department/i), 'Cardiology');
+	await user.click(screen.getByRole('combobox', { name: /department/i }));
+	await user.click(await screen.findByRole('option', { name: 'Cardiology' }));
 
 	await screen.findByText('D1');
-	expect(screen.queryByText('D2')).not.toBeInTheDocument();
+	await waitFor(() => expect(screen.queryByText('D2')).not.toBeInTheDocument());
 });

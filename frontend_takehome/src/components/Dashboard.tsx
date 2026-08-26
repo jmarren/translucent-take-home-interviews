@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
+import { PieChart, Landmark, TrendingUp, Table } from 'lucide-react';
 import DenialChart from './DenialChart';
+import DenialsTable from './DenialsTable';
+import DepartmentSelect from './DepartmentSelect';
 import Sidebar, { SidebarTab } from './Sidebar';
 import ComingSoon from './ComingSoon';
-import { Denial, DEPARTMENTS } from '../types';
+import { Denial } from '../types';
 
 export const DENIALS_QUERY = gql`
   query Denials($department: String) {
@@ -19,10 +22,10 @@ export const DENIALS_QUERY = gql`
 `;
 
 const TABS: SidebarTab[] = [
-	{ id: 'reason-breakdown', label: 'Reason Breakdown' },
-	{ id: 'payer-breakdown', label: 'Payer Breakdown' },
-	{ id: 'trends', label: 'Trends Over Time' },
-	{ id: 'records', label: 'Denial Records' },
+	{ id: 'reason-breakdown', label: 'Reason Breakdown', icon: PieChart },
+	{ id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
+	{ id: 'trends', label: 'Trends Over Time', icon: TrendingUp },
+	{ id: 'records', label: 'Denial Records', icon: Table },
 ];
 
 const TAB_DESCRIPTIONS: Record<string, string> = {
@@ -56,48 +59,14 @@ export default function Dashboard() {
 
 				<div className="dashboard-content">
 					<label htmlFor="department-filter">Department</label>
-					<select
-						id="department-filter"
-						value={department}
-						onChange={(e) => setDepartment(e.target.value)}
-					>
-						<option value="">All Departments</option>
-						{DEPARTMENTS.map((dept) => (
-							<option key={dept} value={dept}>
-								{dept}
-							</option>
-						))}
-					</select>
+					<DepartmentSelect value={department} onChange={setDepartment} />
 
 					{loading && !previousData && !data ? (
 						<p>Loading...</p>
 					) : activeTab === 'reason-breakdown' ? (
 						<>
 							<DenialChart data={denials} />
-							<table>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Dept</th>
-										<th>Amount</th>
-										<th>Reason</th>
-										<th>Date</th>
-										<th>Payer</th>
-									</tr>
-								</thead>
-								<tbody>
-									{denials.map((d) => (
-										<tr key={d.id}>
-											<td>{d.id}</td>
-											<td>{d.department}</td>
-											<td>{d.amount}</td>
-											<td>{d.reason}</td>
-											<td>{d.date}</td>
-											<td>{d.payer}</td>
-										</tr>
-									))}
-								</tbody>
-							</table>
+							<DenialsTable data={denials} />
 						</>
 					) : (
 						<ComingSoon
