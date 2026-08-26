@@ -1,5 +1,5 @@
 import React from 'react';
-import ReasonBreakdownPage from './components/ReasonBreakdownPage';
+import BreakdownPage from './components/BreakdownPage';
 import SettingsPage from './components/SettingsPage';
 
 // The single place mapping a tab id to the page element its route renders.
@@ -10,6 +10,6 @@ import SettingsPage from './components/SettingsPage';
 // inside another literal <Route>/<Fragment>), not ones returned from an
 // arbitrary custom component.
 export const TAB_PAGE_ELEMENTS: Record<string, React.ReactNode> = {
-	'reason-breakdown': <ReasonBreakdownPage />,
+	breakdown: <BreakdownPage />,
 	settings: <SettingsPage />,
 };

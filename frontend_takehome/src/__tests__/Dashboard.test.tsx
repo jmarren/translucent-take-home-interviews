@@ -12,7 +12,7 @@ import { DENIALS_QUERY } from '../useDenials';
 import { TABS, TAB_DESCRIPTIONS } from '../tabs';
 import { TAB_PAGE_ELEMENTS } from '../tabPages';
 
-function renderDashboard(mocks: MockedResponse[], initialPath = '/reason-breakdown') {
+function renderDashboard(mocks: MockedResponse[], initialPath = '/breakdown') {
 	return render(
 		<MockedProvider mocks={mocks}>
 			<MemoryRouter initialEntries={[initialPath]}>

@@ -9,7 +9,7 @@ import TrendSparkline from './TrendSparkline';
 import { useDenials } from '../useDenials';
 import { DashboardOutletContext } from './DashboardLayout';
 
-export default function ReasonBreakdownPage() {
+export default function BreakdownPage() {
 	const { department, period } = useOutletContext<DashboardOutletContext>();
 	const { filteredDenials, isInitialLoad, error } = useDenials(department, period);
 

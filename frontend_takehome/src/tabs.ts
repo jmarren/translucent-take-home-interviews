@@ -7,7 +7,7 @@ export interface DashboardTab {
 }
 
 export const TABS: DashboardTab[] = [
-  { id: 'reason-breakdown', label: 'Reason Breakdown', icon: PieChart },
+  { id: 'breakdown', label: 'Breakdown', icon: PieChart },
   { id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
   { id: 'trends', label: 'Trends Over Time', icon: TrendingUp },
   { id: 'records', label: 'Denial Records', icon: Table },
