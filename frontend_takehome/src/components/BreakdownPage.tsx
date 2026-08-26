@@ -7,7 +7,7 @@ import DenialsTable from './DenialsTable';
 import SummaryStats from './SummaryStats';
 import TrendSparkline from './TrendSparkline';
 import { useDenials } from '../useDenials';
-import { DashboardOutletContext } from './DashboardLayout';
+import { DashboardOutletContext } from './Layout';
 
 export default function BreakdownPage() {
 	const { department, period } = useOutletContext<DashboardOutletContext>();

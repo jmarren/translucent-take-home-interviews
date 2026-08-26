@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useSearchParams, NavigateFunction } from 'react-router-dom';
 import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
 import SidebarShell from './SidebarShell';
@@ -8,9 +8,35 @@ import { PeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
 import { useThemePreferences } from '../useThemePreferences';
 import { useDashboardFilters } from '../useDashboardFilters';
 import { useCommandPalette } from '../useCommandPalette';
-import { buildCommands } from '../commands';
+import { buildCommands, Command, CommandContext } from '../commands';
 import { Palette } from '../palettes';
 import { NavMode } from '../navModes';
+
+// Curried so the "stable" router handles (navigate, current search params)
+// are supplied once and partially applied outside the component -- only the
+// final, per-call `id` argument is provided at the actual call site inside
+// Layout, instead of a fresh navigateToTab closure being declared on every
+// render.
+const makeNavigateToTab =
+	(navigate: NavigateFunction, searchParams: URLSearchParams) => (id: string) =>
+		navigate({ pathname: `/${id}`, search: searchParams.toString() });
+
+// Curried the same way: the pieces of CommandContext that are setters/
+// callbacks (stable across a given render's closures, but not worth
+// rebuilding the whole context object inline inside useMemo) are supplied
+// first; the remaining, actually-changing pieces are supplied at the call
+// site inside the useMemo callback.
+const makeBuildCommands =
+	(
+		fixed: Pick<
+			CommandContext,
+			'navigateToTab' | 'setDepartment' | 'setPeriod' | 'setFont' | 'setPalette' | 'setRadius' | 'close'
+		>
+	) =>
+		(
+			variable: Pick<CommandContext, 'activeTab' | 'department' | 'period' | 'font' | 'paletteLabel' | 'radius'>
+		): Command[] =>
+			buildCommands({ ...fixed, ...variable });
 
 export interface DashboardOutletContext {
 	department: string;
@@ -32,7 +58,7 @@ export interface DashboardOutletContext {
 // tab metadata.
 const TABS_WITHOUT_FILTER_BAR = new Set(['settings']);
 
-export default function DashboardLayout() {
+export default function Layout() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
@@ -43,9 +69,7 @@ export default function DashboardLayout() {
 		useThemePreferences();
 	const { paletteOpen, setPaletteOpen, closePalette } = useCommandPalette(navMode === 'palette');
 
-	function navigateToTab(id: string) {
-		navigate({ pathname: `/${id}`, search: searchParams.toString() });
-	}
+	const navigateToTab = makeNavigateToTab(navigate, searchParams);
 
 	const filterSummary = useMemo(() => {
 		const parts: string[] = [];
@@ -58,13 +82,7 @@ export default function DashboardLayout() {
 
 	const commands = useMemo(
 		() =>
-			buildCommands({
-				activeTab,
-				department,
-				period,
-				font,
-				paletteLabel: palette.label,
-				radius,
+			makeBuildCommands({
 				navigateToTab,
 				setDepartment,
 				setPeriod,
@@ -72,8 +90,15 @@ export default function DashboardLayout() {
 				setPalette,
 				setRadius,
 				close: closePalette,
+			})({
+				activeTab,
+				department,
+				period,
+				font,
+				paletteLabel: palette.label,
+				radius,
 			}),
-		[activeTab, department, period, font, palette, radius, setDepartment, setPeriod, closePalette]
+		[activeTab, department, period, font, palette, radius, navigateToTab, setDepartment, setPeriod, setFont, setPalette, setRadius, closePalette]
 	);
 
 	const outletContext: DashboardOutletContext = {

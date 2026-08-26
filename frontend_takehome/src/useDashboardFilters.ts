@@ -11,7 +11,7 @@ export interface DashboardFilters {
 // Department/period are URL search params rather than route state, since
 // they layer on top of whichever tab route is active rather than selecting
 // between tabs themselves (that's handled by React Router's own route
-// matching now that each tab is a static route -- see DashboardLayout).
+// matching now that each tab is a static route -- see Layout).
 export function useDashboardFilters(): DashboardFilters {
 	const [searchParams, setSearchParams] = useSearchParams();
 
