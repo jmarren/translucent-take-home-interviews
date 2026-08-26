@@ -10,6 +10,12 @@ export const PERIODS = [
 
 export type PeriodId = (typeof PERIODS)[number]['id'];
 
+export const DEFAULT_PERIOD: PeriodId = PERIODS[0].id;
+
+export function isValidPeriodId(id: string | null): id is PeriodId {
+  return !!id && PERIODS.some((p) => p.id === id);
+}
+
 function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }

@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { gql, useQuery } from '@apollo/client';
-import { PieChart, Landmark, TrendingUp, Table, Settings } from 'lucide-react';
+import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import DenialChart from './DenialChart';
 import DepartmentPieChart from './DepartmentPieChart';
 import DenialsTable from './DenialsTable';
@@ -9,11 +9,12 @@ import PeriodSelect from './PeriodSelect';
 import SummaryStats from './SummaryStats';
 import TrendSparkline from './TrendSparkline';
 import SettingsTab from './SettingsTab';
-import Sidebar, { SidebarTab } from './Sidebar';
+import Sidebar from './Sidebar';
 import ComingSoon from './ComingSoon';
 import { Denial } from '../types';
-import { PeriodId, filterByPeriod, getReferenceDate } from '../periods';
+import { PeriodId, filterByPeriod, getReferenceDate, isValidPeriodId, DEFAULT_PERIOD } from '../periods';
 import { useThemePreferences } from '../useThemePreferences';
+import { TABS, TAB_DESCRIPTIONS, DEFAULT_TAB_ID, isValidTabId } from '../tabs';
 
 export const DENIALS_QUERY = gql`
   query Denials($department: String) {
@@ -28,28 +29,38 @@ export const DENIALS_QUERY = gql`
   }
 `;
 
-const TABS: SidebarTab[] = [
-	{ id: 'reason-breakdown', label: 'Reason Breakdown', icon: PieChart },
-	{ id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
-	{ id: 'trends', label: 'Trends Over Time', icon: TrendingUp },
-	{ id: 'records', label: 'Denial Records', icon: Table },
-	{ id: 'settings', label: 'Settings', icon: Settings },
-];
-
-const TAB_DESCRIPTIONS: Record<string, string> = {
-	'payer-breakdown':
-		'Coming soon: total denied amount by payer, so you can see which insurers are denying the most claims.',
-	trends:
-		'Coming soon: denial volume and dollar amount over time, to spot spikes and seasonal patterns.',
-	records:
-		'Coming soon: the full, sortable table of individual denial records currently shown below the chart.',
-};
-
 export default function Dashboard() {
-	const [department, setDepartment] = useState<string>('');
-	const [period, setPeriod] = useState<PeriodId>('all');
-	const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
+	const { tabId } = useParams<{ tabId: string }>();
+	const navigate = useNavigate();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const { font, setFont, palette, setPalette, radius, setRadius } = useThemePreferences();
+
+	if (!isValidTabId(tabId)) {
+		return <Navigate to={`/${DEFAULT_TAB_ID}`} replace />;
+	}
+	const activeTab = tabId;
+
+	const department = searchParams.get('department') ?? '';
+	const periodParam = searchParams.get('period');
+	const period: PeriodId = isValidPeriodId(periodParam) ? periodParam : DEFAULT_PERIOD;
+
+	function setActiveTab(id: string) {
+		navigate({ pathname: `/${id}`, search: searchParams.toString() });
+	}
+
+	function setDepartment(value: string) {
+		const next = new URLSearchParams(searchParams);
+		if (value) next.set('department', value);
+		else next.delete('department');
+		setSearchParams(next, { replace: true });
+	}
+
+	function setPeriod(value: PeriodId) {
+		const next = new URLSearchParams(searchParams);
+		if (value !== DEFAULT_PERIOD) next.set('period', value);
+		else next.delete('period');
+		setSearchParams(next, { replace: true });
+	}
 
 	const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(
 		DENIALS_QUERY,

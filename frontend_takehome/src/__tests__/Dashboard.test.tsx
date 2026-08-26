@@ -1,10 +1,23 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import DenialChart from '../components/DenialChart';
 import DepartmentPieChart from '../components/DepartmentPieChart';
 import Dashboard, { DENIALS_QUERY } from '../components/Dashboard';
+
+function renderDashboard(mocks: MockedResponse[], initialPath = '/reason-breakdown') {
+	return render(
+		<MockedProvider mocks={mocks}>
+			<MemoryRouter initialEntries={[initialPath]}>
+				<Routes>
+					<Route path="/:tabId" element={<Dashboard />} />
+				</Routes>
+			</MemoryRouter>
+		</MockedProvider>
+	);
+}
 
 test('renders chart title', () => {
 	render(<DenialChart data={[]} />);
@@ -39,11 +52,7 @@ const mocks: MockedResponse[] = [
 
 test('selecting a department filters the table and chart to that department', async () => {
 	const user = userEvent.setup();
-	render(
-		<MockedProvider mocks={mocks}>
-			<Dashboard />
-		</MockedProvider>
-	);
+	renderDashboard(mocks);
 
 	expect(await screen.findByText('D1')).toBeInTheDocument();
 	expect(screen.getByText('D2')).toBeInTheDocument();
@@ -69,11 +78,7 @@ const periodMocks: MockedResponse[] = [
 
 test('selecting a period filters out denials outside that range', async () => {
 	const user = userEvent.setup();
-	render(
-		<MockedProvider mocks={periodMocks}>
-			<Dashboard />
-		</MockedProvider>
-	);
+	renderDashboard(periodMocks);
 
 	expect(await screen.findByText('D3')).toBeInTheDocument();
 	expect(screen.getByText('D4')).toBeInTheDocument();
