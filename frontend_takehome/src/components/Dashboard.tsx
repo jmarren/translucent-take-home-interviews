@@ -6,7 +6,8 @@ import DepartmentPieChart from './DepartmentPieChart';
 import DenialsTable from './DenialsTable';
 import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
-import SummaryCards from './SummaryCards';
+import SummaryStats from './SummaryStats';
+import TrendSparkline from './TrendSparkline';
 import Sidebar, { SidebarTab } from './Sidebar';
 import ComingSoon from './ComingSoon';
 import { Denial } from '../types';
@@ -77,14 +78,11 @@ export default function Dashboard() {
 						<p>Loading...</p>
 					) : activeTab === 'reason-breakdown' ? (
 						<>
-							<div className="reason-breakdown-layout">
-								<div className="reason-breakdown-main">
-									<div className="charts-row">
-										<DenialChart data={filteredDenials} />
-										<DepartmentPieChart data={filteredDenials} />
-									</div>
-								</div>
-								<SummaryCards data={filteredDenials} />
+							<SummaryStats data={filteredDenials} />
+							<div className="charts-row">
+								<DenialChart data={filteredDenials} />
+								<DepartmentPieChart data={filteredDenials} />
+								<TrendSparkline data={filteredDenials} />
 							</div>
 							<div className="denial-records-section">
 								<h2 className="denial-records-heading">Denial-Level Detail</h2>

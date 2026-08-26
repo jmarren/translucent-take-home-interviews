@@ -103,16 +103,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-.reason-breakdown-layout {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-}
-
-.reason-breakdown-main {
-  flex: 0 0 auto;
-}
-
 .charts-row {
   display: flex;
   flex-wrap: wrap;
@@ -187,18 +177,11 @@ h2 {
   letter-spacing: 0.04em;
 }
 
-.summary-cards {
-  flex: 1;
-  min-width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 .summary-panel {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  margin-bottom: 24px;
   background-color: var(--dark-slate-grey);
   border-radius: 8px;
   overflow: hidden;
@@ -232,21 +215,11 @@ h2 {
   font-size: 1.25rem;
 }
 
-/* Shares the .charts-row > section chrome (border/radius/shadow) and the
-   .chart-card-exhibit padding rhythm rather than hand-copying the recipe, so
-   the trend card reads as a sibling of the two chart cards. It keeps its
-   own concrete height (260px) instead of their shared 576px, since it sits
-   in the narrower .summary-cards column with much shorter content. */
-.trend-sparkline-card {
-  height: 260px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--silver);
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
-}
-
+/* The trend card now sits inside .charts-row alongside the bar/pie charts,
+   so it inherits their shared chrome and 576px height from
+   `.charts-row > section` instead of keeping its own separate size. This
+   class only adds the extra min-width/overflow safety the sparkline's
+   flexible chart body needs on top of `.chart-card-body`. */
 .trend-sparkline-body {
   width: 100%;
   flex: 1;
