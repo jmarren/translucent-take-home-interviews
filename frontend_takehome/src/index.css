@@ -126,7 +126,7 @@ label {
 
 .chart-card-title {
   margin: 0;
-  padding: 16px 24px;
+  padding: 16px 16px;
   text-align: left;
   color: #fcfcfb;
   background-color: var(--dark-slate-grey);
@@ -136,7 +136,7 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 72px 72px;
+  padding: 24px 40px 72px;
 }
 
 .denial-records-section {
