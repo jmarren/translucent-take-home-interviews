@@ -127,6 +127,10 @@ h2 {
   width: 800px;
 }
 
+.charts-row > .trend-sparkline-card {
+  width: 620px;
+}
+
 /* Shared chart-card padding rhythm: the bar/pie chart cards (.charts-row >
    section) and the trend sparkline card (.trend-sparkline-card) all apply
    this class so their padding stays in sync instead of being hand-copied.
