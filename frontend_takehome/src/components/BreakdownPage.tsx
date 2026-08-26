@@ -39,7 +39,7 @@ export const REASON_CARD: CategoryCardConfig = {
   title: 'Reasons',
   categoryLabel: 'Reason',
   ariaLabel: 'Denial breakdown chart',
-  chartTypeAriaLabel: 'Chart type for Reasons',
+  chartTypeAriaLabel: 'Denial breakdown chart type',
   caption: 'Total denied dollars grouped by stated denial reason.',
   groupBy: (d) => d.reason,
   wide: true,

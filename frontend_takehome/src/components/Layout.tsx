@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import DepartmentSelect from './DepartmentSelect';
 import PayerSelect from './PayerSelect';
+import ReasonSelect from './ReasonSelect';
 import PeriodSelect from './PeriodSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
@@ -76,6 +77,7 @@ function MainContent(layoutState: LayoutState) {
 				<div className="filter-bar">
 					<DepartmentSelect filters={layoutState.filters} />
 					<PayerSelect filters={layoutState.filters} />
+					<ReasonSelect filters={layoutState.filters} />
 					<PeriodSelect filters={layoutState.filters} />
 				</div>
 			)}

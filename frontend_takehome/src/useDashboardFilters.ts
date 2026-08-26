@@ -5,10 +5,12 @@ import { PeriodId, isValidPeriodId, DEFAULT_PERIOD, PERIODS } from './periods';
 export interface DashboardFilters {
 	department: string;
 	payer: string;
+	reason: string;
 	period: PeriodId;
 	summary: string | null;
 	setDepartment: (value: string) => void;
 	setPayer: (value: string) => void;
+	setReason: (value: string) => void;
 	setPeriod: (value: PeriodId) => void;
 }
 
@@ -21,6 +23,7 @@ export function useDashboardFilters(): DashboardFilters {
 
 	const department = searchParams.get('department') ?? '';
 	const payer = searchParams.get('payer') ?? '';
+	const reason = searchParams.get('reason') ?? '';
 	const periodParam = searchParams.get('period');
 	const period: PeriodId = isValidPeriodId(periodParam) ? periodParam : DEFAULT_PERIOD;
 
@@ -28,11 +31,12 @@ export function useDashboardFilters(): DashboardFilters {
 		const parts: string[] = [];
 		if (department) parts.push(department);
 		if (payer) parts.push(payer);
+		if (reason) parts.push(reason);
 		if (period !== DEFAULT_PERIOD) {
 			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
 		}
 		return parts.length > 0 ? parts.join(' · ') : null;
-	}, [department, payer, period]);
+	}, [department, payer, reason, period]);
 
 	function setDepartment(value: string) {
 		const next = new URLSearchParams(searchParams);
@@ -48,6 +52,13 @@ export function useDashboardFilters(): DashboardFilters {
 		setSearchParams(next, { replace: true });
 	}
 
+	function setReason(value: string) {
+		const next = new URLSearchParams(searchParams);
+		if (value) next.set('reason', value);
+		else next.delete('reason');
+		setSearchParams(next, { replace: true });
+	}
+
 	function setPeriod(value: PeriodId) {
 		const next = new URLSearchParams(searchParams);
 		if (value !== DEFAULT_PERIOD) next.set('period', value);
@@ -55,5 +66,5 @@ export function useDashboardFilters(): DashboardFilters {
 		setSearchParams(next, { replace: true });
 	}
 
-	return { department, payer, period, summary, setDepartment, setPayer, setPeriod };
+	return { department, payer, reason, period, summary, setDepartment, setPayer, setReason, setPeriod };
 }

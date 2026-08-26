@@ -8,7 +8,7 @@ import {
   Square,
 } from "lucide-react";
 import { TABS } from "./tabs";
-import { DEPARTMENTS, PAYERS } from "./types";
+import { DEPARTMENTS, PAYERS, REASONS } from "./types";
 import { PERIODS } from "./periods";
 import { ALL_FONTS } from "./fonts";
 import { ALL_PALETTES } from "./palettes";
@@ -107,6 +107,33 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: ctx.filters.payer === payer ? "Active" : undefined,
       perform: () => {
         ctx.filters.setPayer(payer);
+        ctx.close();
+      },
+    });
+  }
+
+  commands.push({
+    id: "filter:reason:all",
+    label: "Filter: All Reasons",
+    group: "Filter by Reason",
+    icon: Filter,
+    keywords: ["reason", "filter", "clear"],
+    hint: ctx.filters.reason === "" ? "Active" : undefined,
+    perform: () => {
+      ctx.filters.setReason("");
+      ctx.close();
+    },
+  });
+  for (const reason of REASONS) {
+    commands.push({
+      id: `filter:reason:${reason}`,
+      label: `Filter: ${reason}`,
+      group: "Filter by Reason",
+      icon: Filter,
+      keywords: ["reason", "filter", reason.toLowerCase()],
+      hint: ctx.filters.reason === reason ? "Active" : undefined,
+      perform: () => {
+        ctx.filters.setReason(reason);
         ctx.close();
       },
     });

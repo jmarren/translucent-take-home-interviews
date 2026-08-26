@@ -111,6 +111,31 @@ test('selecting a payer filters the table and chart to that payer', async () => 
 	await waitFor(() => expect(screen.queryByText('D1')).not.toBeInTheDocument());
 });
 
+const reasonMocks: MockedResponse[] = [
+	{
+		request: { query: DENIALS_QUERY, variables: { department: undefined, payer: undefined, reason: undefined } },
+		result: { data: { denials: allDenials } },
+	},
+	{
+		request: { query: DENIALS_QUERY, variables: { department: undefined, payer: undefined, reason: 'Missing info' } },
+		result: { data: { denials: [allDenials[1]] } },
+	},
+];
+
+test('selecting a reason filters the table and chart to that reason', async () => {
+	const user = userEvent.setup();
+	renderDashboard(reasonMocks);
+
+	expect(await screen.findByText('D1')).toBeInTheDocument();
+	expect(screen.getByText('D2')).toBeInTheDocument();
+
+	await user.click(screen.getByRole('combobox', { name: /reason/i }));
+	await user.click(await screen.findByRole('option', { name: 'Missing info' }));
+
+	await screen.findByText('D2');
+	await waitFor(() => expect(screen.queryByText('D1')).not.toBeInTheDocument());
+});
+
 const spreadOutDenials = [
 	{ __typename: 'Denial', id: 'D3', department: 'Cardiology', amount: 300, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
 	{ __typename: 'Denial', id: 'D4', department: 'Neurology', amount: 400, reason: 'Missing info', date: '2024-06-15', payer: 'Cigna' },
