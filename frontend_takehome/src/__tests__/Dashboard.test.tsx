@@ -47,3 +47,33 @@ test('selecting a department filters the table and chart to that department', as
 	await screen.findByText('D1');
 	await waitFor(() => expect(screen.queryByText('D2')).not.toBeInTheDocument());
 });
+
+const spreadOutDenials = [
+	{ __typename: 'Denial', id: 'D3', department: 'Cardiology', amount: 300, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
+	{ __typename: 'Denial', id: 'D4', department: 'Neurology', amount: 400, reason: 'Missing info', date: '2024-06-15', payer: 'Cigna' },
+];
+
+const periodMocks: MockedResponse[] = [
+	{
+		request: { query: DENIALS_QUERY, variables: { department: undefined } },
+		result: { data: { denials: spreadOutDenials } },
+	},
+];
+
+test('selecting a period filters out denials outside that range', async () => {
+	const user = userEvent.setup();
+	render(
+		<MockedProvider mocks={periodMocks}>
+			<Dashboard />
+		</MockedProvider>
+	);
+
+	expect(await screen.findByText('D3')).toBeInTheDocument();
+	expect(screen.getByText('D4')).toBeInTheDocument();
+
+	await user.click(screen.getByRole('combobox', { name: /period/i }));
+	await user.click(await screen.findByRole('option', { name: 'This Month' }));
+
+	await waitFor(() => expect(screen.queryByText('D3')).not.toBeInTheDocument());
+	expect(screen.getByText('D4')).toBeInTheDocument();
+});

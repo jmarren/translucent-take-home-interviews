@@ -87,6 +87,58 @@ label {
   color: #fcfcfb;
 }
 
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.reason-breakdown-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.reason-breakdown-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.summary-cards {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--beige);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.summary-card-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--iron-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.summary-card-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--dark-slate-grey);
+}
+
+.summary-card-value-text {
+  font-size: 1.1rem;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { PieChart, Landmark, TrendingUp, Table } from 'lucide-react';
 import DenialChart from './DenialChart';
 import DenialsTable from './DenialsTable';
 import DepartmentSelect from './DepartmentSelect';
+import PeriodSelect from './PeriodSelect';
+import SummaryCards from './SummaryCards';
 import Sidebar, { SidebarTab } from './Sidebar';
 import ComingSoon from './ComingSoon';
 import { Denial } from '../types';
+import { PeriodId, filterByPeriod, getReferenceDate } from '../periods';
 
 export const DENIALS_QUERY = gql`
   query Denials($department: String) {
@@ -39,6 +42,7 @@ const TAB_DESCRIPTIONS: Record<string, string> = {
 
 export default function Dashboard() {
 	const [department, setDepartment] = useState<string>('');
+	const [period, setPeriod] = useState<PeriodId>('all');
 	const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
 
 	const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(
@@ -47,6 +51,11 @@ export default function Dashboard() {
 	);
 
 	const denials = data?.denials ?? previousData?.denials ?? [];
+
+	const filteredDenials = useMemo(() => {
+		const referenceDate = getReferenceDate(denials);
+		return filterByPeriod(denials, period, referenceDate);
+	}, [denials, period]);
 
 	if (error) return <p role="alert">Error loading denials.</p>;
 
@@ -58,16 +67,21 @@ export default function Dashboard() {
 				<Sidebar tabs={TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
 
 				<div className="dashboard-content">
-					<label htmlFor="department-filter">Department</label>
-					<DepartmentSelect value={department} onChange={setDepartment} />
+					<div className="filter-bar">
+						<DepartmentSelect value={department} onChange={setDepartment} />
+						<PeriodSelect value={period} onChange={setPeriod} />
+					</div>
 
 					{loading && !previousData && !data ? (
 						<p>Loading...</p>
 					) : activeTab === 'reason-breakdown' ? (
-						<>
-							<DenialChart data={denials} />
-							<DenialsTable data={denials} />
-						</>
+						<div className="reason-breakdown-layout">
+							<div className="reason-breakdown-main">
+								<DenialChart data={filteredDenials} />
+								<DenialsTable data={filteredDenials} />
+							</div>
+							<SummaryCards data={filteredDenials} />
+						</div>
 					) : (
 						<ComingSoon
 							title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
