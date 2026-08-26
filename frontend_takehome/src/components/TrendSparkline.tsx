@@ -42,8 +42,8 @@ export default function TrendSparkline({ data }: TrendSparklineProps) {
     >
       <h2 className="chart-card-title">Trend</h2>
       <div className="chart-card-body trend-sparkline-body">
-        <div style={{ width: '100%', height: '100%' }}>
-          <ResponsiveContainer width="100%" height="100%">
+        <div style={{ width: '100%' }}>
+          <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
