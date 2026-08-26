@@ -1,22 +1,22 @@
 import React from 'react';
 import LabeledSelect from './LabeledSelect';
 import { DEPARTMENTS } from '../types';
+import { DashboardFilters } from '../useDashboardFilters';
 
 interface DepartmentSelectProps {
-  value: string;
-  onChange: (value: string) => void;
+  filters: DashboardFilters;
 }
 
 const ALL_DEPARTMENTS = '__all__';
 
-export default function DepartmentSelect({ value, onChange }: DepartmentSelectProps) {
+export default function DepartmentSelect({ filters }: DepartmentSelectProps) {
   return (
     <LabeledSelect
       id="department-filter"
       label="Department"
       ariaLabel="Department"
-      value={value || ALL_DEPARTMENTS}
-      onChange={(next) => onChange(next === ALL_DEPARTMENTS ? '' : next)}
+      value={filters.department || ALL_DEPARTMENTS}
+      onChange={(next) => filters.setDepartment(next === ALL_DEPARTMENTS ? '' : next)}
       options={[
         { value: ALL_DEPARTMENTS, label: 'All Departments' },
         ...DEPARTMENTS.map((dept) => ({ value: dept, label: dept })),

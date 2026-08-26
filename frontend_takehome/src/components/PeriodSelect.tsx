@@ -1,20 +1,20 @@
 import React from 'react';
 import LabeledSelect from './LabeledSelect';
 import { PERIODS, PeriodId } from '../periods';
+import { DashboardFilters } from '../useDashboardFilters';
 
 interface PeriodSelectProps {
-  value: PeriodId;
-  onChange: (value: PeriodId) => void;
+  filters: DashboardFilters;
 }
 
-export default function PeriodSelect({ value, onChange }: PeriodSelectProps) {
+export default function PeriodSelect({ filters }: PeriodSelectProps) {
   return (
     <LabeledSelect
       id="period-filter"
       label="Period"
       ariaLabel="Period"
-      value={value}
-      onChange={(next) => onChange(next as PeriodId)}
+      value={filters.period}
+      onChange={(next) => filters.setPeriod(next as PeriodId)}
       options={PERIODS.map((p) => ({ value: p.id, label: p.label }))}
     />
   );

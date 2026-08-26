@@ -135,8 +135,8 @@ function MainContent(layoutState: LayoutState) {
 		<>
 			{!TABS_WITHOUT_FILTER_BAR.has(layoutState.navigation.activeTab) && (
 				<div className="filter-bar">
-					<DepartmentSelect value={layoutState.filters.department} onChange={layoutState.filters.setDepartment} />
-					<PeriodSelect value={layoutState.filters.period} onChange={layoutState.filters.setPeriod} />
+					<DepartmentSelect filters={layoutState.filters} />
+					<PeriodSelect filters={layoutState.filters} />
 				</div>
 			)}
 			<Outlet context={layoutState} />
