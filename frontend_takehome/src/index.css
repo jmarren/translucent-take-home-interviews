@@ -322,6 +322,15 @@ h2 {
   z-index: 1;
 }
 
+/* Darkens the full row (not just the cell under the cursor) so the eye can
+   scan straight across to compare values in other columns -- the extra
+   class in the selector gives this a higher specificity than the plain
+   `tbody tr:nth-child(even)` zebra-striping rule below, so hover always
+   wins regardless of row parity. */
+.denial-records-table-scroll tbody tr:hover {
+  background-color: rgba(44, 66, 63, 0.12);
+}
+
 .summary-panel {
   display: flex;
   flex-wrap: wrap;
