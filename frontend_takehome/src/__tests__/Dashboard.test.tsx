@@ -5,6 +5,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import DenialChart from '../components/DenialChart';
 import DepartmentPieChart from '../components/DepartmentPieChart';
+import PayerPieChart from '../components/PayerPieChart';
 import Dashboard, { DENIALS_QUERY } from '../components/Dashboard';
 
 function renderDashboard(mocks: MockedResponse[], initialPath = '/reason-breakdown') {
@@ -28,6 +29,12 @@ test('renders chart title', () => {
 test('renders department pie chart title', () => {
 	render(<DepartmentPieChart data={[]} />);
 	const title = screen.getByText(/Departments/i);
+	expect(title).toBeInTheDocument();
+});
+
+test('renders payer pie chart title', () => {
+	render(<PayerPieChart data={[]} />);
+	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
 });
 
