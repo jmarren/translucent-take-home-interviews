@@ -21,22 +21,39 @@ const makeNavigateToTab =
 	(navigate: NavigateFunction, searchParams: URLSearchParams) => (id: string) =>
 		navigate({ pathname: `/${id}`, search: searchParams.toString() });
 
-// Curried the same way: the pieces of CommandContext that are setters/
-// callbacks (stable across a given render's closures, but not worth
-// rebuilding the whole context object inline inside useMemo) are supplied
-// first; the remaining, actually-changing pieces are supplied at the call
-// site inside the useMemo callback.
-const makeBuildCommands =
-	(
-		fixed: Pick<
-			CommandContext,
-			'navigateToTab' | 'setDepartment' | 'setPeriod' | 'setFont' | 'setPalette' | 'setRadius' | 'close'
-		>
-	) =>
-		(
-			variable: Pick<CommandContext, 'activeTab' | 'department' | 'period' | 'font' | 'paletteLabel' | 'radius'>
-		): Command[] =>
-			buildCommands({ ...fixed, ...variable });
+type CommandsMemoDeps = [
+	CommandContext['activeTab'],
+	CommandContext['department'],
+	CommandContext['period'],
+	CommandContext['font'],
+	CommandContext['paletteLabel'],
+	CommandContext['radius'],
+	CommandContext['navigateToTab'],
+	CommandContext['setDepartment'],
+	CommandContext['setPeriod'],
+	CommandContext['setFont'],
+	CommandContext['setPalette'],
+	CommandContext['setRadius'],
+	CommandContext['close'],
+];
+
+function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], CommandsMemoDeps] {
+	return [() => buildCommands(ctx), [
+		ctx.activeTab,
+		ctx.department,
+		ctx.period,
+		ctx.font,
+		ctx.paletteLabel,
+		ctx.radius,
+		ctx.navigateToTab,
+		ctx.setDepartment,
+		ctx.setPeriod,
+		ctx.setFont,
+		ctx.setPalette,
+		ctx.setRadius,
+		ctx.close,
+	]];
+}
 
 export interface DashboardOutletContext {
 	department: string;
@@ -49,6 +66,20 @@ export interface DashboardOutletContext {
 	setRadius: (value: number) => void;
 	navMode: NavMode;
 	setNavMode: (value: NavMode) => void;
+}
+
+function makeFilterSummaryMemoParams(
+	department: string,
+	period: PeriodId
+): [() => string | null, [string, PeriodId]] {
+	return [() => {
+		const parts: string[] = [];
+		if (department) parts.push(department);
+		if (period !== DEFAULT_PERIOD) {
+			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
+		}
+		return parts.length > 0 ? parts.join(' · ') : null;
+	}, [department, period]]
 }
 
 // The settings/coming-soon tabs render even when the Settings tab is active
@@ -71,35 +102,23 @@ export default function Layout() {
 
 	const navigateToTab = makeNavigateToTab(navigate, searchParams);
 
-	const filterSummary = useMemo(() => {
-		const parts: string[] = [];
-		if (department) parts.push(department);
-		if (period !== DEFAULT_PERIOD) {
-			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
-		}
-		return parts.length > 0 ? parts.join(' · ') : null;
-	}, [department, period]);
+	const filterSummary = useMemo(...makeFilterSummaryMemoParams(department, period));
 
-	const commands = useMemo(
-		() =>
-			makeBuildCommands({
-				navigateToTab,
-				setDepartment,
-				setPeriod,
-				setFont,
-				setPalette,
-				setRadius,
-				close: closePalette,
-			})({
-				activeTab,
-				department,
-				period,
-				font,
-				paletteLabel: palette.label,
-				radius,
-			}),
-		[activeTab, department, period, font, palette, radius, navigateToTab, setDepartment, setPeriod, setFont, setPalette, setRadius, closePalette]
-	);
+	const commands = useMemo(...makeCommandsMemoParams({
+		activeTab,
+		department,
+		period,
+		font,
+		paletteLabel: palette.label,
+		radius,
+		navigateToTab,
+		setDepartment,
+		setPeriod,
+		setFont,
+		setPalette,
+		setRadius,
+		close: closePalette,
+	}));
 
 	const outletContext: DashboardOutletContext = {
 		department,
