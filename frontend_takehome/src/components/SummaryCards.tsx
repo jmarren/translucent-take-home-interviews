@@ -76,7 +76,10 @@ export default function SummaryCards({ data }: SummaryCardsProps) {
       </div>
 
       {trend.length > 1 && (
-        <section className="trend-sparkline-card" aria-label="Denied amount trend over time">
+        <section
+          className="trend-sparkline-card chart-card-exhibit"
+          aria-label="Denied amount trend over time"
+        >
           <h2 className="chart-card-title">Trend</h2>
           <div className="trend-sparkline-body">
             <ResponsiveContainer width="100%" height="100%">
@@ -109,6 +112,9 @@ export default function SummaryCards({ data }: SummaryCardsProps) {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          <p className="chart-card-caption">
+            Monthly denied dollar total across the filtered range.
+          </p>
         </section>
       )}
     </div>

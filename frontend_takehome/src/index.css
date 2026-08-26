@@ -136,28 +136,14 @@ h2 {
   width: 800px;
 }
 
-/* "Exhibit" treatment (ported from the dossier-redesign explorations):
-   a small case-file tag above the title, and an italic caption below the
-   chart, applied to the two chart cards only. The surrounding card
-   (.charts-row > section) keeps its existing concrete height/border/shadow
-   from add-department-pie-chart, so the ResponsiveContainer sizing chain
-   established there is untouched. */
+/* Shared chart-card padding rhythm: the bar/pie chart cards (.charts-row >
+   section) and the trend sparkline card (.trend-sparkline-card) all apply
+   this class so their padding stays in sync instead of being hand-copied.
+   Each card's own rule still owns its border/radius/shadow/height, since
+   those differ (or deliberately don't) between the wide charts-row cards
+   and the narrower trend card. */
 .chart-card-exhibit {
   padding: 16px 16px 12px;
-}
-
-.chart-card-tag {
-  margin: 0 0 6px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #fcfcfb;
-  background-color: var(--iron-grey);
-  display: inline-block;
-  width: fit-content;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  padding: 3px 10px;
-  border-radius: 2px;
 }
 
 .chart-card-title {
@@ -246,6 +232,11 @@ h2 {
   font-size: 1.25rem;
 }
 
+/* Shares the .charts-row > section chrome (border/radius/shadow) and the
+   .chart-card-exhibit padding rhythm rather than hand-copying the recipe, so
+   the trend card reads as a sibling of the two chart cards. It keeps its
+   own concrete height (260px) instead of their shared 576px, since it sits
+   in the narrower .summary-cards column with much shorter content. */
 .trend-sparkline-card {
   height: 260px;
   display: flex;
@@ -261,6 +252,8 @@ h2 {
   flex: 1;
   min-height: 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
   padding: 8px 16px 16px;
 }
 
