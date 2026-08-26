@@ -33,8 +33,8 @@ export default function DenialChart({ data }: DenialChartProps) {
         {chartData.length === 0 ? (
           <p>No denial data to display.</p>
         ) : (
-          <div style={{ width: '100%', maxWidth: 720 }}>
-            <ResponsiveContainer width="100%" height={432}>
+          <div style={{ width: '100%', maxWidth: 720, flex: 1, minHeight: 0 }}>
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
                 layout="vertical"
