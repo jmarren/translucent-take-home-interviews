@@ -8,13 +8,13 @@ import Dashboard, { DENIALS_QUERY } from '../components/Dashboard';
 
 test('renders chart title', () => {
 	render(<DenialChart data={[]} />);
-	const title = screen.getByText(/Denial Breakdown/i);
+	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
 	render(<DepartmentPieChart data={[]} />);
-	const title = screen.getByText(/Denial Breakdown by Department/i);
+	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 

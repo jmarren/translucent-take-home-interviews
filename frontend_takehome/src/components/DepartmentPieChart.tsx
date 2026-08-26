@@ -50,7 +50,7 @@ export default function DepartmentPieChart({ data }: DepartmentPieChartProps) {
 
   return (
     <section aria-label="Denial breakdown by department chart">
-      <h2 className="chart-card-title">Denial Breakdown by Department</h2>
+      <h2 className="chart-card-title">Departments</h2>
       <div className="chart-card-body">
         {chartData.length === 0 ? (
           <p>No denial data to display.</p>
