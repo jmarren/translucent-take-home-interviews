@@ -208,8 +208,7 @@ label {
 }
 
 .trend-sparkline-card {
-  flex: 1;
-  min-height: 0;
+  height: 220px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--silver);
@@ -218,8 +217,9 @@ label {
 }
 
 .trend-sparkline-body {
+  width: 100%;
   flex: 1;
-  min-height: 120px;
+  min-height: 0;
   padding: 16px;
 }
 
