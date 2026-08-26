@@ -123,6 +123,10 @@ label {
   box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
 }
 
+.charts-row > .reason-chart-card {
+  width: 800px;
+}
+
 .chart-card-title {
   margin: 0;
   padding: 16px 16px;
