@@ -86,30 +86,30 @@ function BarView({
 	wide?: boolean;
 }) {
 	return (
-		<div style={{ width: '100%', flex: 'stretch', minHeight: 0 }}>
-			<ResponsiveContainer width="100%" height="100%">
-				<BarChart
-					data={chartData}
-					layout="vertical"
-					width={500}
-					margin={{ top: 8, right: 24, left: 16, bottom: 8 }}
-				>
-					<CartesianGrid strokeDasharray="3 3" horizontal={false} />
-					<XAxis
-						type="number"
-						tickFormatter={currency}
-						domain={[0, (dataMax: number) => dataMax * 1.15]}
-					/>
-					<YAxis type="category" dataKey="category" width={wide ? 140 : 100} tick={{ fontSize: 13 }} />
-					<Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-					<Bar dataKey="amount" name="Denied amount" radius={[0, 3, 3, 0]}>
-						{chartData.map((entry, index) => (
-							<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
-						))}
-					</Bar>
-				</BarChart>
-			</ResponsiveContainer>
-		</div>
+		// <div style={{ width: '100%', flex: 'stretch', minHeight: 0 }}>
+		<ResponsiveContainer width="100%" >
+			<BarChart
+				data={chartData}
+				layout="vertical"
+				width={500}
+				margin={{ top: 8, right: 24, left: 16, bottom: 8 }}
+			>
+				<CartesianGrid strokeDasharray="3 3" horizontal={false} />
+				<XAxis
+					type="number"
+					tickFormatter={currency}
+					domain={[0, (dataMax: number) => dataMax * 1.15]}
+				/>
+				<YAxis type="category" dataKey="category" width={wide ? 140 : 100} tick={{ fontSize: 13 }} />
+				<Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
+				<Bar dataKey="amount" name="Denied amount" radius={[0, 3, 3, 0]}>
+					{chartData.map((entry, index) => (
+						<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
+					))}
+				</Bar>
+			</BarChart>
+		</ResponsiveContainer>
+		// </div>
 	);
 }
 
@@ -117,8 +117,8 @@ function PieView({ chartData, colors }: { chartData: CategoryTotal[]; colors?: R
 	const total = useMemo(() => chartData.reduce((sum, d) => sum + d.amount, 0), [chartData]);
 	return (
 		// <div style={{ width: '100%' }}>
-		<ResponsiveContainer width={"100%"} >
-			<PieChart >
+		<ResponsiveContainer width={"100%"}  >
+			<PieChart  >
 				<Pie
 					data={chartData}
 					dataKey="amount"
@@ -126,6 +126,7 @@ function PieView({ chartData, colors }: { chartData: CategoryTotal[]; colors?: R
 					cx="50%"
 					cy="50%"
 					outerRadius="55%"
+					width={"fit-content"}
 					label={({ category, amount }) => `${category}: ${((amount / total) * 100).toFixed(0)}%`}
 				>
 					{chartData.map((entry, index) => (
@@ -185,7 +186,7 @@ export default function CategoryCard({ data, loading = false, config }: Category
 					onChange={setChartType}
 				/>
 			</div>
-			<div className="chart-card-body" style={{ margin: 20 }}>
+			<div className="chart-card-body" >
 				{loading ? (
 					<div
 						className={chartType === 'pie' ? 'chart-skeleton chart-skeleton-round' : 'chart-skeleton'}

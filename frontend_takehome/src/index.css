@@ -115,7 +115,7 @@ h2 {
 }
 
 .charts-row > section {
-  flex: 1 1 auto;
+  flex: 1 1 ;
   height: 576px;
   display: flex;
   flex-direction: column;
@@ -234,7 +234,7 @@ h2 {
   text-align: right;
 }
 
-.chart-card-body {
+.chart-card-body { 
   flex: 1;
   min-height: 0;
   display: flex;
