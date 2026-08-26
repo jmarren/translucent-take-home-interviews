@@ -10,6 +10,7 @@ import { Denial } from '../types';
 
 interface PayerPieChartProps {
   data: Denial[];
+  loading?: boolean;
 }
 
 const currency = (value: number) =>
@@ -31,7 +32,7 @@ const PAYER_COLORS: Record<string, string> = {
 
 const FALLBACK_COLOR = '#949b96'; // --grey-olive-2
 
-export default function PayerPieChart({ data }: PayerPieChartProps) {
+export default function PayerPieChart({ data, loading = false }: PayerPieChartProps) {
   const chartData = useMemo(() => {
     const totals = new Map<string, number>();
     for (const d of data) {
@@ -49,10 +50,12 @@ export default function PayerPieChart({ data }: PayerPieChartProps) {
     <section className="chart-card-exhibit" aria-label="Denial breakdown by payer chart">
       <h2 className="chart-card-title">Payers</h2>
       <div className="chart-card-body">
-        {chartData.length === 0 ? (
-          <p>No denial data to display.</p>
-        ) : (
-          <div style={{ width: '100%', maxWidth: 432 }}>
+        <div style={{ width: '100%', maxWidth: 432 }}>
+          {loading ? (
+            <div className="chart-skeleton chart-skeleton-round" aria-hidden="true" />
+          ) : chartData.length === 0 ? (
+            <p>No denial data to display.</p>
+          ) : (
             <ResponsiveContainer width="100%" aspect={1}>
               <PieChart margin={{ top: 8, right: 32, left: 32, bottom: 8 }}>
                 <Pie
@@ -76,8 +79,8 @@ export default function PayerPieChart({ data }: PayerPieChartProps) {
                 <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
               </PieChart>
             </ResponsiveContainer>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <p className="chart-card-caption">Total denied dollars grouped by payer, filed vs. total.</p>
     </section>
