@@ -37,17 +37,18 @@ export interface DashboardOutletContext {
 }
 
 function makeFilterSummaryMemoParams(
-	department: string,
-	period: PeriodId
+	filters: DashboardFilters
 ): [() => string | null, [string, PeriodId]] {
 	return [() => {
+		const department = filters.department;
+		const period = filters.period;
 		const parts: string[] = [];
 		if (department) parts.push(department);
 		if (period !== DEFAULT_PERIOD) {
 			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
 		}
 		return parts.length > 0 ? parts.join(' · ') : null;
-	}, [department, period]]
+	}, [filters.department, filters.period]]
 }
 
 // The settings/coming-soon tabs render even when the Settings tab is active
@@ -59,35 +60,34 @@ const TABS_WITHOUT_FILTER_BAR = new Set(['settings']);
 
 export default function Layout() {
 	const location = useLocation();
-	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
 	const activeTab = location.pathname.slice(1);
+	const navigate = useNavigate();
 
-	const filters = useDashboardFilters();
+	const dashboardFilters = useDashboardFilters();
 	const theme = useThemePreferences();
 	const { paletteOpen, setPaletteOpen, closePalette } = useCommandPalette(theme.navMode === 'palette');
 
 	const navigateToTab = makeNavigateToTab(navigate, searchParams);
 
-	const filterSummary = useMemo(...makeFilterSummaryMemoParams(filters.department, filters.period));
+	const filterSummary = useMemo(...makeFilterSummaryMemoParams(dashboardFilters));
 
 	const commands = useMemo(...makeCommandsMemoParams({
-		...filters,
-		...theme,
+		dashboardFilters,
+		theme,
 		activeTab,
-		paletteLabel: theme.palette.label,
 		navigateToTab,
 		close: closePalette,
 	}));
 
-	const outletContext: DashboardOutletContext = { filters, theme };
+	const outletContext: DashboardOutletContext = { filters: dashboardFilters, theme };
 
 	const mainContent = (
 		<>
 			{!TABS_WITHOUT_FILTER_BAR.has(activeTab) && (
 				<div className="filter-bar">
-					<DepartmentSelect value={filters.department} onChange={filters.setDepartment} />
-					<PeriodSelect value={filters.period} onChange={filters.setPeriod} />
+					<DepartmentSelect value={dashboardFilters.department} onChange={dashboardFilters.setDepartment} />
+					<PeriodSelect value={dashboardFilters.period} onChange={dashboardFilters.setPeriod} />
 				</div>
 			)}
 			<Outlet context={outletContext} />

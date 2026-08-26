@@ -1,10 +1,20 @@
-import { LucideIcon, Search, Filter, Calendar, Palette, Type, Square } from 'lucide-react';
+import {
+  LucideIcon,
+  Search,
+  Filter,
+  Calendar,
+  Palette,
+  Type,
+  Square,
+} from 'lucide-react';
 import { TABS } from './tabs';
 import { DEPARTMENTS } from './types';
-import { PERIODS, PeriodId } from './periods';
+import { PERIODS } from './periods';
 import { ALL_FONTS } from './fonts';
-import { ALL_PALETTES, Palette as PaletteValue } from './palettes';
+import { ALL_PALETTES } from './palettes';
 import { RADIUS_OPTIONS } from './radii';
+import { ThemePreferences } from './useThemePreferences';
+import { DashboardFilters } from './useDashboardFilters';
 
 export interface Command {
   id: string;
@@ -18,18 +28,10 @@ export interface Command {
 }
 
 export interface CommandContext {
+  theme: ThemePreferences;
+  dashboardFilters: DashboardFilters;
   activeTab: string;
-  department: string;
-  period: PeriodId;
-  font: string;
-  paletteLabel: string;
-  radius: number;
   navigateToTab: (id: string) => void;
-  setDepartment: (value: string) => void;
-  setPeriod: (value: PeriodId) => void;
-  setFont: (value: string) => void;
-  setPalette: (value: PaletteValue) => void;
-  setRadius: (value: number) => void;
   close: () => void;
 }
 
@@ -62,9 +64,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
     group: 'Filter by Department',
     icon: Filter,
     keywords: ['department', 'filter', 'clear'],
-    hint: ctx.department === '' ? 'Active' : undefined,
+    hint: ctx.dashboardFilters.department === '' ? 'Active' : undefined,
     perform: () => {
-      ctx.setDepartment('');
+      ctx.dashboardFilters.setDepartment('');
       ctx.close();
     },
   });
@@ -75,9 +77,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Filter by Department',
       icon: Filter,
       keywords: ['department', 'filter', dept.toLowerCase()],
-      hint: ctx.department === dept ? 'Active' : undefined,
+      hint: ctx.dashboardFilters.department === dept ? 'Active' : undefined,
       perform: () => {
-        ctx.setDepartment(dept);
+        ctx.dashboardFilters.setDepartment(dept);
         ctx.close();
       },
     });
@@ -90,9 +92,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Filter by Period',
       icon: Calendar,
       keywords: ['period', 'time', 'range'],
-      hint: ctx.period === period.id ? 'Active' : undefined,
+      hint: ctx.dashboardFilters.period === period.id ? 'Active' : undefined,
       perform: () => {
-        ctx.setPeriod(period.id);
+        ctx.dashboardFilters.setPeriod(period.id);
         ctx.close();
       },
     });
@@ -105,9 +107,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Appearance — Font',
       icon: Type,
       keywords: ['font', 'typeface', 'settings'],
-      hint: font.value === ctx.font ? 'Active' : undefined,
+      hint: font.value === ctx.theme.font ? 'Active' : undefined,
       perform: () => {
-        ctx.setFont(font.value);
+        ctx.theme.setFont(font.value);
         ctx.close();
       },
     });
@@ -120,9 +122,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Appearance — Palette',
       icon: Palette,
       keywords: ['palette', 'color', 'colour', 'theme', 'settings'],
-      hint: palette.label === ctx.paletteLabel ? 'Active' : undefined,
+      hint: palette.label === ctx.theme.palette.label ? 'Active' : undefined,
       perform: () => {
-        ctx.setPalette(palette);
+        ctx.theme.setPalette(palette);
         ctx.close();
       },
     });
@@ -135,9 +137,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: 'Appearance — Border Radius',
       icon: Square,
       keywords: ['radius', 'rounded', 'corners', 'settings'],
-      hint: radius.value === ctx.radius ? 'Active' : undefined,
+      hint: radius.value === ctx.theme.radius ? 'Active' : undefined,
       perform: () => {
-        ctx.setRadius(radius.value);
+        ctx.theme.setRadius(radius.value);
         ctx.close();
       },
     });
