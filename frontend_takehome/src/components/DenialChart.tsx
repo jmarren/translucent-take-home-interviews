@@ -32,7 +32,7 @@ export default function DenialChart({ data }: DenialChartProps) {
       {chartData.length === 0 ? (
         <p>No denial data to display.</p>
       ) : (
-        <div style={{ maxWidth: 576 }}>
+        <div style={{ maxWidth: 528 }}>
           <ResponsiveContainer width="100%" aspect={1}>
             <BarChart data={chartData} margin={{ top: 8, right: 16, left: 8, bottom: 48 }}>
               <CartesianGrid strokeDasharray="3 3" />

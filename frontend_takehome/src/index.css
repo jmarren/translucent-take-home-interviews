@@ -120,7 +120,7 @@ label {
   align-items: center;
   border: 1px solid var(--silver);
   border-radius: 8px;
-  padding: 24px;
+  padding: 48px;
   box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
 }
 
