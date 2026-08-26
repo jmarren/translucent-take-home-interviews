@@ -106,29 +106,40 @@ export default function Layout() {
 		},
 	};
 
-	const mainContent = (
-		<>
-			{!TABS_WITHOUT_FILTER_BAR.has(activeTab) && (
-				<div className="filter-bar">
-					<DepartmentSelect value={filters.department} onChange={filters.setDepartment} />
-					<PeriodSelect value={filters.period} onChange={filters.setPeriod} />
-				</div>
-			)}
-			<Outlet context={layoutState} />
-		</>
-	);
+	const mainContent = MainContent(layoutState);
 
 	if (theme.navMode === 'sidebar') {
-		return (
-			<SidebarShell layoutState={layoutState}>
-				{mainContent}
-			</SidebarShell>
-		);
+		return WrapSidebarShell(mainContent, layoutState);
 	}
+	return WrapPaletteShell(mainContent, layoutState);
+}
 
+function WrapPaletteShell(mainContent: React.ReactNode, layoutState: LayoutState) {
 	return (
 		<PaletteShell layoutState={layoutState}>
 			{mainContent}
 		</PaletteShell>
+	);
+}
+
+function WrapSidebarShell(mainContent: React.ReactNode, layoutState: LayoutState) {
+	return (
+		<SidebarShell layoutState={layoutState}>
+			{mainContent}
+		</SidebarShell>
+	);
+}
+
+function MainContent(layoutState: LayoutState) {
+	return (
+		<>
+			{!TABS_WITHOUT_FILTER_BAR.has(layoutState.navigation.activeTab) && (
+				<div className="filter-bar">
+					<DepartmentSelect value={layoutState.filters.department} onChange={layoutState.filters.setDepartment} />
+					<PeriodSelect value={layoutState.filters.period} onChange={layoutState.filters.setPeriod} />
+				</div>
+			)}
+			<Outlet context={layoutState} />
+		</>
 	);
 }
