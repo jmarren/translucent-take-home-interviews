@@ -165,36 +165,41 @@ label {
 .summary-cards {
   flex: 1;
   min-width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-content: start;
+  gap: 16px;
 }
 
 .summary-card {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  background-color: var(--beige);
+  gap: 6px;
+  background-color: #fcfcfb;
+  border: 1px solid var(--silver);
+  border-left: 3px solid var(--dark-slate-grey);
   border-radius: 8px;
-  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
+  padding: 16px 20px;
 }
 
 .summary-card-label {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--iron-grey);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
 }
 
 .summary-card-value {
-  font-size: 1.6rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--dark-slate-grey);
+  line-height: 1.1;
 }
 
 .summary-card-value-text {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 table {
