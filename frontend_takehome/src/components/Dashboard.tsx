@@ -60,45 +60,63 @@ export default function Dashboard() {
 
 	if (error) return <p role="alert">Error loading denials.</p>;
 
+	const caseNumber = String(filteredDenials.length).padStart(4, '0');
+
 	return (
-		<div className="dashboard">
-			<h1>Denials</h1>
-
-			<div className="dashboard-layout">
-				<Sidebar tabs={TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
-
-				<div className="dashboard-content">
-					<div className="filter-bar">
-						<DepartmentSelect value={department} onChange={setDepartment} />
-						<PeriodSelect value={period} onChange={setPeriod} />
-					</div>
-
-					{loading && !previousData && !data ? (
-						<p>Loading...</p>
-					) : activeTab === 'reason-breakdown' ? (
-						<>
-							<div className="reason-breakdown-layout">
-								<div className="reason-breakdown-main">
-									<div className="charts-row">
-										<DenialChart data={filteredDenials} />
-										<DepartmentPieChart data={filteredDenials} />
-									</div>
-								</div>
-								<SummaryCards data={filteredDenials} />
-							</div>
-							<div className="denial-records-section">
-								<h2 className="denial-records-heading">Denial-Level Detail</h2>
-								<DenialsTable data={filteredDenials} />
-							</div>
-						</>
-					) : (
-						<ComingSoon
-							title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
-							description={TAB_DESCRIPTIONS[activeTab]}
-						/>
-					)}
+		<div className="dossier">
+			<header className="dossier-masthead">
+				<div className="dossier-masthead-top">
+					<span className="dossier-kicker">Case File</span>
+					<span className="dossier-case-no" aria-hidden="true">
+						No. {caseNumber}
+					</span>
 				</div>
+				<h1>Denials Dossier</h1>
+				<p className="dossier-subtitle">
+					A running record of denied claims, filed by department and reason.
+				</p>
+			</header>
+
+			<Sidebar tabs={TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
+
+			<div className="dossier-filter-bar">
+				<span className="dossier-filter-label" aria-hidden="true">
+					Filed under:
+				</span>
+				<DepartmentSelect value={department} onChange={setDepartment} />
+				<PeriodSelect value={period} onChange={setPeriod} />
 			</div>
+
+			<main className="dossier-body">
+				{loading && !previousData && !data ? (
+					<p>Loading...</p>
+				) : activeTab === 'reason-breakdown' ? (
+					<>
+						<SummaryCards data={filteredDenials} />
+
+						<div className="exhibits-row">
+							<DenialChart data={filteredDenials} />
+							<DepartmentPieChart data={filteredDenials} />
+						</div>
+
+						<section className="dossier-record" aria-label="Denial-level detail">
+							<h2 className="dossier-record-heading">
+								<span className="dossier-record-tag">Exhibit C</span>
+								The Record
+							</h2>
+							<p className="dossier-record-caption">
+								Every denial underlying the exhibits above, itemized. Sortable by any field.
+							</p>
+							<DenialsTable data={filteredDenials} />
+						</section>
+					</>
+				) : (
+					<ComingSoon
+						title={TABS.find((t) => t.id === activeTab)?.label ?? ''}
+						description={TAB_DESCRIPTIONS[activeTab]}
+					/>
+				)}
+			</main>
 		</div>
 	);
 }

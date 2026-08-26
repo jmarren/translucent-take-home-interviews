@@ -48,30 +48,31 @@ export default function SummaryCards({ data }: SummaryCardsProps) {
   }, [data]);
 
   return (
-    <div className="summary-cards" aria-label="Summary statistics">
-      <div className="summary-panel">
-        <div className="summary-card">
-          <span className="summary-card-label">Total Denied</span>
-          <span className="summary-card-value">{currency(stats.total)}</span>
+    <div className="ledger" aria-label="Summary statistics">
+      <dl className="ledger-strip">
+        <div className="ledger-entry">
+          <dt className="ledger-label">Total Denied</dt>
+          <dd className="ledger-value">{currency(stats.total)}</dd>
         </div>
-        <div className="summary-card">
-          <span className="summary-card-label">Denial Count</span>
-          <span className="summary-card-value">{stats.count.toLocaleString()}</span>
+        <div className="ledger-entry">
+          <dt className="ledger-label">Denial Count</dt>
+          <dd className="ledger-value">{stats.count.toLocaleString()}</dd>
         </div>
-        <div className="summary-card">
-          <span className="summary-card-label">Average Denial</span>
-          <span className="summary-card-value">{currency(stats.average)}</span>
+        <div className="ledger-entry">
+          <dt className="ledger-label">Average Denial</dt>
+          <dd className="ledger-value">{currency(stats.average)}</dd>
         </div>
-        <div className="summary-card">
-          <span className="summary-card-label">Top Reason</span>
-          <span className="summary-card-value summary-card-value-text">{stats.topReason}</span>
+        <div className="ledger-entry ledger-entry-wide">
+          <dt className="ledger-label">Top Reason</dt>
+          <dd className="ledger-value ledger-value-text">{stats.topReason}</dd>
         </div>
-      </div>
+      </dl>
 
       {trend.length > 1 && (
-        <section className="trend-sparkline-card" aria-label="Denied amount trend over time">
-          <h2 className="chart-card-title">Trend</h2>
-          <div className="trend-sparkline-body">
+        <section className="exhibit exhibit-trend" aria-label="Denied amount trend over time">
+          <p className="exhibit-tag">Exhibit D</p>
+          <h2 className="exhibit-title">Denied Amount Over Time</h2>
+          <div className="exhibit-trend-body">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trend} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
                 <defs>
@@ -94,6 +95,7 @@ export default function SummaryCards({ data }: SummaryCardsProps) {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          <p className="exhibit-caption">Monthly denied dollar total across the filtered range.</p>
         </section>
       )}
     </div>

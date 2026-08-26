@@ -27,13 +27,14 @@ export default function DenialChart({ data }: DenialChartProps) {
   }, [data]);
 
   return (
-    <section className="reason-chart-card" aria-label="Denial breakdown chart">
-      <h2 className="chart-card-title">Reasons</h2>
-      <div className="chart-card-body">
+    <section className="exhibit exhibit-reasons" aria-label="Denial breakdown chart">
+      <p className="exhibit-tag">Exhibit A</p>
+      <h2 className="exhibit-title">Denied Amount by Reason</h2>
+      <div className="exhibit-body">
         {chartData.length === 0 ? (
           <p>No denial data to display.</p>
         ) : (
-          <div style={{ width: '100%', maxWidth: 720, flex: 1, minHeight: 0 }}>
+          <div style={{ width: '100%', flex: 1, minHeight: 0 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
@@ -48,12 +49,13 @@ export default function DenialChart({ data }: DenialChartProps) {
                 />
                 <YAxis type="category" dataKey="reason" width={140} tick={{ fontSize: 13 }} />
                 <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-                <Bar dataKey="amount" fill="#5b7fa6" name="Denied amount" />
+                <Bar dataKey="amount" fill="#5b7fa6" name="Denied amount" radius={[0, 3, 3, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
       </div>
+      <p className="exhibit-caption">Total denied dollars grouped by stated denial reason.</p>
     </section>
   );
 }
