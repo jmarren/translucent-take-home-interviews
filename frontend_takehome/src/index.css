@@ -226,6 +226,7 @@ h2 {
    class only adds the extra min-width/overflow safety the sparkline's
    flexible chart body needs on top of `.chart-card-body`. */
 .trend-sparkline-body {
+  box-sizing: border-box;
   width: 100%;
   flex: 1;
   min-height: 0;
