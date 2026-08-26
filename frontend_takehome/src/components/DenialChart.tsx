@@ -34,11 +34,19 @@ export default function DenialChart({ data }: DenialChartProps) {
           <p>No denial data to display.</p>
         ) : (
           <div style={{ width: '100%', maxWidth: 432 }}>
-            <ResponsiveContainer width="100%" aspect={1}>
-              <BarChart data={chartData} margin={{ top: 8, right: 24, left: 16, bottom: 48 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="reason" angle={-30} textAnchor="end" interval={0} height={70} />
-                <YAxis tickFormatter={currency} domain={[0, (dataMax: number) => dataMax * 1.15]} />
+            <ResponsiveContainer width="100%" aspect={3 / 4}>
+              <BarChart
+                data={chartData}
+                layout="vertical"
+                margin={{ top: 8, right: 24, left: 16, bottom: 8 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis
+                  type="number"
+                  tickFormatter={currency}
+                  domain={[0, (dataMax: number) => dataMax * 1.15]}
+                />
+                <YAxis type="category" dataKey="reason" width={140} tick={{ fontSize: 13 }} />
                 <Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
                 <Bar dataKey="amount" fill="#2c423f" name="Denied amount" />
               </BarChart>
