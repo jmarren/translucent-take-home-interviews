@@ -61,7 +61,7 @@ export const PAYER_CARD: CategoryCardConfig = {
   defaultChartType: 'pie',
   title: 'Payers',
   ariaLabel: 'Denial breakdown by payer chart',
-  chartTypeAriaLabel: 'Chart type for Payers',
+  chartTypeAriaLabel: 'Insurer breakdown chart type',
   caption: 'Total denied dollars grouped by payer, filed vs. total.',
   groupBy: (d) => d.payer,
   colors: PAYER_COLORS,

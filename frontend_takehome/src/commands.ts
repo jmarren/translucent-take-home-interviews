@@ -8,7 +8,7 @@ import {
   Square,
 } from "lucide-react";
 import { TABS } from "./tabs";
-import { DEPARTMENTS } from "./types";
+import { DEPARTMENTS, PAYERS } from "./types";
 import { PERIODS } from "./periods";
 import { ALL_FONTS } from "./fonts";
 import { ALL_PALETTES } from "./palettes";
@@ -80,6 +80,33 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: ctx.filters.department === dept ? "Active" : undefined,
       perform: () => {
         ctx.filters.setDepartment(dept);
+        ctx.close();
+      },
+    });
+  }
+
+  commands.push({
+    id: "filter:payer:all",
+    label: "Filter: All Payers",
+    group: "Filter by Payer",
+    icon: Filter,
+    keywords: ["payer", "insurer", "filter", "clear"],
+    hint: ctx.filters.payer === "" ? "Active" : undefined,
+    perform: () => {
+      ctx.filters.setPayer("");
+      ctx.close();
+    },
+  });
+  for (const payer of PAYERS) {
+    commands.push({
+      id: `filter:payer:${payer}`,
+      label: `Filter: ${payer}`,
+      group: "Filter by Payer",
+      icon: Filter,
+      keywords: ["payer", "insurer", "filter", payer.toLowerCase()],
+      hint: ctx.filters.payer === payer ? "Active" : undefined,
+      perform: () => {
+        ctx.filters.setPayer(payer);
         ctx.close();
       },
     });

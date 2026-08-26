@@ -4,9 +4,11 @@ import { PeriodId, isValidPeriodId, DEFAULT_PERIOD, PERIODS } from './periods';
 
 export interface DashboardFilters {
 	department: string;
+	payer: string;
 	period: PeriodId;
 	summary: string | null;
 	setDepartment: (value: string) => void;
+	setPayer: (value: string) => void;
 	setPeriod: (value: PeriodId) => void;
 }
 
@@ -18,22 +20,31 @@ export function useDashboardFilters(): DashboardFilters {
 	const [searchParams, setSearchParams] = useSearchParams();
 
 	const department = searchParams.get('department') ?? '';
+	const payer = searchParams.get('payer') ?? '';
 	const periodParam = searchParams.get('period');
 	const period: PeriodId = isValidPeriodId(periodParam) ? periodParam : DEFAULT_PERIOD;
 
 	const summary = useMemo(() => {
 		const parts: string[] = [];
 		if (department) parts.push(department);
+		if (payer) parts.push(payer);
 		if (period !== DEFAULT_PERIOD) {
 			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
 		}
 		return parts.length > 0 ? parts.join(' · ') : null;
-	}, [department, period]);
+	}, [department, payer, period]);
 
 	function setDepartment(value: string) {
 		const next = new URLSearchParams(searchParams);
 		if (value) next.set('department', value);
 		else next.delete('department');
+		setSearchParams(next, { replace: true });
+	}
+
+	function setPayer(value: string) {
+		const next = new URLSearchParams(searchParams);
+		if (value) next.set('payer', value);
+		else next.delete('payer');
 		setSearchParams(next, { replace: true });
 	}
 
@@ -44,5 +55,5 @@ export function useDashboardFilters(): DashboardFilters {
 		setSearchParams(next, { replace: true });
 	}
 
-	return { department, period, summary, setDepartment, setPeriod };
+	return { department, payer, period, summary, setDepartment, setPayer, setPeriod };
 }

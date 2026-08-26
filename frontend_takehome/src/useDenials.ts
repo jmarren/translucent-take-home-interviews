@@ -5,8 +5,8 @@ import { filterByPeriod, getReferenceDate } from './periods';
 import { DashboardFilters } from './useDashboardFilters';
 
 export const DENIALS_QUERY = gql`
-  query Denials($department: String) {
-    denials(department: $department) {
+  query Denials($department: String, $payer: String) {
+    denials(department: $department, payer: $payer) {
       id
       department
       amount
@@ -25,7 +25,10 @@ export interface UseDenialsResult {
 
 export function useDenials(filters: DashboardFilters): UseDenialsResult {
   const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(DENIALS_QUERY, {
-    variables: { department: filters.department || undefined },
+    variables: {
+      department: filters.department || undefined,
+      payer: filters.payer || undefined,
+    },
   });
 
   const denials = data?.denials ?? previousData?.denials ?? [];

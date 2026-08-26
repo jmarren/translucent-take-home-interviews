@@ -15,3 +15,5 @@ export const DEPARTMENTS = [
   'Pediatrics',
   'Radiology',
 ] as const;
+
+export const PAYERS = ['Medicare', 'Humana', 'Cigna', 'BCBS', 'Aetna'] as const;

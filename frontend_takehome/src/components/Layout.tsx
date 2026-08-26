@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import DepartmentSelect from './DepartmentSelect';
+import PayerSelect from './PayerSelect';
 import PeriodSelect from './PeriodSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
@@ -74,6 +75,7 @@ function MainContent(layoutState: LayoutState) {
 			{!TABS_WITHOUT_FILTER_BAR.has(layoutState.navigation.activeTab) && (
 				<div className="filter-bar">
 					<DepartmentSelect filters={layoutState.filters} />
+					<PayerSelect filters={layoutState.filters} />
 					<PeriodSelect filters={layoutState.filters} />
 				</div>
 			)}

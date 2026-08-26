@@ -107,21 +107,28 @@ h2 {
   margin-bottom: 20px;
 }
 
+/* 3 category cards across the top row, with the trend card (see
+   .trend-sparkline-card below) spanning the full width of its own row
+   underneath -- explicit columns rather than flex-wrap since the trend
+   card's span needs a real grid to lock onto, not just "whatever's left". */
 .charts-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
   gap: 24px;
 }
 
 .charts-row > section {
-  flex: 1 1 ;
   height: 576px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--silver);
   border-radius: var(--radius);
   box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
+}
+
+.charts-row > .trend-sparkline-card {
+  grid-column: 1 / -1;
 }
 
 
