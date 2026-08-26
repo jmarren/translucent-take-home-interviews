@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { buildCommands, Command, CommandContext } from './commands';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { buildCommands, Command, CommandContext } from "./commands";
 
 export interface Modal {
   isOpen: boolean;
@@ -17,7 +17,9 @@ export interface CommandPalette {
 // stays the single place enumerating them -- adding/removing a field there
 // automatically changes what the commands memo re-runs on, with nothing to
 // keep in sync here.
-function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], unknown[]] {
+function makeCommandsMemoParams(
+  ctx: CommandContext,
+): [() => Command[], unknown[]] {
   return [() => buildCommands(ctx), Object.values(ctx)];
 }
 
@@ -25,22 +27,21 @@ function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], unknown[
 // callers pass `enabled` rather than this hook reaching into theme
 // preferences itself, so it stays independent of nav-mode internals.
 export function useCommandPalette(
-  enabled: boolean,
-  context: Omit<CommandContext, 'close'>
+  context: Omit<CommandContext, "close">,
 ): CommandPalette {
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (context.theme.navMode !== "palette") return;
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setOpen((open) => !open);
       }
     }
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [enabled]);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [context.theme.navMode]);
 
   const close = useCallback(() => setOpen(false), []);
 

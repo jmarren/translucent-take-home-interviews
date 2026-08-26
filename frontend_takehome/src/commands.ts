@@ -6,15 +6,16 @@ import {
   Palette,
   Type,
   Square,
-} from 'lucide-react';
-import { TABS } from './tabs';
-import { DEPARTMENTS } from './types';
-import { PERIODS } from './periods';
-import { ALL_FONTS } from './fonts';
-import { ALL_PALETTES } from './palettes';
-import { RADIUS_OPTIONS } from './radii';
-import { ThemePreferences } from './useThemePreferences';
-import { DashboardFilters } from './useDashboardFilters';
+} from "lucide-react";
+import { TABS } from "./tabs";
+import { DEPARTMENTS } from "./types";
+import { PERIODS } from "./periods";
+import { ALL_FONTS } from "./fonts";
+import { ALL_PALETTES } from "./palettes";
+import { RADIUS_OPTIONS } from "./radii";
+import { ThemePreferences } from "./useThemePreferences";
+import { DashboardFilters } from "./useDashboardFilters";
+import { Navigation } from "./useNavigation";
 
 export interface Command {
   id: string;
@@ -30,8 +31,7 @@ export interface Command {
 export interface CommandContext {
   theme: ThemePreferences;
   filters: DashboardFilters;
-  activeTab: string;
-  navigateToTab: (id: string) => void;
+  navigation: Navigation;
   close: () => void;
 }
 
@@ -47,26 +47,26 @@ export function buildCommands(ctx: CommandContext): Command[] {
     commands.push({
       id: `go:${tab.id}`,
       label: `Go to ${tab.label}`,
-      group: 'Navigate',
+      group: "Navigate",
       icon: tab.icon,
-      keywords: ['go', 'view', 'open', tab.id],
-      hint: tab.id === ctx.activeTab ? 'Current view' : undefined,
+      keywords: ["go", "view", "open", tab.id],
+      hint: tab.id === ctx.navigation.activeTab ? "Current view" : undefined,
       perform: () => {
-        ctx.navigateToTab(tab.id);
+        ctx.navigation.switchTo(tab.id);
         ctx.close();
       },
     });
   }
 
   commands.push({
-    id: 'filter:department:all',
-    label: 'Filter: All Departments',
-    group: 'Filter by Department',
+    id: "filter:department:all",
+    label: "Filter: All Departments",
+    group: "Filter by Department",
     icon: Filter,
-    keywords: ['department', 'filter', 'clear'],
-    hint: ctx.filters.department === '' ? 'Active' : undefined,
+    keywords: ["department", "filter", "clear"],
+    hint: ctx.filters.department === "" ? "Active" : undefined,
     perform: () => {
-      ctx.filters.setDepartment('');
+      ctx.filters.setDepartment("");
       ctx.close();
     },
   });
@@ -74,10 +74,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
     commands.push({
       id: `filter:department:${dept}`,
       label: `Filter: ${dept}`,
-      group: 'Filter by Department',
+      group: "Filter by Department",
       icon: Filter,
-      keywords: ['department', 'filter', dept.toLowerCase()],
-      hint: ctx.filters.department === dept ? 'Active' : undefined,
+      keywords: ["department", "filter", dept.toLowerCase()],
+      hint: ctx.filters.department === dept ? "Active" : undefined,
       perform: () => {
         ctx.filters.setDepartment(dept);
         ctx.close();
@@ -89,10 +89,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
     commands.push({
       id: `filter:period:${period.id}`,
       label: `Period: ${period.label}`,
-      group: 'Filter by Period',
+      group: "Filter by Period",
       icon: Calendar,
-      keywords: ['period', 'time', 'range'],
-      hint: ctx.filters.period === period.id ? 'Active' : undefined,
+      keywords: ["period", "time", "range"],
+      hint: ctx.filters.period === period.id ? "Active" : undefined,
       perform: () => {
         ctx.filters.setPeriod(period.id);
         ctx.close();
@@ -104,10 +104,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
     commands.push({
       id: `font:${font.value}`,
       label: `Font: ${font.label}`,
-      group: 'Appearance — Font',
+      group: "Appearance — Font",
       icon: Type,
-      keywords: ['font', 'typeface', 'settings'],
-      hint: font.value === ctx.theme.font ? 'Active' : undefined,
+      keywords: ["font", "typeface", "settings"],
+      hint: font.value === ctx.theme.font ? "Active" : undefined,
       perform: () => {
         ctx.theme.setFont(font.value);
         ctx.close();
@@ -119,10 +119,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
     commands.push({
       id: `palette:${palette.label}`,
       label: `Palette: ${palette.label}`,
-      group: 'Appearance — Palette',
+      group: "Appearance — Palette",
       icon: Palette,
-      keywords: ['palette', 'color', 'colour', 'theme', 'settings'],
-      hint: palette.label === ctx.theme.palette.label ? 'Active' : undefined,
+      keywords: ["palette", "color", "colour", "theme", "settings"],
+      hint: palette.label === ctx.theme.palette.label ? "Active" : undefined,
       perform: () => {
         ctx.theme.setPalette(palette);
         ctx.close();
@@ -134,10 +134,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
     commands.push({
       id: `radius:${radius.value}`,
       label: `Border Radius: ${radius.label}`,
-      group: 'Appearance — Border Radius',
+      group: "Appearance — Border Radius",
       icon: Square,
-      keywords: ['radius', 'rounded', 'corners', 'settings'],
-      hint: radius.value === ctx.theme.radius ? 'Active' : undefined,
+      keywords: ["radius", "rounded", "corners", "settings"],
+      hint: radius.value === ctx.theme.radius ? "Active" : undefined,
       perform: () => {
         ctx.theme.setRadius(radius.value);
         ctx.close();

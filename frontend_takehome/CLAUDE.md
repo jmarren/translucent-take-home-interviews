@@ -47,9 +47,8 @@ fields.
 
 This applies to function parameters, `useMemo`/`useCallback` dependency
 building, React Context/Outlet context shapes, and props objects alike
-— see `src/components/Layout.tsx` (`DashboardOutletContext`,
-`makeCommandsMemoParams`) and `src/commands.ts` (`CommandContext`) for
-the pattern in practice.
+— see `src/components/Layout.tsx` (`LayoutState`) and `src/commands.ts`
+(`CommandContext`) for the pattern in practice.
 
 ## No dead or commented-out code
 
@@ -63,7 +62,7 @@ worth keeping as context, put the reasoning in a real comment or in
 Default to `const`. Only use `let` for a binding that is actually
 reassigned after its initial declaration.
 
-## Single quotes
+## Double quotes
 
-Use single quotes for strings and import paths, matching the rest of
-the codebase — not double quotes.
+Use double quotes for strings and import paths, matching the rest of
+the codebase — not single quotes.
