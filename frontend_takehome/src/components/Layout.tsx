@@ -8,17 +8,7 @@ import { PeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
 import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
 import { useDashboardFilters, DashboardFilters } from '../useDashboardFilters';
 import { useNavigation, Navigation } from '../useNavigation';
-import { Modal, useCommandPalette } from '../useCommandPalette';
-import { buildCommands, Command, CommandContext } from '../commands';
-
-// The dep list is every field of `ctx`, taken via Object.values() rather
-// than named one-by-one, so CommandContext's field list (in ../commands.ts)
-// stays the single place enumerating them -- adding/removing a field there
-// automatically changes what useMemo re-runs on, with nothing to keep in
-// sync here.
-function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], unknown[]] {
-	return [() => buildCommands(ctx), Object.values(ctx)];
-}
+import { useCommandPalette, CommandPalette } from '../useCommandPalette';
 
 function makeFilterSummaryMemoParams(
 	filters: DashboardFilters
@@ -33,11 +23,6 @@ function makeFilterSummaryMemoParams(
 		}
 		return parts.length > 0 ? parts.join(' · ') : null;
 	}, [filters.department, filters.period]]
-}
-
-type CommandPalette = {
-	modal: Modal,
-	commands: Command[],
 }
 
 export type LayoutState = {
@@ -62,26 +47,21 @@ export default function Layout() {
 	// data
 	const filters = useDashboardFilters();
 	const theme = useThemePreferences();
-	const paletteModal = useCommandPalette(theme.navMode === 'palette');
 	const filterSummary = useMemo(...makeFilterSummaryMemoParams(filters));
 
-	const commands = useMemo(...makeCommandsMemoParams({
+	const commandPalette = useCommandPalette(theme.navMode === 'palette', {
 		filters,
 		theme,
 		activeTab: navigation.activeTab,
 		navigateToTab: navigation.switchTo,
-		close: paletteModal.close,
-	}));
+	});
 
 	const layoutState: LayoutState = {
 		filters,
 		filterSummary: navigation.activeTab === 'settings' ? null : filterSummary,
 		theme,
 		navigation,
-		commandPalette: {
-			modal: paletteModal,
-			commands,
-		},
+		commandPalette,
 	};
 
 	const mainContent = MainContent(layoutState);

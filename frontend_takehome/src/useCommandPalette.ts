@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { buildCommands, Command, CommandContext } from './commands';
 
 export interface Modal {
   isOpen: boolean;
@@ -6,10 +7,27 @@ export interface Modal {
   close: () => void;
 }
 
+export interface CommandPalette {
+  modal: Modal;
+  commands: Command[];
+}
+
+// The dep list is every field of `ctx`, taken via Object.values() rather
+// than named one-by-one, so CommandContext's field list (in ./commands.ts)
+// stays the single place enumerating them -- adding/removing a field there
+// automatically changes what the commands memo re-runs on, with nothing to
+// keep in sync here.
+function makeCommandsMemoParams(ctx: CommandContext): [() => Command[], unknown[]] {
+  return [() => buildCommands(ctx), Object.values(ctx)];
+}
+
 // The global Cmd+K/Ctrl+K listener only makes sense in palette nav mode --
 // callers pass `enabled` rather than this hook reaching into theme
 // preferences itself, so it stays independent of nav-mode internals.
-export function useCommandPalette(enabled: boolean): Modal {
+export function useCommandPalette(
+  enabled: boolean,
+  context: Omit<CommandContext, 'close'>
+): CommandPalette {
   const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
@@ -26,5 +44,7 @@ export function useCommandPalette(enabled: boolean): Modal {
 
   const close = useCallback(() => setOpen(false), []);
 
-  return { isOpen, setOpen, close };
+  const commands = useMemo(...makeCommandsMemoParams({ ...context, close }));
+
+  return { modal: { isOpen, setOpen, close }, commands };
 }

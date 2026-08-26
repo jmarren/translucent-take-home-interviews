@@ -1,10 +1,6 @@
 import { TABS } from '../tabs';
 import { LayoutState } from './Layout';
 
-// interface SidebarProps {
-// 	layoutState: LayoutState;
-// }
-
 export default function Sidebar({ layoutState }: { layoutState: LayoutState }) {
 	return (
 		<nav className="sidebar" aria-label="Dashboard sections">
