@@ -6,9 +6,6 @@ export interface Palette {
   greyOlive2: string;
   darkSlateGrey: string;
   beige: string;
-  /** Optional "core" accent hues, e.g. for chart series or highlights. */
-  tertiary1?: string;
-  tertiary2?: string;
 }
 
 export interface PaletteGroup {
@@ -232,62 +229,52 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
     ],
   },
   {
-    label: 'Dual-accent (with tertiary colors)',
+    label: 'Dual-accent',
     palettes: [
       {
         label: 'Slate & Signal',
         silver: '#cfd3d6',
         ironGrey: '#495a63',
-        greyOlive: '#83949c',
+        greyOlive: '#c6633f',
         greyOlive2: '#a3aeb3',
         darkSlateGrey: '#20303a',
-        beige: '#eef0ef',
-        tertiary1: '#c6633f',
-        tertiary2: '#3f8f7c',
+        beige: '#3f8f7c',
       },
       {
         label: 'Harbor & Ember',
         silver: '#cdd7db',
         ironGrey: '#3e5c66',
-        greyOlive: '#78949c',
+        greyOlive: '#d4823a',
         greyOlive2: '#9db3b9',
         darkSlateGrey: '#1a2e35',
-        beige: '#eef2f0',
-        tertiary1: '#d4823a',
-        tertiary2: '#6a4c93',
+        beige: '#6a4c93',
       },
       {
         label: 'Moss & Marigold',
         silver: '#d1d6c9',
         ironGrey: '#4d5c42',
-        greyOlive: '#889a72',
+        greyOlive: '#c99a34',
         greyOlive2: '#a9b697',
         darkSlateGrey: '#242e1c',
-        beige: '#f0eee1',
-        tertiary1: '#c99a34',
-        tertiary2: '#a34e4e',
+        beige: '#a34e4e',
       },
       {
         label: 'Graphite & Coral',
         silver: '#d3d3d3',
         ironGrey: '#525252',
-        greyOlive: '#8c8c8c',
+        greyOlive: '#c85c4f',
         greyOlive2: '#aaaaaa',
         darkSlateGrey: '#262626',
-        beige: '#f1efe9',
-        tertiary1: '#c85c4f',
-        tertiary2: '#3f7ca8',
+        beige: '#3f7ca8',
       },
       {
         label: 'Indigo & Citrine',
         silver: '#cfd2dc',
         ironGrey: '#3f4566',
-        greyOlive: '#7679a0',
+        greyOlive: '#c9a635',
         greyOlive2: '#9b9ec0',
         darkSlateGrey: '#1c2038',
-        beige: '#eef0f5',
-        tertiary1: '#c9a635',
-        tertiary2: '#4e9b7a',
+        beige: '#4e9b7a',
       },
     ],
   },
@@ -297,9 +284,6 @@ export const ALL_PALETTES: Palette[] = PALETTE_GROUPS.flatMap((g) => g.palettes)
 
 export const DEFAULT_PALETTE = ALL_PALETTES[0];
 
-const FALLBACK_TERTIARY_1 = '#8a5a44';
-const FALLBACK_TERTIARY_2 = '#5b7fa6';
-
 export function applyPalette(palette: Palette) {
   const root = document.documentElement.style;
   root.setProperty('--silver', palette.silver);
@@ -308,14 +292,10 @@ export function applyPalette(palette: Palette) {
   root.setProperty('--grey-olive-2', palette.greyOlive2);
   root.setProperty('--dark-slate-grey', palette.darkSlateGrey);
   root.setProperty('--beige', palette.beige);
-  root.setProperty('--tertiary-1', palette.tertiary1 ?? FALLBACK_TERTIARY_1);
-  root.setProperty('--tertiary-2', palette.tertiary2 ?? FALLBACK_TERTIARY_2);
 }
 
 export function paletteSwatchGradient(p: Palette): string {
   const stops = [p.darkSlateGrey, p.ironGrey, p.greyOlive, p.greyOlive2, p.beige];
-  if (p.tertiary1) stops.push(p.tertiary1);
-  if (p.tertiary2) stops.push(p.tertiary2);
   const step = 100 / stops.length;
   const segments = stops.map((color, i) => `${color} ${i * step}% ${(i + 1) * step}%`);
   return `linear-gradient(90deg, ${segments.join(', ')})`;
