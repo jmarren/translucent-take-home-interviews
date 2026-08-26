@@ -6,17 +6,30 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import DenialChart from '../components/DenialChart';
 import DepartmentPieChart from '../components/DepartmentPieChart';
 import PayerPieChart from '../components/PayerPieChart';
-import Dashboard, { DENIALS_QUERY } from '../components/Dashboard';
-import { TABS } from '../tabs';
+import DashboardLayout from '../components/DashboardLayout';
+import ComingSoon from '../components/ComingSoon';
+import { DENIALS_QUERY } from '../useDenials';
+import { TABS, TAB_DESCRIPTIONS } from '../tabs';
+import { TAB_PAGE_ELEMENTS } from '../tabPages';
 
 function renderDashboard(mocks: MockedResponse[], initialPath = '/reason-breakdown') {
 	return render(
 		<MockedProvider mocks={mocks}>
 			<MemoryRouter initialEntries={[initialPath]}>
 				<Routes>
-					{TABS.map((tab) => (
-						<Route key={tab.id} path={`/${tab.id}`} element={<Dashboard />} />
-					))}
+					<Route element={<DashboardLayout />}>
+						{TABS.map((tab) => (
+							<Route
+								key={tab.id}
+								path={`/${tab.id}`}
+								element={
+									TAB_PAGE_ELEMENTS[tab.id] ?? (
+										<ComingSoon title={tab.label} description={TAB_DESCRIPTIONS[tab.id]} />
+									)
+								}
+							/>
+						))}
+					</Route>
 				</Routes>
 			</MemoryRouter>
 		</MockedProvider>
