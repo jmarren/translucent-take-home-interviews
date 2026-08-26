@@ -1,6 +1,5 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { Navigate } from 'react-router-dom';
 import DenialChart from './DenialChart';
 import DepartmentPieChart from './DepartmentPieChart';
 import PayerPieChart from './PayerPieChart';
@@ -10,90 +9,31 @@ import PeriodSelect from './PeriodSelect';
 import SummaryStats from './SummaryStats';
 import TrendSparkline from './TrendSparkline';
 import SettingsTab from './SettingsTab';
-import TopBar from './TopBar';
-import CommandPalette from './CommandPalette';
-import Sidebar from './Sidebar';
+import SidebarShell from './SidebarShell';
+import PaletteShell from './PaletteShell';
 import ComingSoon from './ComingSoon';
-import { Denial } from '../types';
-import { PeriodId, filterByPeriod, getReferenceDate, isValidPeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
+import { DEFAULT_PERIOD, PERIODS } from '../periods';
 import { useThemePreferences } from '../useThemePreferences';
-import { TABS, TAB_DESCRIPTIONS, DEFAULT_TAB_ID, isValidTabId } from '../tabs';
+import { TABS, TAB_DESCRIPTIONS, DEFAULT_TAB_ID } from '../tabs';
 import { buildCommands } from '../commands';
+import { useDenials } from '../useDenials';
+import { useDashboardFilters } from '../useDashboardFilters';
+import { useCommandPalette } from '../useCommandPalette';
 
-export const DENIALS_QUERY = gql`
-  query Denials($department: String) {
-    denials(department: $department) {
-      id
-      department
-      amount
-      reason
-      date
-      payer
-    }
-  }
-`;
+export { DENIALS_QUERY } from '../useDenials';
 
 export default function Dashboard() {
-	const { tabId } = useParams<{ tabId: string }>();
-	const navigate = useNavigate();
-	const [searchParams, setSearchParams] = useSearchParams();
+	const filters = useDashboardFilters();
 	const { font, setFont, palette, setPalette, radius, setRadius, navMode, setNavMode } =
 		useThemePreferences();
-	const [paletteOpen, setPaletteOpen] = useState(false);
+	const { paletteOpen, setPaletteOpen, closePalette } = useCommandPalette(navMode === 'palette');
 
-	useEffect(() => {
-		if (navMode !== 'palette') return;
-		function handleKeyDown(event: KeyboardEvent) {
-			if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
-				event.preventDefault();
-				setPaletteOpen((open) => !open);
-			}
-		}
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [navMode]);
-
-	const closePalette = useCallback(() => setPaletteOpen(false), []);
-
-	if (!isValidTabId(tabId)) {
+	if (!filters) {
 		return <Navigate to={`/${DEFAULT_TAB_ID}`} replace />;
 	}
-	const activeTab = tabId;
+	const { activeTab, department, period, setActiveTab, setDepartment, setPeriod } = filters;
 
-	const department = searchParams.get('department') ?? '';
-	const periodParam = searchParams.get('period');
-	const period: PeriodId = isValidPeriodId(periodParam) ? periodParam : DEFAULT_PERIOD;
-
-	function setActiveTab(id: string) {
-		navigate({ pathname: `/${id}`, search: searchParams.toString() });
-	}
-
-	function setDepartment(value: string) {
-		const next = new URLSearchParams(searchParams);
-		if (value) next.set('department', value);
-		else next.delete('department');
-		setSearchParams(next, { replace: true });
-	}
-
-	function setPeriod(value: PeriodId) {
-		const next = new URLSearchParams(searchParams);
-		if (value !== DEFAULT_PERIOD) next.set('period', value);
-		else next.delete('period');
-		setSearchParams(next, { replace: true });
-	}
-
-	const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(
-		DENIALS_QUERY,
-		{ variables: { department: department || undefined } }
-	);
-
-	const denials = data?.denials ?? previousData?.denials ?? [];
-	const isInitialLoad = loading && !previousData && !data;
-
-	const filteredDenials = useMemo(() => {
-		const referenceDate = getReferenceDate(denials);
-		return filterByPeriod(denials, period, referenceDate);
-	}, [denials, period]);
+	const { filteredDenials, isInitialLoad, error } = useDenials(department, period);
 
 	const filterSummary = useMemo(() => {
 		const parts: string[] = [];
@@ -121,7 +61,7 @@ export default function Dashboard() {
 				setRadius,
 				close: closePalette,
 			}),
-		[activeTab, department, period, font, palette, radius, navigate, searchParams, closePalette]
+		[activeTab, department, period, font, palette, radius, setActiveTab, setDepartment, setPeriod, closePalette]
 	);
 
 	if (error) return <p role="alert">Error loading denials.</p>;
@@ -173,32 +113,22 @@ export default function Dashboard() {
 
 	if (navMode === 'sidebar') {
 		return (
-			<div className="dashboard">
-				<h1 className="visually-hidden">Denials</h1>
-
-				<div className="dashboard-layout">
-					<Sidebar tabs={TABS} activeTab={activeTab} onSelectTab={setActiveTab} />
-
-					<div className="dashboard-content">{mainContent}</div>
-				</div>
-			</div>
+			<SidebarShell activeTab={activeTab} onSelectTab={setActiveTab}>
+				{mainContent}
+			</SidebarShell>
 		);
 	}
 
 	return (
-		<div className="dashboard">
-			<h1 className="visually-hidden">Denials</h1>
-
-			<TopBar
-				tabs={TABS}
-				activeTab={activeTab}
-				onOpenPalette={() => setPaletteOpen(true)}
-				filterSummary={activeTab === 'settings' ? null : filterSummary}
-			/>
-
-			<CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} commands={commands} />
-
-			<div className="dashboard-content">{mainContent}</div>
-		</div>
+		<PaletteShell
+			activeTab={activeTab}
+			filterSummary={activeTab === 'settings' ? null : filterSummary}
+			paletteOpen={paletteOpen}
+			onOpenPalette={() => setPaletteOpen(true)}
+			onPaletteOpenChange={setPaletteOpen}
+			commands={commands}
+		>
+			{mainContent}
+		</PaletteShell>
 	);
 }
