@@ -105,6 +105,18 @@ label {
   min-width: 0;
 }
 
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.charts-row > section {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
 .denial-records-section {
   margin-top: 32px;
   background-color: rgba(197, 197, 197, 0.2);

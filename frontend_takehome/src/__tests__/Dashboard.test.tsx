@@ -3,11 +3,18 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import DenialChart from '../components/DenialChart';
+import DepartmentPieChart from '../components/DepartmentPieChart';
 import Dashboard, { DENIALS_QUERY } from '../components/Dashboard';
 
 test('renders chart title', () => {
 	render(<DenialChart data={[]} />);
 	const title = screen.getByText(/Denial Breakdown/i);
+	expect(title).toBeInTheDocument();
+});
+
+test('renders department pie chart title', () => {
+	render(<DepartmentPieChart data={[]} />);
+	const title = screen.getByText(/Denial Breakdown by Department/i);
 	expect(title).toBeInTheDocument();
 });
 

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { PieChart, Landmark, TrendingUp, Table } from 'lucide-react';
 import DenialChart from './DenialChart';
+import DepartmentPieChart from './DepartmentPieChart';
 import DenialsTable from './DenialsTable';
 import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
@@ -78,7 +79,10 @@ export default function Dashboard() {
 						<>
 							<div className="reason-breakdown-layout">
 								<div className="reason-breakdown-main">
-									<DenialChart data={filteredDenials} />
+									<div className="charts-row">
+										<DenialChart data={filteredDenials} />
+										<DepartmentPieChart data={filteredDenials} />
+									</div>
 								</div>
 								<SummaryCards data={filteredDenials} />
 							</div>
