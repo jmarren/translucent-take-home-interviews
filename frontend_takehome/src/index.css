@@ -434,3 +434,21 @@ tbody tr:nth-child(even) {
   color: #1a1a1a;
   font-weight: 700;
 }
+
+.palette-experiment {
+  right: 200px;
+}
+
+.palette-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.palette-swatches {
+  flex-shrink: 0;
+  width: 36px;
+  height: 14px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}

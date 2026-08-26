@@ -2,6 +2,7 @@ import React from 'react';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import Dashboard from './components/Dashboard';
 import FontExperiment from './components/FontExperiment';
+import PaletteExperiment from './components/PaletteExperiment';
 
 const client = new ApolloClient({ uri: 'http://localhost:4000/', cache: new InMemoryCache() });
 
@@ -10,6 +11,7 @@ export default function App() {
     <ApolloProvider client={client}>
       <Dashboard />
       <FontExperiment />
+      <PaletteExperiment />
     </ApolloProvider>
   );
 }
