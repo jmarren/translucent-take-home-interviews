@@ -1,29 +1,13 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 import DepartmentSelect from './DepartmentSelect';
 import PeriodSelect from './PeriodSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
-import { PeriodId, DEFAULT_PERIOD, PERIODS } from '../periods';
 import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
 import { useDashboardFilters, DashboardFilters } from '../useDashboardFilters';
 import { useNavigation, Navigation } from '../useNavigation';
 import { useCommandPalette, CommandPalette } from '../useCommandPalette';
-
-function makeFilterSummaryMemoParams(
-	filters: DashboardFilters
-): [() => string | null, [string, PeriodId]] {
-	return [() => {
-		const department = filters.department;
-		const period = filters.period;
-		const parts: string[] = [];
-		if (department) parts.push(department);
-		if (period !== DEFAULT_PERIOD) {
-			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
-		}
-		return parts.length > 0 ? parts.join(' · ') : null;
-	}, [filters.department, filters.period]]
-}
 
 export type LayoutState = {
 	filters: DashboardFilters,
@@ -47,18 +31,16 @@ export default function Layout() {
 	// data
 	const filters = useDashboardFilters();
 	const theme = useThemePreferences();
-	const filterSummary = useMemo(...makeFilterSummaryMemoParams(filters));
 
-	const commandPalette = useCommandPalette(theme.navMode === 'palette', {
+	const commandPalette = useCommandPalette({
 		filters,
 		theme,
-		activeTab: navigation.activeTab,
-		navigateToTab: navigation.switchTo,
+		navigation,
 	});
 
 	const layoutState: LayoutState = {
 		filters,
-		filterSummary: navigation.activeTab === 'settings' ? null : filterSummary,
+		filterSummary: navigation.activeTab === 'settings' ? null : filters.summary,
 		theme,
 		navigation,
 		commandPalette,
