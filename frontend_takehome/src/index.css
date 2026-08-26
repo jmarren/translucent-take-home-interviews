@@ -5,6 +5,7 @@
   --grey-olive-2: #949b96;
   --dark-slate-grey: #2c423f;
   --beige: #e8e0d0;
+  --font-family: 'Rajdhani', sans-serif;
 }
 
 html,
@@ -14,7 +15,7 @@ body,
 }
 
 body {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-family);
   color: var(--dark-slate-grey);
   background-color: var(--iron-grey);
   margin: 0;
@@ -349,4 +350,39 @@ tbody tr:nth-child(even) {
 
 .coming-soon {
   color: var(--iron-grey);
+}
+
+/* Temporary dev tool for trying out fonts -- remove before shipping. */
+.font-experiment {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1a1a1a;
+  border: 1px solid #ff6b35;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: system-ui, sans-serif;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.font-experiment-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff6b35;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.font-experiment-select {
+  font-family: system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: #fff;
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px 8px;
 }
