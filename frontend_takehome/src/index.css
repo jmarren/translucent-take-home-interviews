@@ -169,6 +169,36 @@ h2 {
   color: var(--iron-grey);
 }
 
+/* Loading placeholders: reserve the exact space the real chart/rows will
+   occupy once data arrives, so nothing shifts when the query resolves. */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+.chart-skeleton {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(148, 155, 150, 0.25);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.chart-skeleton-round {
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.skeleton-text {
+  display: inline-block;
+  width: 70%;
+  height: 0.9em;
+  border-radius: var(--radius-xs);
+  background-color: rgba(148, 155, 150, 0.3);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
 .denial-records-section {
   margin-top: 32px;
   background-color: rgba(197, 197, 197, 0.2);
@@ -183,6 +213,22 @@ h2 {
   color: var(--iron-grey);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+/* Fixed height + internal scroll, independent of row count, so the section
+   occupies identical space whether it's showing skeleton rows, a filtered
+   handful of results, or the full dataset -- final row count isn't knowable
+   before data arrives, so this is the one part of the page that can't match
+   its loading-state height to its loaded-state height any other way. */
+.denial-records-table-scroll {
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.denial-records-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .summary-panel {

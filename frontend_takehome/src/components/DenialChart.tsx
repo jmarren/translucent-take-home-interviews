@@ -12,12 +12,13 @@ import { Denial } from '../types';
 
 interface DenialChartProps {
   data: Denial[];
+  loading?: boolean;
 }
 
 const currency = (value: number) =>
   `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
-export default function DenialChart({ data }: DenialChartProps) {
+export default function DenialChart({ data, loading = false }: DenialChartProps) {
   const chartData = useMemo(() => {
     const totals = new Map<string, number>();
     for (const d of data) {
@@ -30,10 +31,12 @@ export default function DenialChart({ data }: DenialChartProps) {
     <section className="reason-chart-card chart-card-exhibit" aria-label="Denial breakdown chart">
       <h2 className="chart-card-title">Reasons</h2>
       <div className="chart-card-body">
-        {chartData.length === 0 ? (
-          <p>No denial data to display.</p>
-        ) : (
-          <div style={{ width: '100%', maxWidth: 720, flex: 1, minHeight: 0 }}>
+        <div style={{ width: '100%', maxWidth: 720, flex: 1, minHeight: 0 }}>
+          {loading ? (
+            <div className="chart-skeleton" aria-hidden="true" />
+          ) : chartData.length === 0 ? (
+            <p>No denial data to display.</p>
+          ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={chartData}
@@ -51,8 +54,8 @@ export default function DenialChart({ data }: DenialChartProps) {
                 <Bar dataKey="amount" fill="#5b7fa6" name="Denied amount" radius={[0, 3, 3, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       <p className="chart-card-caption">Total denied dollars grouped by stated denial reason.</p>
     </section>

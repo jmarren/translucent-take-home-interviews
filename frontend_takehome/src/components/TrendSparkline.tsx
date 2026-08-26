@@ -11,6 +11,7 @@ import { Denial } from '../types';
 
 interface TrendSparklineProps {
   data: Denial[];
+  loading?: boolean;
 }
 
 const currency = (value: number) =>
@@ -20,7 +21,7 @@ const MONTH_LABELS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ];
 
-export default function TrendSparkline({ data }: TrendSparklineProps) {
+export default function TrendSparkline({ data, loading = false }: TrendSparklineProps) {
   const trend = useMemo(() => {
     const monthTotals = new Map<string, number>();
     for (const d of data) {
@@ -33,7 +34,7 @@ export default function TrendSparkline({ data }: TrendSparklineProps) {
     }).sort((a, b) => (a.monthKey > b.monthKey ? 1 : -1));
   }, [data]);
 
-  if (trend.length <= 1) return null;
+  if (!loading && trend.length <= 1) return null;
 
   return (
     <section
@@ -43,35 +44,39 @@ export default function TrendSparkline({ data }: TrendSparklineProps) {
       <h2 className="chart-card-title">Trend</h2>
       <div className="chart-card-body trend-sparkline-body">
         <div style={{ width: '100%' }}>
-          <ResponsiveContainer width="100%" height={280}>
-            <AreaChart data={trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5b7fa6" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#5b7fa6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-              <YAxis
-                tickFormatter={currency}
-                tick={{ fontSize: 11 }}
-                width={64}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                formatter={(value: number) => [currency(value), 'Total amount']}
-                labelFormatter={(_, payload) => payload?.[0]?.payload?.month ?? ''}
-              />
-              <Area
-                type="monotone"
-                dataKey="amount"
-                stroke="#5b7fa6"
-                strokeWidth={2}
-                fill="url(#trendFill)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="chart-skeleton" style={{ height: 280 }} aria-hidden="true" />
+          ) : (
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#5b7fa6" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#5b7fa6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <YAxis
+                  tickFormatter={currency}
+                  tick={{ fontSize: 11 }}
+                  width={64}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  formatter={(value: number) => [currency(value), 'Total amount']}
+                  labelFormatter={(_, payload) => payload?.[0]?.payload?.month ?? ''}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="#5b7fa6"
+                  strokeWidth={2}
+                  fill="url(#trendFill)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
       <p className="chart-card-caption">

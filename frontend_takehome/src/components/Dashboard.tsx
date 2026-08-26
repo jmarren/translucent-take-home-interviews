@@ -87,6 +87,7 @@ export default function Dashboard() {
 	);
 
 	const denials = data?.denials ?? previousData?.denials ?? [];
+	const isInitialLoad = loading && !previousData && !data;
 
 	const filteredDenials = useMemo(() => {
 		const referenceDate = getReferenceDate(denials);
@@ -144,19 +145,17 @@ export default function Dashboard() {
 						<PeriodSelect value={period} onChange={setPeriod} />
 					</div>
 
-					{loading && !previousData && !data ? (
-						<p>Loading...</p>
-					) : activeTab === 'reason-breakdown' ? (
+					{activeTab === 'reason-breakdown' ? (
 						<>
 							<SummaryStats data={filteredDenials} />
 							<div className="charts-row">
-								<DenialChart data={filteredDenials} />
-								<DepartmentPieChart data={filteredDenials} />
-								<TrendSparkline data={filteredDenials} />
+								<DenialChart data={filteredDenials} loading={isInitialLoad} />
+								<DepartmentPieChart data={filteredDenials} loading={isInitialLoad} />
+								<TrendSparkline data={filteredDenials} loading={isInitialLoad} />
 							</div>
 							<div className="denial-records-section">
 								<h2 className="denial-records-heading">Denial-Level Detail</h2>
-								<DenialsTable data={filteredDenials} />
+								<DenialsTable data={filteredDenials} loading={isInitialLoad} />
 							</div>
 						</>
 					) : (
