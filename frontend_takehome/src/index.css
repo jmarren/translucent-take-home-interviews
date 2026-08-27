@@ -25,7 +25,6 @@ body {
   color: var(--dark-slate-grey);
   background-color: var(--iron-grey);
   margin: 0;
-  width: 100vw;
   display: flex;
   flex-direction: column;
 }
@@ -34,7 +33,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  min-width: fit-content;
   bottom: 0;
   flex-grow: 1;
 }
@@ -363,7 +361,7 @@ h2 {
   background-color: var(--dark-slate-grey);
   border-radius: var(--radius);
   overflow: hidden;
-
+  min-width: 300px;
   box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
 }
 
