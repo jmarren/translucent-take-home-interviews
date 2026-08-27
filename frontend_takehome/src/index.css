@@ -9,6 +9,7 @@
   --radius: 8px;
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-xs: calc(var(--radius) * 0.25);
+
 }
 
 html,
@@ -17,11 +18,16 @@ body,
   height: 100%;
 }
 
+
+
 body {
   font-family: var(--font-family);
   color: var(--dark-slate-grey);
   background-color: var(--iron-grey);
   margin: 0;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard {
@@ -29,6 +35,8 @@ body {
   flex-direction: column;
   min-height: 100vh;
   min-width: fit-content;
+  bottom: 0;
+  flex-grow: 1;
 }
 
 h2 {
@@ -564,14 +572,14 @@ tbody tr:nth-child(even) {
 .dashboard-layout {
   display: flex;
   align-items: stretch;
-  flex: 1;
   margin-top: 24px;
+  flex-grow: 1;
 }
 
 .sidebar {
   flex: 0 0 220px;
   background-color: var(--beige);
-  margin: 0 0 24px 24px;
+  margin: 0 0 0 24px;
   padding: 24px 32px 24px 16px;
   border-radius: var(--radius);
   position: relative;
@@ -620,7 +628,7 @@ tbody tr:nth-child(even) {
 .dashboard-layout .dashboard-content {
   flex: 1;
   min-width: 0;
-  margin: 0 24px 24px -24px;
+  margin: 0 0px 0 -24px;
   box-shadow: -2px 0 6px rgba(44, 66, 63, 0.12);
 }
 

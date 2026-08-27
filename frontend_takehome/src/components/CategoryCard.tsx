@@ -127,10 +127,11 @@ function PieView({ chartData, colors }: { chartData: CategoryTotal[]; colors?: R
 					cy="50%"
 					outerRadius="55%"
 					width={"fit-content"}
+					display={"flex"}
 					label={({ category, amount }) => `${category}: ${((amount / total) * 100).toFixed(0)}%`}
 				>
 					{chartData.map((entry, index) => (
-						<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
+						<Cell width={"fit-content"} style={{ flexShrink: 1 }} key={entry.category} fill={colorFor(entry.category, index, colors)} />
 					))}
 				</Pie>
 				<Tooltip formatter={(value: number, _name, item) => [currency(value), item?.payload?.category]} />
