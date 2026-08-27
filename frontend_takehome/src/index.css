@@ -133,7 +133,7 @@ h2 {
   flex-direction: column;
   border: 1px solid var(--silver);
   border-radius: var(--radius);
-  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.08);
+  box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
 }
 
 .charts-row > .trend-sparkline-card {
@@ -164,6 +164,8 @@ h2 {
   margin: 0;
   text-align: left;
   color: var(--dark-slate-grey);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 /* Houses the title plus the per-card chart-type dropdown on one row, with
@@ -335,6 +337,10 @@ h2 {
   position: sticky;
   top: 0;
   z-index: 1;
+  /* Needs its own opaque background (rather than inheriting th's
+     transparent one) so it still masks body rows scrolling up underneath
+     it while pinned. */
+  background-color: #fcfcfb;
 }
 
 /* Darkens the full row (not just the cell under the cursor) so the eye can
@@ -407,9 +413,16 @@ table {
   width: 100%;
 }
 
+/* Matches .chart-card-table th's treatment (muted label, transparent
+   background) instead of a separate dark-fill/white-text style -- keeps
+   every table in the app on one header language rather than two. */
 th {
-  color: #fcfcfb;
-  background-color: var(--iron-grey);
+  color: var(--iron-grey);
+  background-color: transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   text-align: left;
   padding: 0;
 }
@@ -555,12 +568,11 @@ tbody tr:nth-child(even) {
 }
 
 .dashboard-content {
-  /* width: fit-content; */
   margin: 24px 24px;
   padding: 24px 32px;
   background-color: #fcfcfb;
   border-radius: var(--radius);
-  box-shadow: 0 1px 4px rgba(44, 66, 63, 0.12);
+  box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
   position: relative;
   z-index: 1;
 }

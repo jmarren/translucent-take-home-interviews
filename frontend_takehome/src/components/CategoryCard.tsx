@@ -100,7 +100,7 @@ function BarView({
 					tickFormatter={currency}
 					domain={[0, (dataMax: number) => dataMax * 1.15]}
 				/>
-				<YAxis type="category" dataKey="category" width={wide ? 140 : 100} tick={{ fontSize: 13 }} />
+				<YAxis type="category" dataKey="category" width={wide ? 140 : 120} tick={{ fontSize: 13 }} />
 				<Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
 				<Bar dataKey="amount" name="Denied amount" radius={[0, 3, 3, 0]}>
 					{chartData.map((entry, index) => (
@@ -113,31 +113,46 @@ function BarView({
 	);
 }
 
+// Renders category name and percentage as two fixed <tspan> lines instead
+// of one plain string -- a single string left Recharts/the browser's own
+// text layout to decide where to wrap, which broke different slices at
+// different points (e.g. "Radiology:\n46%" vs. "Orthopedics: 54%") for no
+// reason a viewer could predict. Every slice now wraps the same way
+// regardless of name length.
+function renderPieLabel(total: number) {
+	return function PieLabel(props: any) {
+		const { x, y, textAnchor, fill, category, amount } = props;
+		const pct = `${((amount / total) * 100).toFixed(0)}%`;
+		return (
+			<text x={x} y={y} textAnchor={textAnchor} fill={fill} fontSize={11}>
+				<tspan x={x} dy="-0.3em">{category}</tspan>
+				<tspan x={x} dy="1.2em">{pct}</tspan>
+			</text>
+		);
+	};
+}
+
 function PieView({ chartData, colors }: { chartData: CategoryTotal[]; colors?: Record<string, string> }) {
 	const total = useMemo(() => chartData.reduce((sum, d) => sum + d.amount, 0), [chartData]);
 	return (
-		// <div style={{ width: '100%' }}>
-		<ResponsiveContainer width={"100%"}  >
-			<PieChart  >
+		<ResponsiveContainer width="100%" aspect={1}>
+			<PieChart margin={{ top: 8, right: 32, left: 32, bottom: 8 }}>
 				<Pie
 					data={chartData}
 					dataKey="amount"
 					nameKey="category"
 					cx="50%"
 					cy="50%"
-					outerRadius="55%"
-					width={"fit-content"}
-					display={"flex"}
-					label={({ category, amount }) => `${category}: ${((amount / total) * 100).toFixed(0)}%`}
+					outerRadius="50%"
+					label={renderPieLabel(total)}
 				>
 					{chartData.map((entry, index) => (
-						<Cell width={"fit-content"} style={{ flexShrink: 1 }} key={entry.category} fill={colorFor(entry.category, index, colors)} />
+						<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
 					))}
 				</Pie>
 				<Tooltip formatter={(value: number, _name, item) => [currency(value), item?.payload?.category]} />
 			</PieChart>
 		</ResponsiveContainer>
-		// </div>
 	);
 }
 
