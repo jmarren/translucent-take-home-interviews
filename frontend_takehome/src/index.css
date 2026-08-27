@@ -51,8 +51,8 @@ h2 {
 
 .labeled-select-label {
   color: var(--iron-grey);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -64,7 +64,8 @@ h2 {
   gap: 8px;
   min-width: 200px;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.75rem;
+  font-weight: 400;
   color: var(--dark-slate-grey);
   background-color: #fcfcfb;
   border: 1px solid var(--grey-olive);
@@ -97,7 +98,8 @@ h2 {
 
 .department-select-item {
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.75rem;
+  font-weight: 400;
   color: var(--dark-slate-grey);
   padding: 8px 12px;
   cursor: pointer;
@@ -380,14 +382,14 @@ h2 {
 }
 
 .summary-card-value {
-  font-size: 2rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #fcfcfb;
   line-height: 1.15;
 }
 
 .summary-card-value-text {
-  font-size: 1.25rem;
+  font-size: 1.10rem;
 }
 
 /* The trend card now sits inside .charts-row alongside the bar/pie charts,
@@ -615,8 +617,8 @@ tbody tr:nth-child(even) {
   width: 100%;
   text-align: left;
   font-family: inherit;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 300;
   color: var(--iron-grey);
   background: none;
   border: none;
