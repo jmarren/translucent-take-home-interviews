@@ -34,9 +34,9 @@ export function useDenials(filters: DashboardFilters): UseDenialsResult {
     denials: Denial[];
   }>(DENIALS_QUERY, {
     variables: {
-      department: filters.department || undefined,
-      payer: filters.payer || undefined,
-      reason: filters.reason || undefined,
+      department: filters.department.value || undefined,
+      payer: filters.payer.value || undefined,
+      reason: filters.reason.value || undefined,
     },
   });
 
@@ -45,8 +45,8 @@ export function useDenials(filters: DashboardFilters): UseDenialsResult {
   const referenceDate = useMemo(() => getReferenceDate(denials), [denials]);
 
   const filteredDenials = useMemo(
-    () => filterByPeriod(denials, filters.period, referenceDate),
-    [denials, filters.period, referenceDate],
+    () => filterByPeriod(denials, filters.period.value, referenceDate),
+    [denials, filters.period.value, referenceDate],
   );
 
   return {

@@ -7,15 +7,10 @@ import {
   Dispatch,
 } from "react";
 import { buildCommands, Command, CommandContext } from "../commands";
-
-export interface Modal {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
-  close: () => void;
-}
+import { State, makeState } from "./state";
 
 export interface CommandPalette {
-  modal: Modal;
+  open: State<boolean>;
   commands: Command[];
 }
 
@@ -35,7 +30,7 @@ function makeCommandEffectParams(
   setOpen: Dispatch<SetStateAction<boolean>>,
 ): Parameters<typeof useEffect> {
   let callback = () => {
-    if (ctx.theme.navMode !== "palette") return;
+    if (ctx.theme.navMode.value !== "palette") return;
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
@@ -46,7 +41,7 @@ function makeCommandEffectParams(
     return () => document.removeEventListener("keydown", handleKeyDown);
   };
 
-  return [callback, [ctx.theme.navMode]];
+  return [callback, [ctx.theme.navMode.value]];
 }
 
 // The global Cmd+K/Ctrl+K listener only makes sense in palette nav mode --
@@ -60,8 +55,9 @@ export function useCommandPalette(
   useEffect(...makeCommandEffectParams(ctx, setOpen));
 
   const close = useCallback(() => setOpen(false), []);
+  const open = makeState<boolean>(isOpen, setOpen);
 
   const commands = useMemo(...makeCommandsMemoParams({ ...ctx, close }));
 
-  return { modal: { isOpen, setOpen, close }, commands };
+  return { open, commands };
 }

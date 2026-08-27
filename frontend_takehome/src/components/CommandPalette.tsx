@@ -11,14 +11,14 @@ import { LayoutState } from './Layout';
  * visual chrome and the command list itself.
  */
 export default function CommandPalette({ layoutState }: { layoutState: LayoutState }) {
-	const { modal, commands } = layoutState.commandPalette;
+	const { open, commands } = layoutState.commandPalette;
 	const [search, setSearch] = useState('');
 
 	// Reset search text each time the palette opens so it never reopens showing a stale
 	// query from a previous session.
 	useEffect(() => {
-		if (modal.isOpen) setSearch('');
-	}, [modal.isOpen]);
+		if (open.value) setSearch('');
+	}, [open.value]);
 
 	const groups = useMemo(() => {
 		const order: string[] = [];
@@ -35,8 +35,8 @@ export default function CommandPalette({ layoutState }: { layoutState: LayoutSta
 
 	return (
 		<Command.Dialog
-			open={modal.isOpen}
-			onOpenChange={modal.setOpen}
+			open={open.value}
+			onOpenChange={open.set}
 			label="Command palette"
 			className="command-palette"
 			contentClassName="command-palette-content"

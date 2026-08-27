@@ -6,6 +6,7 @@ import {
   Palette,
   Type,
   Square,
+  Heading,
 } from "lucide-react";
 import { TABS } from "./tabs";
 import { DEPARTMENTS, PAYERS, REASONS, METRICS } from "./types";
@@ -13,6 +14,7 @@ import { PERIODS } from "./periods";
 import { ALL_FONTS } from "./theme/fonts";
 import { ALL_PALETTES } from "./theme/palettes";
 import { RADIUS_OPTIONS } from "./theme/radii";
+import { TITLE_STYLES } from "./theme/titleStyles";
 import { ThemePreferences } from "./hooks/useThemePreferences";
 import { DashboardFilters } from "./hooks/useDashboardFilters";
 import { Navigation } from "./hooks/useNavigation";
@@ -50,9 +52,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Navigate",
       icon: tab.icon,
       keywords: ["go", "view", "open", tab.id],
-      hint: tab.id === ctx.navigation.activeTab ? "Current view" : undefined,
+      hint:
+        tab.id === ctx.navigation.activeTab.value ? "Current view" : undefined,
       perform: () => {
-        ctx.navigation.switchTo(tab.id);
+        ctx.navigation.activeTab.set(tab.id);
         ctx.close();
       },
     });
@@ -64,9 +67,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
     group: "Filter by Department",
     icon: Filter,
     keywords: ["department", "filter", "clear"],
-    hint: ctx.filters.department === "" ? "Active" : undefined,
+    hint: ctx.filters.department.value === "" ? "Active" : undefined,
     perform: () => {
-      ctx.filters.setDepartment("");
+      ctx.filters.department.set("");
       ctx.close();
     },
   });
@@ -77,9 +80,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Filter by Department",
       icon: Filter,
       keywords: ["department", "filter", dept.toLowerCase()],
-      hint: ctx.filters.department === dept ? "Active" : undefined,
+      hint: ctx.filters.department.value === dept ? "Active" : undefined,
       perform: () => {
-        ctx.filters.setDepartment(dept);
+        ctx.filters.department.set(dept);
         ctx.close();
       },
     });
@@ -91,9 +94,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
     group: "Filter by Payer",
     icon: Filter,
     keywords: ["payer", "insurer", "filter", "clear"],
-    hint: ctx.filters.payer === "" ? "Active" : undefined,
+    hint: ctx.filters.payer.value === "" ? "Active" : undefined,
     perform: () => {
-      ctx.filters.setPayer("");
+      ctx.filters.payer.set("");
       ctx.close();
     },
   });
@@ -104,9 +107,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Filter by Payer",
       icon: Filter,
       keywords: ["payer", "insurer", "filter", payer.toLowerCase()],
-      hint: ctx.filters.payer === payer ? "Active" : undefined,
+      hint: ctx.filters.payer.value === payer ? "Active" : undefined,
       perform: () => {
-        ctx.filters.setPayer(payer);
+        ctx.filters.payer.set(payer);
         ctx.close();
       },
     });
@@ -118,9 +121,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
     group: "Filter by Reason",
     icon: Filter,
     keywords: ["reason", "filter", "clear"],
-    hint: ctx.filters.reason === "" ? "Active" : undefined,
+    hint: ctx.filters.reason.value === "" ? "Active" : undefined,
     perform: () => {
-      ctx.filters.setReason("");
+      ctx.filters.reason.set("");
       ctx.close();
     },
   });
@@ -131,9 +134,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Filter by Reason",
       icon: Filter,
       keywords: ["reason", "filter", reason.toLowerCase()],
-      hint: ctx.filters.reason === reason ? "Active" : undefined,
+      hint: ctx.filters.reason.value === reason ? "Active" : undefined,
       perform: () => {
-        ctx.filters.setReason(reason);
+        ctx.filters.reason.set(reason);
         ctx.close();
       },
     });
@@ -146,9 +149,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Filter by Period",
       icon: Calendar,
       keywords: ["period", "time", "range"],
-      hint: ctx.filters.period === period.id ? "Active" : undefined,
+      hint: ctx.filters.period.value === period.id ? "Active" : undefined,
       perform: () => {
-        ctx.filters.setPeriod(period.id);
+        ctx.filters.period.set(period.id);
         ctx.close();
       },
     });
@@ -161,9 +164,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Filter by Metric",
       icon: Filter,
       keywords: ["metric", "amount", "count", "visualize"],
-      hint: ctx.filters.metric === metric.id ? "Active" : undefined,
+      hint: ctx.filters.metric.value === metric.id ? "Active" : undefined,
       perform: () => {
-        ctx.filters.setMetric(metric.id);
+        ctx.filters.metric.set(metric.id);
         ctx.close();
       },
     });
@@ -176,9 +179,9 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Appearance — Font",
       icon: Type,
       keywords: ["font", "typeface", "settings"],
-      hint: font.value === ctx.theme.font ? "Active" : undefined,
+      hint: font.value === ctx.theme.font.value ? "Active" : undefined,
       perform: () => {
-        ctx.theme.setFont(font.value);
+        ctx.theme.font.set(font.value);
         ctx.close();
       },
     });
@@ -191,9 +194,10 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Appearance — Palette",
       icon: Palette,
       keywords: ["palette", "color", "colour", "theme", "settings"],
-      hint: palette.label === ctx.theme.palette.label ? "Active" : undefined,
+      hint:
+        palette.label === ctx.theme.palette.value.label ? "Active" : undefined,
       perform: () => {
-        ctx.theme.setPalette(palette);
+        ctx.theme.palette.set(palette);
         ctx.close();
       },
     });
@@ -206,9 +210,49 @@ export function buildCommands(ctx: CommandContext): Command[] {
       group: "Appearance — Border Radius",
       icon: Square,
       keywords: ["radius", "rounded", "corners", "settings"],
-      hint: radius.value === ctx.theme.radius ? "Active" : undefined,
+      hint: radius.value === ctx.theme.radius.value ? "Active" : undefined,
       perform: () => {
-        ctx.theme.setRadius(radius.value);
+        ctx.theme.radius.set(radius.value);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const titleStyle of TITLE_STYLES) {
+    commands.push({
+      id: `title-style:primary:${titleStyle.label}`,
+      label: `Title Style (Summary Panel): ${titleStyle.label}`,
+      group: "Appearance — Title Style",
+      icon: Heading,
+      keywords: ["title", "heading", "typography", "settings", "summary"],
+      hint:
+        titleStyle.label === ctx.theme.primaryTitleStyle.value.label
+          ? "Active"
+          : undefined,
+      perform: () => {
+        ctx.theme.primaryTitleStyle.set(titleStyle);
+        ctx.close();
+      },
+    });
+    commands.push({
+      id: `title-style:secondary:${titleStyle.label}`,
+      label: `Title Style (Charts & Records): ${titleStyle.label}`,
+      group: "Appearance — Title Style",
+      icon: Heading,
+      keywords: [
+        "title",
+        "heading",
+        "typography",
+        "settings",
+        "chart",
+        "records",
+      ],
+      hint:
+        titleStyle.label === ctx.theme.secondaryTitleStyle.value.label
+          ? "Active"
+          : undefined,
+      perform: () => {
+        ctx.theme.secondaryTitleStyle.set(titleStyle);
         ctx.close();
       },
     });

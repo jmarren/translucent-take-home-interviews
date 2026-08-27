@@ -1,14 +1,47 @@
 :root {
-  --silver: #c5c5c5;
-  --iron-grey: #4c5b61;
-  --grey-olive: #829191;
-  --grey-olive-2: #949b96;
-  --dark-slate-grey: #2c423f;
-  --beige: #e8e0d0;
+  /* Each variable is named for the role it plays in the UI, not the literal
+     hue of the default palette -- --text-primary/--surface-primary and
+     --text-secondary/--surface-secondary each draw from a single palette
+     field (darkSlateGrey, ironGrey) used in two different roles (as text
+     color in most places, as a dark fill/border/outline in a few), so both
+     variables in each pair share the same value below and the same
+     `applyPalette` source field, just applied differently per call site. */
+  --border-muted: #c5c5c5;
+  --text-secondary: #4c5b61;
+  --surface-secondary: #4c5b61;
+  --border-emphasis: #4c5b61;
+  --border-accent: #829191;
+  --border-accent-strong: #949b96;
+  --text-primary: #2c423f;
+  --surface-primary: #2c423f;
+  --surface-accent: #e8e0d0;
+  --surface-light: #fcfcfb;
   --font-family: 'Rajdhani', sans-serif;
   --radius: 8px;
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-xs: calc(var(--radius) * 0.25);
+  /* Two independently-settable title styles (Settings' "Title Style"
+     section, theme/titleStyles.ts) -- "primary" is used by the summary
+     panel's stat labels, "secondary" by chart-card titles and the
+     Denial-Level Detail heading. Each rule keeps its own margin/layout,
+     since that differs by surface. Every slot also gets an
+     on-light/on-dark color pair (not one shared color), because a title's
+     *literal* color still depends on whether it sits on a light card or
+     the dark summary panel -- each resolves the same primary/secondary
+     color intensity to whichever token keeps contrast correct on its own
+     surface (see theme/titleStyles.ts's applyTitleStyle). */
+  --title-primary-font-size: 1.15rem;
+  --title-primary-font-weight: 700;
+  --title-primary-text-transform: none;
+  --title-primary-letter-spacing: normal;
+  --title-primary-color-on-light: var(--text-primary);
+  --title-primary-color-on-dark: var(--surface-light);
+  --title-secondary-font-size: 0.9rem;
+  --title-secondary-font-weight: 700;
+  --title-secondary-text-transform: uppercase;
+  --title-secondary-letter-spacing: 0.04em;
+  --title-secondary-color-on-light: var(--text-secondary);
+  --title-secondary-color-on-dark: var(--border-muted);
 
 }
 
@@ -22,8 +55,8 @@ body,
 
 body {
   font-family: var(--font-family);
-  color: var(--dark-slate-grey);
-  background-color: var(--iron-grey);
+  color: var(--text-primary);
+  background-color: var(--surface-secondary);
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -38,7 +71,7 @@ body {
 }
 
 h2 {
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
 }
 
 .labeled-select {
@@ -48,7 +81,7 @@ h2 {
 }
 
 .labeled-select-label {
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   font-size: 0.65rem;
   font-weight: 400;
   text-transform: uppercase;
@@ -64,30 +97,30 @@ h2 {
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 400;
-  color: var(--dark-slate-grey);
-  background-color: #fcfcfb;
-  border: 1px solid var(--grey-olive);
+  color: var(--text-primary);
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   cursor: pointer;
 }
 
 .department-select-trigger:hover {
-  border-color: var(--iron-grey);
+  border-color: var(--border-emphasis);
 }
 
 .department-select-trigger:focus-visible {
-  outline: 2px solid var(--dark-slate-grey);
+  outline: 2px solid var(--surface-primary);
   outline-offset: 1px;
 }
 
 .department-select-icon {
-  color: var(--iron-grey);
+  color: var(--text-secondary);
 }
 
 .department-select-content {
-  background-color: #fcfcfb;
-  border: 1px solid var(--grey-olive);
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
   overflow: hidden;
@@ -98,15 +131,15 @@ h2 {
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 400;
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
   padding: 8px 12px;
   cursor: pointer;
   outline: none;
 }
 
 .department-select-item[data-highlighted] {
-  background-color: var(--dark-slate-grey);
-  color: #fcfcfb;
+  background-color: var(--surface-primary);
+  color: var(--surface-light);
 }
 
 .filter-bar {
@@ -132,7 +165,8 @@ h2 {
    sitting alone in a short row still won't match an unrelated row above or
    below it -- acceptable since bar thickness is now capped, keeping height
    variance between cards modest). The trend card (`.trend-sparkline-card`)
-   always forces its own line via `flex-basis: 100%`. */
+   has its own, taller min-width floor (850px) for the same reason -- see
+   its own rule below. */
 .charts-row {
   display: flex;
   flex-wrap: wrap;
@@ -143,7 +177,7 @@ h2 {
 .charts-row > section {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--silver);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius);
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
 }
@@ -156,8 +190,24 @@ h2 {
   flex: 1 1 360px;
 }
 
+/* A pie card has a natural, capped size (its own inline `maxWidth`, set
+   from the same width formula as its min-width -- see CategoryCard.tsx) --
+   growing it to fill leftover row space would just stretch dead space
+   around an unchanged circle, unlike a bar or table view, which can put
+   extra width to real use (longer bars, wider label column). So pie cards
+   opt out of flex-grow entirely and stay their intrinsic size, while any
+   bar/table card sharing the row absorbs the space a pie card leaves on
+   the table. */
+.charts-row > .pie-chart-card {
+  flex-grow: 0;
+}
+
+/* Same grow/shrink-to-share-the-row behavior as the category cards above,
+   just with a taller min-width floor (850px) to keep the trend line
+   legible -- sits inline with other cards when the row has that much
+   spare room, and wraps to its own line otherwise. */
 .charts-row > .trend-sparkline-card {
-  flex: 1 1 100%;
+  flex: 1 1 850px;
 }
 
 
@@ -174,9 +224,11 @@ h2 {
 .chart-card-title {
   margin: 0;
   text-align: left;
-  color: var(--dark-slate-grey);
-  font-size: 1.15rem;
-  font-weight: 700;
+  color: var(--title-secondary-color-on-light);
+  font-size: var(--title-secondary-font-size);
+  font-weight: var(--title-secondary-font-weight);
+  text-transform: var(--title-secondary-text-transform);
+  letter-spacing: var(--title-secondary-letter-spacing);
 }
 
 /* Houses the title plus the per-card chart-type dropdown on one row, with
@@ -190,7 +242,7 @@ h2 {
   gap: 12px;
   margin: 0 0 12px;
   padding: 0 0 10px;
-  border-bottom: 1px solid var(--grey-olive);
+  border-bottom: 1px solid var(--border-accent);
 }
 
 .chart-type-select-trigger {
@@ -200,21 +252,21 @@ h2 {
   flex-shrink: 0;
   font-family: inherit;
   font-size: 0.8rem;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   background-color: transparent;
-  border: 1px solid var(--grey-olive);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   cursor: pointer;
 }
 
 .chart-type-select-trigger:hover {
-  border-color: var(--iron-grey);
-  color: var(--dark-slate-grey);
+  border-color: var(--border-emphasis);
+  color: var(--text-primary);
 }
 
 .chart-type-select-trigger:focus-visible {
-  outline: 2px solid var(--dark-slate-grey);
+  outline: 2px solid var(--surface-primary);
   outline-offset: 1px;
 }
 
@@ -223,8 +275,8 @@ h2 {
 }
 
 .chart-type-select-content {
-  background-color: #fcfcfb;
-  border: 1px solid var(--grey-olive);
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
   overflow: hidden;
@@ -234,15 +286,15 @@ h2 {
 .chart-type-select-item {
   font-family: inherit;
   font-size: 0.85rem;
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
   padding: 6px 12px;
   cursor: pointer;
   outline: none;
 }
 
 .chart-type-select-item[data-highlighted] {
-  background-color: var(--dark-slate-grey);
-  color: #fcfcfb;
+  background-color: var(--surface-primary);
+  color: var(--surface-light);
 }
 
 .chart-card-table {
@@ -255,11 +307,11 @@ h2 {
 .chart-card-table td {
   text-align: left;
   padding: 6px 10px;
-  border-bottom: 1px solid var(--silver);
+  border-bottom: 1px solid var(--border-muted);
 }
 
 .chart-card-table th {
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   background-color: transparent;
   font-size: 0.75rem;
   font-weight: 600;
@@ -285,7 +337,7 @@ h2 {
   margin: 8px 0 0;
   font-size: 0.85rem;
   font-style: italic;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
 }
 
 /* Loading placeholders: reserve the exact space the real chart/rows will
@@ -324,17 +376,17 @@ h2 {
   /* background-color: rgba(197, 197, 197, 0.2); */
   border-radius: var(--radius);
   padding: 20px 24px;
-  border: 1px solid var(--silver);
+  border: 1px solid var(--border-muted);
   box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
 }
 
 .denial-records-heading {
   margin: 0 0 16px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--iron-grey);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--title-secondary-color-on-light);
+  font-size: var(--title-secondary-font-size);
+  font-weight: var(--title-secondary-font-weight);
+  text-transform: var(--title-secondary-text-transform);
+  letter-spacing: var(--title-secondary-letter-spacing);
 }
 
 /* Fixed height + internal scroll, independent of row count, so the section
@@ -367,7 +419,7 @@ h2 {
   flex-wrap: wrap;
   align-content: flex-start;
   margin-bottom: 24px;
-  background-color: var(--dark-slate-grey);
+  background-color: var(--surface-primary);
   border-radius: var(--radius);
   overflow: hidden;
   min-width: 300px;
@@ -384,17 +436,17 @@ h2 {
 }
 
 .summary-card-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--silver);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--title-primary-color-on-dark);
+  font-size: var(--title-primary-font-size);
+  font-weight: var(--title-primary-font-weight);
+  text-transform: var(--title-primary-text-transform);
+  letter-spacing: var(--title-primary-letter-spacing);
 }
 
 .summary-card-value {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #fcfcfb;
+  color: var(--surface-light);
   line-height: 1.15;
 }
 
@@ -402,11 +454,23 @@ h2 {
   font-size: 1.10rem;
 }
 
+/* .trends-page fills .dashboard-content's remaining height (see
+   .dashboard-content's own flex: 1) so .trends-chart-card, its only
+   flex-growing child, can fill whatever's left below the controls row
+   instead of sitting at a fixed height unrelated to the actual viewport. */
+.trends-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .trends-controls {
   display: flex;
   align-items: flex-end;
   gap: 16px;
   margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .trends-toggle {
@@ -416,10 +480,11 @@ h2 {
 }
 
 .trends-chart-card {
-  height: 640px;
+  flex: 1;
+  min-height: 360px;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--silver);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius);
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
   background-color: white;
@@ -448,18 +513,18 @@ h2 {
   flex-direction: column;
   gap: 2px;
   padding: 10px 14px;
-  background-color: var(--dark-slate-grey);
+  background-color: var(--surface-primary);
   border-radius: var(--radius-sm);
 }
 
 .trend-delta-chip-headline {
-  background-color: var(--iron-grey);
+  background-color: var(--surface-secondary);
 }
 
 .trend-delta-chip-label {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--silver);
+  color: var(--border-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -467,7 +532,7 @@ h2 {
 .trend-delta-chip-value {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #fcfcfb;
+  color: var(--surface-light);
 }
 
 .trend-delta-up {
@@ -482,10 +547,9 @@ h2 {
    now size to their own content height (see CategoryCard.tsx's
    barChartHeight) rather than a shared fixed card height -- so this card
    needs its own explicit chart height instead of inheriting one from a
-   common ancestor. 420px gives the trend line real room to read, given the
-   card already spans the full row width alone; matches the loading
-   skeleton's reserved height (TimeSeriesCard.tsx) so nothing shifts once
-   real data replaces it. */
+   common ancestor. 420px gives the trend line real room to read even at
+   its 850px min-width; matches the loading skeleton's reserved height
+   (TimeSeriesCard.tsx) so nothing shifts once real data replaces it. */
 .trend-sparkline-body {
   /* .chart-card-body sets `flex: 1`, which expands to `flex-basis: 0%` --
      without overriding flex-basis here, this element's hypothetical
@@ -511,13 +575,13 @@ table {
   width: 100%;
 }
 
-/* Same dark fill as .summary-panel (--dark-slate-grey), but using its
-   higher-contrast value color (#fcfcfb, the big stat numbers) instead of
-   the softer --silver label color, for stronger contrast on the smaller
-   header text. */
+/* Same dark fill as .summary-panel (--surface-primary), but using its
+   higher-contrast value color (--surface-light, the big stat numbers)
+   instead of the softer --border-muted label color, for stronger contrast
+   on the smaller header text. */
 th {
-  color: #fcfcfb;
-  background-color: var(--dark-slate-grey);
+  color: var(--surface-light);
+  background-color: var(--surface-primary);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -556,8 +620,8 @@ th {
 }
 
 td {
-  color: var(--dark-slate-grey);
-  border-bottom: 1px solid var(--silver);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-muted);
   padding: 8px 12px;
 }
 
@@ -585,7 +649,7 @@ tbody tr:nth-child(even) {
   flex-wrap: wrap;
   margin: 24px 24px 0;
   padding: 14px 20px;
-  background-color: var(--beige);
+  background-color: var(--surface-accent);
   border-radius: var(--radius);
 }
 
@@ -594,14 +658,14 @@ tbody tr:nth-child(even) {
   align-items: center;
   gap: 10px;
   min-width: 0;
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.05rem;
 }
 
 .top-bar-current-icon {
   flex-shrink: 0;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
 }
 
 .top-bar-current-label {
@@ -611,7 +675,7 @@ tbody tr:nth-child(even) {
 .top-bar-filter-summary {
   font-weight: 500;
   font-size: 0.85rem;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -628,9 +692,9 @@ tbody tr:nth-child(even) {
   gap: 10px;
   font-family: inherit;
   font-size: 0.9rem;
-  color: var(--iron-grey);
-  background-color: #fcfcfb;
-  border: 1px solid var(--grey-olive);
+  color: var(--text-secondary);
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   cursor: pointer;
@@ -647,11 +711,11 @@ tbody tr:nth-child(even) {
 }
 
 .command-trigger:hover {
-  border-color: var(--iron-grey);
+  border-color: var(--border-emphasis);
 }
 
 .command-trigger:focus-visible {
-  outline: 2px solid var(--dark-slate-grey);
+  outline: 2px solid var(--surface-primary);
   outline-offset: 1px;
 }
 
@@ -659,21 +723,37 @@ tbody tr:nth-child(even) {
   flex-shrink: 0;
   font-family: inherit;
   font-size: 0.72rem;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   background-color: rgba(44, 66, 63, 0.08);
-  border: 1px solid var(--grey-olive);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-xs);
   padding: 2px 6px;
 }
 
+/* display: flex; flex-direction: column behaves the same as normal block
+   flow for every existing tab's content (each renders its own top-level
+   children stacked full-width, same as a column flex container would) --
+   done as a column flex container specifically so a tab that wants a
+   child to grow and fill the remaining space (the Trends page's chart
+   card, via .trends-page/.trends-chart-card's flex: 1) has a real flex
+   ancestor to grow within, instead of every tab needing its own
+   viewport-relative height hack. */
 .dashboard-content {
   margin: 24px 24px;
   padding: 24px 32px;
-  background-color: #f0f2f0;
+  background-color: var(--surface-light);
   border-radius: var(--radius) 0 0 0;
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  /* In palette-shell (topbar) mode .dashboard-content is a direct child of
+     .dashboard, so it needs its own flex-grow to fill the space left after
+     the top bar -- sidebar mode's .dashboard-layout .dashboard-content
+     below sets the same flex, since .dashboard-content there is nested one
+     level deeper. */
+  flex: 1;
 }
 
 /* Sidebar nav mode -- an alternative to the top-bar/command-palette layout
@@ -689,7 +769,7 @@ tbody tr:nth-child(even) {
 
 .sidebar {
   flex: 0 0 220px;
-  background-color: var(--beige);
+  background-color: var(--surface-accent);
   margin: 0 0 0 24px;
   padding: 24px 32px 24px 16px;
   border-radius: var(--radius) var(--radius) 0 0;
@@ -715,7 +795,7 @@ tbody tr:nth-child(even) {
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 300;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   background: none;
   border: none;
   border-radius: var(--radius-sm);
@@ -732,8 +812,8 @@ tbody tr:nth-child(even) {
 }
 
 .sidebar-tab[aria-current='page'] {
-  color: #fcfcfb;
-  background-color: var(--dark-slate-grey);
+  color: var(--surface-light);
+  background-color: var(--surface-primary);
 }
 
 .dashboard-layout .dashboard-content {
@@ -744,7 +824,7 @@ tbody tr:nth-child(even) {
 }
 
 .coming-soon {
-  color: var(--iron-grey);
+  color: var(--text-secondary);
 }
 
 .settings-tab {
@@ -762,12 +842,12 @@ tbody tr:nth-child(even) {
 
 .settings-section-title {
   margin: 0;
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
 }
 
 .settings-section-description {
   margin: 0 0 12px;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -779,7 +859,7 @@ tbody tr:nth-child(even) {
   margin: 0 0 8px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -795,22 +875,22 @@ tbody tr:nth-child(even) {
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: var(--dark-slate-grey);
-  background-color: #fcfcfb;
-  border: 1px solid var(--silver);
+  color: var(--text-primary);
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-muted);
   border-radius: var(--radius-sm);
   padding: 8px 14px;
   cursor: pointer;
 }
 
 .settings-option:hover {
-  border-color: var(--grey-olive);
+  border-color: var(--border-accent);
 }
 
 .settings-option[aria-pressed='true'] {
-  background-color: var(--dark-slate-grey);
-  border-color: var(--dark-slate-grey);
-  color: #fcfcfb;
+  background-color: var(--surface-primary);
+  border-color: var(--surface-primary);
+  color: var(--surface-light);
   font-weight: 600;
 }
 
@@ -826,8 +906,23 @@ tbody tr:nth-child(even) {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  background-color: var(--iron-grey);
+  background-color: var(--surface-secondary);
   border: none;
+}
+
+.settings-title-style-option {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* Renders each option's own font-size/weight/transform/letter-spacing via
+   inline style (from the TitleStyle being previewed), not the shared
+   --title-* variables -- so switching the active title style doesn't
+   retroactively make every other option in this list look identical. */
+.settings-title-style-sample {
+  font-family: inherit;
+  color: inherit;
 }
 
 .settings-nav-mode-option {
@@ -844,12 +939,12 @@ tbody tr:nth-child(even) {
 
 .settings-nav-mode-description {
   font-size: 0.8rem;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
 .settings-option[aria-pressed='true'] .settings-nav-mode-description {
-  color: #fcfcfb;
+  color: var(--surface-light);
 }
 
 /* Command palette (cmdk). Command.Dialog renders a Radix Dialog under the hood, so
@@ -871,7 +966,7 @@ tbody tr:nth-child(even) {
   max-height: 70vh;
   display: flex;
   flex-direction: column;
-  background-color: #fcfcfb;
+  background-color: var(--surface-light);
   border-radius: var(--radius);
   box-shadow: 0 16px 48px rgba(20, 28, 26, 0.35);
   overflow: hidden;
@@ -891,13 +986,13 @@ tbody tr:nth-child(even) {
   align-items: center;
   gap: 10px;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--silver);
+  border-bottom: 1px solid var(--border-muted);
   flex-shrink: 0;
 }
 
 .command-palette-search-icon {
   flex-shrink: 0;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
 }
 
 [cmdk-input] {
@@ -905,23 +1000,23 @@ tbody tr:nth-child(even) {
   min-width: 0;
   font-family: inherit;
   font-size: 1.05rem;
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
   background: none;
   border: none;
   outline: none;
 }
 
 [cmdk-input]::placeholder {
-  color: var(--grey-olive);
+  color: var(--border-accent);
 }
 
 .command-palette-esc-hint {
   flex-shrink: 0;
   font-family: inherit;
   font-size: 0.72rem;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   background-color: rgba(44, 66, 63, 0.08);
-  border: 1px solid var(--grey-olive);
+  border: 1px solid var(--border-accent);
   border-radius: var(--radius-xs);
   padding: 2px 6px;
 }
@@ -937,7 +1032,7 @@ tbody tr:nth-child(even) {
   margin: 12px 8px 4px;
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -952,22 +1047,22 @@ tbody tr:nth-child(even) {
   gap: 10px;
   padding: 9px 12px;
   border-radius: var(--radius-sm);
-  color: var(--dark-slate-grey);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 [cmdk-item][aria-selected='true'] {
-  background-color: var(--dark-slate-grey);
-  color: #fcfcfb;
+  background-color: var(--surface-primary);
+  color: var(--surface-light);
 }
 
 [cmdk-item][aria-selected='true'] .command-palette-item-icon {
-  color: #fcfcfb;
+  color: var(--surface-light);
 }
 
 .command-palette-item-icon {
   flex-shrink: 0;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
 }
 
 .command-palette-item-label {
@@ -982,16 +1077,16 @@ tbody tr:nth-child(even) {
   flex-shrink: 0;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--grey-olive);
+  color: var(--border-accent);
 }
 
 [cmdk-item][aria-selected='true'] .command-palette-item-hint {
-  color: var(--silver);
+  color: var(--border-muted);
 }
 
 [cmdk-empty] {
   padding: 24px 12px;
   text-align: center;
-  color: var(--iron-grey);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }

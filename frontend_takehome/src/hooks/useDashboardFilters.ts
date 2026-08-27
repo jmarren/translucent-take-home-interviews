@@ -2,28 +2,32 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { PeriodId, isValidPeriodId, DEFAULT_PERIOD, PERIODS } from "../periods";
 import { MetricId, isValidMetricId, DEFAULT_METRIC, METRICS } from "../types";
+import { State, makeState, ValuesOf } from "./state";
 
 export interface DashboardFilters {
-  department: string;
-  payer: string;
-  reason: string;
-  period: PeriodId;
-  metric: MetricId;
+  department: State<string>;
+  payer: State<string>;
+  reason: State<string>;
+  period: State<PeriodId>;
+  metric: State<MetricId>;
   summary: string | null;
-  setDepartment: (value: string) => void;
-  setPayer: (value: string) => void;
-  setReason: (value: string) => void;
-  setPeriod: (value: PeriodId) => void;
-  setMetric: (value: MetricId) => void;
 }
 
-// Department/period are URL search params rather than route state, since
-// they layer on top of whichever tab route is active rather than selecting
-// between tabs themselves (that's handled by React Router's own route
-// matching now that each tab is a static route -- see Layout).
-export function useDashboardFilters(): DashboardFilters {
-  const [searchParams, setSearchParams] = useSearchParams();
+function makeFilterSetter<T extends string>(
+  name: string,
+  searchParams: ReturnType<typeof useSearchParams>,
+) {
+  return (value: T) => {
+    const next = new URLSearchParams(searchParams[0]);
+    if (value) next.set(name, value);
+    else next.delete(name);
+    searchParams[1](next, { replace: true });
+  };
+}
 
+type DashboardFilterParams = ValuesOf<DashboardFilters>;
+
+function getParams(searchParams: URLSearchParams): DashboardFilterParams {
   const department = searchParams.get("department") ?? "";
   const payer = searchParams.get("payer") ?? "";
   const reason = searchParams.get("reason") ?? "";
@@ -36,66 +40,75 @@ export function useDashboardFilters(): DashboardFilters {
     ? metricParam
     : DEFAULT_METRIC;
 
-  const summary = useMemo(() => {
-    const parts: string[] = [];
-    if (department) parts.push(department);
-    if (payer) parts.push(payer);
-    if (reason) parts.push(reason);
-    if (period !== DEFAULT_PERIOD) {
-      parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
-    }
-    if (metric !== DEFAULT_METRIC) {
-      parts.push(METRICS.find((m) => m.id === metric)?.label ?? metric);
-    }
-    return parts.length > 0 ? parts.join(" · ") : null;
-  }, [department, payer, reason, period, metric]);
-
-  function setDepartment(value: string) {
-    const next = new URLSearchParams(searchParams);
-    if (value) next.set("department", value);
-    else next.delete("department");
-    setSearchParams(next, { replace: true });
-  }
-
-  function setPayer(value: string) {
-    const next = new URLSearchParams(searchParams);
-    if (value) next.set("payer", value);
-    else next.delete("payer");
-    setSearchParams(next, { replace: true });
-  }
-
-  function setReason(value: string) {
-    const next = new URLSearchParams(searchParams);
-    if (value) next.set("reason", value);
-    else next.delete("reason");
-    setSearchParams(next, { replace: true });
-  }
-
-  function setPeriod(value: PeriodId) {
-    const next = new URLSearchParams(searchParams);
-    if (value !== DEFAULT_PERIOD) next.set("period", value);
-    else next.delete("period");
-    setSearchParams(next, { replace: true });
-  }
-
-  function setMetric(value: MetricId) {
-    const next = new URLSearchParams(searchParams);
-    if (value !== DEFAULT_METRIC) next.set("metric", value);
-    else next.delete("metric");
-    setSearchParams(next, { replace: true });
-  }
-
   return {
     department,
     payer,
     reason,
     period,
     metric,
+  };
+}
+
+function buildSummary(params: DashboardFilterParams): string | null {
+  const parts: string[] = [];
+  if (params.department) parts.push(params.department);
+  if (params.payer) parts.push(params.payer);
+  if (params.reason) parts.push(params.reason);
+  if (params.period !== DEFAULT_PERIOD) {
+    parts.push(
+      PERIODS.find((p) => p.id === params.period)?.label ?? params.period,
+    );
+  }
+  if (params.metric !== DEFAULT_METRIC) {
+    parts.push(
+      METRICS.find((m) => m.id === params.metric)?.label ?? params.metric,
+    );
+  }
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+// Department/period are URL search params rather than route state, since
+// they layer on top of whichever tab route is active rather than selecting
+// between tabs themselves (that's handled by React Router's own route
+// matching now that each tab is a static route -- see Layout).
+export function useDashboardFilters(): DashboardFilters {
+  const searchParamsState = useSearchParams();
+  const searchParams = searchParamsState[0];
+
+  const params = getParams(searchParams);
+
+  const summary = useMemo(
+    () => buildSummary(params),
+    [
+      params.department,
+      params.payer,
+      params.reason,
+      params.period,
+      params.metric,
+    ],
+  );
+
+  return {
+    department: makeState<string>(
+      params.department,
+      makeFilterSetter<string>("department", searchParamsState),
+    ),
+    payer: makeState<string>(
+      params.payer,
+      makeFilterSetter<string>("payer", searchParamsState),
+    ),
+    reason: makeState<string>(
+      params.reason,
+      makeFilterSetter<string>("reason", searchParamsState),
+    ),
+    period: makeState<PeriodId>(
+      params.period,
+      makeFilterSetter<PeriodId>("period", searchParamsState),
+    ),
+    metric: makeState<MetricId>(
+      params.metric,
+      makeFilterSetter<MetricId>("metric", searchParamsState),
+    ),
     summary,
-    setDepartment,
-    setPayer,
-    setReason,
-    setPeriod,
-    setMetric,
   };
 }

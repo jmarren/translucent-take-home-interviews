@@ -6,6 +6,10 @@ export interface Palette {
   greyOlive2: string;
   darkSlateGrey: string;
   beige: string;
+  /** A near-white surface/text tone, subtly tinted toward this palette's
+   *  hue rather than a flat neutral grey -- used for light card/input
+   *  backgrounds and for light text on this palette's dark fills. */
+  offWhite: string;
 }
 
 export interface PaletteGroup {
@@ -25,6 +29,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#949b96',
         darkSlateGrey: '#2c423f',
         beige: '#e8e0d0',
+        offWhite: '#fcfcfb',
       },
     ],
   },
@@ -39,6 +44,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#a9bcc4',
         darkSlateGrey: '#1f3541',
         beige: '#eef3f5',
+        offWhite: '#fafcfd',
       },
       {
         label: 'Scrub Green',
@@ -48,6 +54,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#9fbcb1',
         darkSlateGrey: '#1c3a30',
         beige: '#e9f1ec',
+        offWhite: '#fafcfb',
       },
       {
         label: 'Clinical White',
@@ -57,6 +64,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#aeb3b9',
         darkSlateGrey: '#2b2f33',
         beige: '#f4f4f4',
+        offWhite: '#fcfcfc',
       },
       {
         label: 'Antiseptic Teal',
@@ -66,6 +74,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#94bcb9',
         darkSlateGrey: '#173836',
         beige: '#e7f4f2',
+        offWhite: '#f9fdfc',
       },
       {
         label: 'Lab Coat',
@@ -75,6 +84,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#b0b2a8',
         darkSlateGrey: '#2e3027',
         beige: '#f2f1ea',
+        offWhite: '#fcfcfa',
       },
     ],
   },
@@ -89,6 +99,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#aea497',
         darkSlateGrey: '#2c2620',
         beige: '#efe9dd',
+        offWhite: '#fcfaf6',
       },
       {
         label: 'Slate & Sand',
@@ -98,6 +109,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#a9ab9f',
         darkSlateGrey: '#28323a',
         beige: '#e6ddc9',
+        offWhite: '#fbfaf7',
       },
       {
         label: 'Dusty Rose',
@@ -107,6 +119,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#c2a3a1',
         darkSlateGrey: '#3a2224',
         beige: '#f1e3df',
+        offWhite: '#fdfaf9',
       },
       {
         label: 'Museum Grey',
@@ -116,6 +129,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#b2afa5',
         darkSlateGrey: '#2b2924',
         beige: '#f0eee7',
+        offWhite: '#fbfbfa',
       },
       {
         label: 'Ink & Parchment',
@@ -125,6 +139,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#aca188',
         darkSlateGrey: '#26221a',
         beige: '#efe5cd',
+        offWhite: '#fcfaf4',
       },
     ],
   },
@@ -139,6 +154,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#8296ab',
         darkSlateGrey: '#182634',
         beige: '#eef1f5',
+        offWhite: '#f9fbfd',
       },
       {
         label: 'Charcoal & Amber',
@@ -148,6 +164,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#aca594',
         darkSlateGrey: '#252220',
         beige: '#f3ead8',
+        offWhite: '#fcfaf6',
       },
       {
         label: 'Deep Forest',
@@ -157,6 +174,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#93ac9c',
         darkSlateGrey: '#152820',
         beige: '#e6efe6',
+        offWhite: '#f9fcfa',
       },
       {
         label: 'Burgundy & Grey',
@@ -166,6 +184,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#b7999b',
         darkSlateGrey: '#331e21',
         beige: '#f0e5e2',
+        offWhite: '#fdfaf9',
       },
       {
         label: 'Graphite & Gold',
@@ -175,6 +194,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#adaa93',
         darkSlateGrey: '#242318',
         beige: '#f2ecd8',
+        offWhite: '#fcfaf5',
       },
     ],
   },
@@ -189,6 +209,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#c3a48f',
         darkSlateGrey: '#3b2718',
         beige: '#f2e4d5',
+        offWhite: '#fdf9f6',
       },
       {
         label: 'Desert Sand',
@@ -198,6 +219,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#c7b898',
         darkSlateGrey: '#3d3319',
         beige: '#f3ead4',
+        offWhite: '#fdfaf4',
       },
       {
         label: 'Espresso',
@@ -207,6 +229,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#a08c79',
         darkSlateGrey: '#241a13',
         beige: '#eee2d3',
+        offWhite: '#fcf9f6',
       },
       {
         label: 'Olive Grove',
@@ -216,6 +239,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#aab190',
         darkSlateGrey: '#2c3020',
         beige: '#eeeed7',
+        offWhite: '#fbfbf5',
       },
       {
         label: 'Clay & Sage',
@@ -225,6 +249,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#b6b49b',
         darkSlateGrey: '#2f3121',
         beige: '#efeddc',
+        offWhite: '#fbfaf5',
       },
     ],
   },
@@ -239,6 +264,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#a3aeb3',
         darkSlateGrey: '#20303a',
         beige: '#3f8f7c',
+        offWhite: '#f9fafb',
       },
       {
         label: 'Harbor & Ember',
@@ -248,6 +274,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#9db3b9',
         darkSlateGrey: '#1a2e35',
         beige: '#6a4c93',
+        offWhite: '#f8fbfc',
       },
       {
         label: 'Moss & Marigold',
@@ -257,6 +284,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#a9b697',
         darkSlateGrey: '#242e1c',
         beige: '#a34e4e',
+        offWhite: '#fafbf7',
       },
       {
         label: 'Graphite & Coral',
@@ -266,6 +294,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#aaaaaa',
         darkSlateGrey: '#262626',
         beige: '#3f7ca8',
+        offWhite: '#fafafa',
       },
       {
         label: 'Indigo & Citrine',
@@ -275,6 +304,7 @@ export const PALETTE_GROUPS: PaletteGroup[] = [
         greyOlive2: '#9b9ec0',
         darkSlateGrey: '#1c2038',
         beige: '#4e9b7a',
+        offWhite: '#f9f9fc',
       },
     ],
   },
@@ -284,14 +314,23 @@ export const ALL_PALETTES: Palette[] = PALETTE_GROUPS.flatMap((g) => g.palettes)
 
 export const DEFAULT_PALETTE = ALL_PALETTES[0];
 
+// CSS variable names describe the role a color plays (text vs. surface vs.
+// border), not the literal hue of the default palette -- darkSlateGrey and
+// ironGrey each feed two variables (used as text color in most places, as a
+// dark fill/border in a few), so both variables in each pair are set from
+// the same palette field here.
 export function applyPalette(palette: Palette) {
   const root = document.documentElement.style;
-  root.setProperty('--silver', palette.silver);
-  root.setProperty('--iron-grey', palette.ironGrey);
-  root.setProperty('--grey-olive', palette.greyOlive);
-  root.setProperty('--grey-olive-2', palette.greyOlive2);
-  root.setProperty('--dark-slate-grey', palette.darkSlateGrey);
-  root.setProperty('--beige', palette.beige);
+  root.setProperty('--border-muted', palette.silver);
+  root.setProperty('--text-secondary', palette.ironGrey);
+  root.setProperty('--surface-secondary', palette.ironGrey);
+  root.setProperty('--border-emphasis', palette.ironGrey);
+  root.setProperty('--border-accent', palette.greyOlive);
+  root.setProperty('--border-accent-strong', palette.greyOlive2);
+  root.setProperty('--text-primary', palette.darkSlateGrey);
+  root.setProperty('--surface-primary', palette.darkSlateGrey);
+  root.setProperty('--surface-accent', palette.beige);
+  root.setProperty('--surface-light', palette.offWhite);
 }
 
 export function paletteSwatchGradient(p: Palette): string {

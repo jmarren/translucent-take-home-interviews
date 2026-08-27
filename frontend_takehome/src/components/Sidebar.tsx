@@ -12,8 +12,8 @@ export default function Sidebar({ layoutState }: { layoutState: LayoutState }) {
 							<button
 								type="button"
 								className="sidebar-tab"
-								aria-current={tab.id === layoutState.navigation.activeTab ? 'page' : undefined}
-								onClick={() => layoutState.navigation.switchTo(tab.id)}
+								aria-current={tab.id === layoutState.navigation.activeTab.value ? 'page' : undefined}
+								onClick={() => layoutState.navigation.activeTab.set(tab.id)}
 							>
 								<Icon className="sidebar-tab-icon" size={18} aria-hidden="true" />
 								{tab.label}

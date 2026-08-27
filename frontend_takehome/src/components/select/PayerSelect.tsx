@@ -10,8 +10,8 @@ export default function PayerSelect({ filters }: { filters: DashboardFilters }) 
 			id="payer-filter"
 			label="Payer"
 			ariaLabel="Payer"
-			value={filters.payer || ALL_PAYERS}
-			onChange={(next) => filters.setPayer(next === ALL_PAYERS ? '' : next)}
+			value={filters.payer.value || ALL_PAYERS}
+			onChange={(next) => filters.payer.set(next === ALL_PAYERS ? '' : next)}
 			options={[
 				{ value: ALL_PAYERS, label: 'All Payers' },
 				...PAYERS.map((payer) => ({ value: payer, label: payer })),

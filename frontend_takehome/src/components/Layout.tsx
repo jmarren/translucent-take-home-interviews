@@ -49,7 +49,7 @@ export default function Layout() {
 
 	const mainContent = MainContent(layoutState);
 
-	if (theme.navMode === 'sidebar') {
+	if (theme.navMode.value === 'sidebar') {
 		return WrapSidebarShell(mainContent, layoutState);
 	}
 	return WrapPaletteShell(mainContent, layoutState);
@@ -74,7 +74,7 @@ function WrapSidebarShell(mainContent: React.ReactNode, layoutState: LayoutState
 function MainContent(layoutState: LayoutState) {
 	return (
 		<>
-			{!TABS_WITHOUT_FILTER_BAR.has(layoutState.navigation.activeTab) && (
+			{!TABS_WITHOUT_FILTER_BAR.has(layoutState.navigation.activeTab.value) && (
 				<div className="filter-bar">
 					<DepartmentSelect filters={layoutState.filters} />
 					<PayerSelect filters={layoutState.filters} />

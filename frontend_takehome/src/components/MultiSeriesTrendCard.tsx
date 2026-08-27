@@ -19,8 +19,7 @@ import { useMultiSeriesTrend, MultiSeriesPoint } from "../hooks/useMultiSeriesTr
 import { buildPopBuckets, PositionBucket } from "../trendPeriods";
 import { computeDeltaStats } from "../trendDeltaStats";
 import { MovingAverageWindow, withMovingAverages } from "../trendMovingAverage";
-import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from "../chartTypes";
-import ChartTypeSelect from "./select/ChartTypeSelect";
+import { TimeSeriesChartType } from "../chartTypes";
 import { DEPARTMENT_COLORS, PAYER_COLORS } from "./BreakdownPage";
 import { DEFAULT_SLICE_COLORS } from "./cards/category/shared";
 
@@ -59,6 +58,7 @@ interface MultiSeriesTrendCardProps {
 	prefs: TrendsPreferences;
 	periodId: PeriodId;
 	metric: MetricId;
+	chartType: TimeSeriesChartType;
 }
 
 interface SimpleViewProps {
@@ -280,17 +280,13 @@ export default function MultiSeriesTrendCard({
 	prefs,
 	periodId,
 	metric,
+	chartType,
 }: MultiSeriesTrendCardProps) {
 	const { points, seriesNames } = useMultiSeriesTrend(data, {
 		granularity: prefs.granularity,
 		dimension: prefs.dimension,
 		metric,
 	});
-	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
-		"trends-page",
-		TIME_SERIES_CHART_TYPES,
-		"line"
-	);
 	const colors = useMemo(() => colorsFor(seriesNames), [seriesNames]);
 
 	const popBuckets = useMemo(() => {
@@ -321,15 +317,6 @@ export default function MultiSeriesTrendCard({
 
 	return (
 		<section className="trends-chart-card chart-card-exhibit" aria-label="Denial trends over time">
-			<div className="chart-card-header">
-				<h2 className="chart-card-title">Trends</h2>
-				<ChartTypeSelect
-					ariaLabel="Trends chart type"
-					value={chartType}
-					options={TIME_SERIES_CHART_TYPES}
-					onChange={setChartType}
-				/>
-			</div>
 			{popPoints && popBuckets && (
 				<DeltaStrip
 					currentBuckets={popBuckets.currentBuckets}

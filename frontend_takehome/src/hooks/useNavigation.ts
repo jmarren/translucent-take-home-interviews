@@ -1,8 +1,8 @@
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { State, makeState } from "./state";
 
 export interface Navigation {
-  activeTab: string;
-  switchTo: (tabId: string) => void;
+  activeTab: State<string>;
 }
 
 // Tabs are static routes (e.g. /settings, /breakdown) rather than a dynamic
@@ -19,5 +19,5 @@ export function useNavigation(): Navigation {
     navigate({ pathname: `/${tabId}`, search: searchParams.toString() });
   }
 
-  return { activeTab, switchTo };
+  return { activeTab: makeState<string>(activeTab, switchTo) };
 }

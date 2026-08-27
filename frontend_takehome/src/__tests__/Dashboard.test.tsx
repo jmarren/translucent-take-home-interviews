@@ -237,7 +237,7 @@ const trendsMocks: MockedResponse[] = [
 test('navigating to Trends renders the real page, not the Coming Soon placeholder', async () => {
 	renderDashboard(trendsMocks, '/trends');
 
-	expect(await screen.findByRole('heading', { name: 'Trends' })).toBeInTheDocument();
+	expect(await screen.findByLabelText('Denial trends over time')).toBeInTheDocument();
 	expect(screen.queryByText(/coming soon/i)).not.toBeInTheDocument();
 });
 
@@ -245,7 +245,7 @@ test('switching the Trends dimension picker changes which values are charted', a
 	const user = userEvent.setup();
 	renderDashboard(trendsMocks, '/trends');
 
-	await screen.findByRole('heading', { name: 'Trends' });
+	await screen.findByLabelText('Denial trends over time');
 	expect(screen.getByText(/split by department/i)).toBeInTheDocument();
 
 	await user.click(screen.getByRole('combobox', { name: /dimension to compare over time/i }));
@@ -257,7 +257,7 @@ test('switching the Trends dimension picker changes which values are charted', a
 test('the compare-to-previous-period toggle is disabled when the period filter is "All Time"', async () => {
 	renderDashboard(trendsMocks, '/trends');
 
-	await screen.findByRole('heading', { name: 'Trends' });
+	await screen.findByLabelText('Denial trends over time');
 	const popToggle = screen.getByRole('combobox', { name: /compare to previous period/i });
 	expect(popToggle).toHaveAttribute('data-disabled');
 });
@@ -266,7 +266,7 @@ test('the compare-to-previous-period toggle is enabled once a specific period is
 	const user = userEvent.setup();
 	renderDashboard(trendsMocks, '/trends');
 
-	await screen.findByRole('heading', { name: 'Trends' });
+	await screen.findByLabelText('Denial trends over time');
 
 	await user.click(screen.getByRole('combobox', { name: 'Period' }));
 	await user.click(await screen.findByRole('option', { name: 'This Year' }));
@@ -282,7 +282,7 @@ test('selecting a moving-average window shows the caption explaining the smoothi
 	const user = userEvent.setup();
 	renderDashboard(trendsMocks, '/trends');
 
-	await screen.findByRole('heading', { name: 'Trends' });
+	await screen.findByLabelText('Denial trends over time');
 	expect(screen.queryByText(/period moving average/i)).not.toBeInTheDocument();
 
 	await user.click(screen.getByRole('combobox', { name: /moving average window/i }));
@@ -295,7 +295,7 @@ test('the moving-average control is disabled while comparing to the previous per
 	const user = userEvent.setup();
 	renderDashboard(trendsMocks, '/trends');
 
-	await screen.findByRole('heading', { name: 'Trends' });
+	await screen.findByLabelText('Denial trends over time');
 
 	await user.click(screen.getByRole('combobox', { name: 'Period' }));
 	await user.click(await screen.findByRole('option', { name: 'This Year' }));

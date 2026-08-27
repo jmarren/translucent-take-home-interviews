@@ -22,7 +22,7 @@ export const DEFAULT_SLICE_COLORS = [
 	'#5b7fa6', '#2c423f', '#4c5b61', '#8a5a44', '#b08d3e', '#829191', '#949b96', '#c5c5c5',
 ];
 
-const FALLBACK_COLOR = '#949b96'; // --grey-olive-2
+const FALLBACK_COLOR = '#949b96'; // default palette's greyOlive2
 
 export function colorFor(category: string, index: number, colors?: Record<string, string>): string {
 	if (colors) return colors[category] ?? FALLBACK_COLOR;
@@ -49,11 +49,14 @@ export function barChartHeight(categoryCount: number): number {
 	return categoryCount * BAR_THICKNESS + BAR_CHART_VERTICAL_PADDING;
 }
 
-// A rough per-character width estimate at the pie label's 15px font-size
-// (avg. ~0.6em per character), used to size layout around the label text
-// without measuring actual glyphs via canvas.
+// A rough per-character width estimate at the pie label's 15px font-size,
+// used to size layout around the label text without measuring actual
+// glyphs via canvas. ~0.5em/char is a reasonable average for mixed-case
+// sans-serif text -- 0.6em (tried first) reserved noticeably more
+// horizontal clearance than the label text actually needed.
 export const PIE_LABEL_FONT_SIZE = 15;
-const PIE_LABEL_CHAR_WIDTH = PIE_LABEL_FONT_SIZE * 0.6;
+const PIE_LABEL_CHAR_WIDTH = PIE_LABEL_FONT_SIZE * 0.5;
+const PIE_LABEL_LINE_HEIGHT = PIE_LABEL_FONT_SIZE * 1.2;
 
 // The pie itself has no fixed width -- it fills whatever the card gives it
 // (`outerRadius="50%"` of the ResponsiveContainer) -- but the card still
@@ -65,4 +68,13 @@ export const ASSUMED_PIE_DIAMETER = 240;
 export function widestLabelWidth(chartData: CategoryTotal[]): number {
 	const widestChars = chartData.reduce((max, d) => Math.max(max, d.category.length), 0);
 	return Math.ceil(widestChars * PIE_LABEL_CHAR_WIDTH);
+}
+
+// The label's category-name/percentage stack is always exactly 2 lines tall
+// (see renderPieLabel's two fixed <tspan>s in pie.tsx), unlike its width,
+// which varies with the category name -- so unlike the width margin above,
+// the vertical margin above/below the pie doesn't need to scale with label
+// content at all, just fit those 2 fixed lines once per edge.
+export function pieChartHeight(): number {
+	return ASSUMED_PIE_DIAMETER + PIE_LABEL_LINE_HEIGHT * 2 * 2; // 2 lines, top + bottom
 }

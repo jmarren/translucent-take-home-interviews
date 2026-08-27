@@ -4,6 +4,7 @@ import ChartTypeSelect from "./select/ChartTypeSelect";
 import { TrendsPreferencesState } from "../trendsPreferences";
 import { PeriodId } from "../periods";
 import { hasPreviousPeriod } from "../trendPeriods";
+import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES } from "../chartTypes";
 
 const DIMENSION_OPTIONS = [
   { value: "department", label: "Department" },
@@ -30,9 +31,11 @@ const MOVING_AVERAGE_OPTIONS = [
 interface TrendsControlsProps {
   prefs: TrendsPreferencesState;
   periodId: PeriodId;
+  chartType: TimeSeriesChartType;
+  onChartTypeChange: (value: TimeSeriesChartType) => void;
 }
 
-export default function TrendsControls({ prefs, periodId }: TrendsControlsProps) {
+export default function TrendsControls({ prefs, periodId, chartType, onChartTypeChange }: TrendsControlsProps) {
   const popAvailable = hasPreviousPeriod(periodId);
 
   return (
@@ -45,6 +48,15 @@ export default function TrendsControls({ prefs, periodId }: TrendsControlsProps)
         options={[...DIMENSION_OPTIONS]}
         onChange={(value) => prefs.setDimension(value as typeof prefs.dimension)}
       />
+      <div className="trends-toggle">
+        <span className="labeled-select-label">Chart type</span>
+        <ChartTypeSelect
+          ariaLabel="Trends chart type"
+          value={chartType}
+          options={TIME_SERIES_CHART_TYPES}
+          onChange={onChartTypeChange}
+        />
+      </div>
       <div className="trends-toggle">
         <span className="labeled-select-label">Granularity</span>
         <ChartTypeSelect

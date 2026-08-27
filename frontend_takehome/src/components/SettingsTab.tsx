@@ -2,6 +2,7 @@ import { FONT_GROUPS } from '../theme/fonts';
 import { PALETTE_GROUPS, paletteSwatchGradient } from '../theme/palettes';
 import { RADIUS_OPTIONS } from '../theme/radii';
 import { NAV_MODES, } from '../theme/navModes';
+import { TITLE_STYLES, TitleStyle } from '../theme/titleStyles';
 import { LayoutState } from './Layout';
 import { useOutletContext } from 'react-router-dom';
 
@@ -23,8 +24,8 @@ export default function SettingsTab() {
 								key={mode.value}
 								type="button"
 								className="settings-option settings-nav-mode-option"
-								aria-pressed={mode.value === theme.navMode}
-								onClick={() => theme.setNavMode(mode.value)}
+								aria-pressed={mode.value === theme.navMode.value}
+								onClick={() => theme.navMode.set(mode.value)}
 							>
 								<span className="settings-nav-mode-label">{mode.label}</span>
 								<span className="settings-nav-mode-description">{mode.description}</span>
@@ -48,8 +49,8 @@ export default function SettingsTab() {
 									key={f.value}
 									type="button"
 									className="settings-option"
-									aria-pressed={f.value === theme.font}
-									onClick={() => theme.setFont(f.value)}
+									aria-pressed={f.value === theme.font.value}
+									onClick={() => theme.font.set(f.value)}
 									style={{ fontFamily: f.value }}
 								>
 									{f.label}
@@ -74,8 +75,8 @@ export default function SettingsTab() {
 									key={p.label}
 									type="button"
 									className="settings-option settings-palette-option"
-									aria-pressed={p.label === theme.palette.label}
-									onClick={() => theme.setPalette(p)}
+									aria-pressed={p.label === theme.palette.value.label}
+									onClick={() => theme.palette.set(p)}
 								>
 									<span
 										className="settings-palette-swatch"
@@ -102,8 +103,8 @@ export default function SettingsTab() {
 								key={r.label}
 								type="button"
 								className="settings-option settings-radius-option"
-								aria-pressed={r.value === theme.radius}
-								onClick={() => theme.setRadius(r.value)}
+								aria-pressed={r.value === theme.radius.value}
+								onClick={() => theme.radius.set(r.value)}
 							>
 								<span
 									className="settings-radius-swatch"
@@ -116,6 +117,58 @@ export default function SettingsTab() {
 					</div>
 				</div>
 			</section>
+
+			<section className="settings-section" aria-label="Title style settings">
+				<h2 className="settings-section-title">Title Style</h2>
+				<p className="settings-section-description">
+					Choose the title treatment for the summary panel's stat labels, and separately for
+					chart-card titles and the Denial-Level Detail heading.
+				</p>
+				<div className="settings-group">
+					<p className="settings-group-label">Summary Panel</p>
+					<TitleStyleOptions active={theme.primaryTitleStyle.value} onChange={theme.primaryTitleStyle.set} />
+				</div>
+				<div className="settings-group">
+					<p className="settings-group-label">Charts &amp; Denial-Level Detail</p>
+					<TitleStyleOptions active={theme.secondaryTitleStyle.value} onChange={theme.secondaryTitleStyle.set} />
+				</div>
+			</section>
+		</div>
+	);
+}
+
+function TitleStyleOptions({
+	active,
+	onChange,
+}: {
+	active: TitleStyle;
+	onChange: (style: TitleStyle) => void;
+}) {
+	return (
+		<div className="settings-options">
+			{TITLE_STYLES.map((style) => (
+				<button
+					key={style.label}
+					type="button"
+					className="settings-option settings-title-style-option"
+					aria-pressed={style.label === active.label}
+					onClick={() => onChange(style)}
+				>
+					<span
+						className="settings-title-style-sample"
+						style={{
+							fontSize: style.fontSize,
+							fontWeight: style.fontWeight,
+							textTransform: style.textTransform,
+							letterSpacing: style.letterSpacing,
+							color: style.emphasis === 'primary' ? 'var(--text-primary)' : 'var(--text-secondary)',
+						}}
+					>
+						Sample Title
+					</span>
+					{style.label}
+				</button>
+			))}
 		</div>
 	);
 }

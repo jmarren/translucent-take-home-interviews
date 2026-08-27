@@ -8,63 +8,139 @@ import {
 } from "../theme/palettes";
 import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from "../theme/radii";
 import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from "../theme/navModes";
+import {
+  TITLE_STYLES,
+  DEFAULT_PRIMARY_TITLE_STYLE,
+  DEFAULT_SECONDARY_TITLE_STYLE,
+  TitleStyle,
+  applyPrimaryTitleStyle,
+  applySecondaryTitleStyle,
+} from "../theme/titleStyles";
+import { State, makeState } from "./state";
 
 const FONT_STORAGE_KEY = "denial-dashboard:font";
 const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";
 const RADIUS_STORAGE_KEY = "denial-dashboard:radius";
 const NAV_MODE_STORAGE_KEY = "denial-dashboard:nav-mode";
+const PRIMARY_TITLE_STYLE_STORAGE_KEY =
+  "denial-dashboard:primary-title-style-label";
+const SECONDARY_TITLE_STYLE_STORAGE_KEY =
+  "denial-dashboard:secondary-title-style-label";
 
-function loadStoredFont(): string {
+// Reads a raw string out of localStorage, swallowing the "unavailable"
+// case (private browsing, etc.) down to null so callers only ever have
+// to handle "there was nothing usable stored" rather than two failure
+// modes.
+function readStorageItem(storageKey: string): string | null {
   try {
-    const stored = window.localStorage.getItem(FONT_STORAGE_KEY);
-    if (stored && ALL_FONTS.some((f) => f.value === stored)) return stored;
+    return window.localStorage.getItem(storageKey);
   } catch {
-    // localStorage unavailable (private browsing, etc.) -- fall back to default.
+    return null;
   }
-  return DEFAULT_FONT;
 }
 
-function loadStoredPalette(): Palette {
-  try {
-    const storedLabel = window.localStorage.getItem(PALETTE_STORAGE_KEY);
-    const match = ALL_PALETTES.find((p) => p.label === storedLabel);
-    if (match) return match;
-  } catch {
-    // localStorage unavailable -- fall back to default.
-  }
-  return DEFAULT_PALETTE;
+// Composes a loader: read the raw stored string, hand it to `parse` to
+// resolve against the real option list, and fall back to `fallback`
+// whenever there's nothing stored or `parse` can't place it. Each
+// preference then only has to supply how *it* recognizes a stored value,
+// not how storage access or fallback works.
+function makeLoader<T>(
+  storageKey: string,
+  parse: (stored: string | null) => T | undefined,
+  fallback: T,
+): () => T {
+  return () => parse(readStorageItem(storageKey)) ?? fallback;
 }
 
-function loadStoredRadius(): number {
-  try {
-    const stored = window.localStorage.getItem(RADIUS_STORAGE_KEY);
-    const parsed = stored === null ? NaN : Number(stored);
-    if (RADIUS_OPTIONS.some((r) => r.value === parsed)) return parsed;
-  } catch {
-    // localStorage unavailable -- fall back to default.
-  }
-  return DEFAULT_RADIUS;
+const loadStoredFont = makeLoader<string>(
+  FONT_STORAGE_KEY,
+  (stored) => ALL_FONTS.find((f) => f.value === stored)?.value,
+  DEFAULT_FONT,
+);
+
+const loadStoredPalette = makeLoader<Palette>(
+  PALETTE_STORAGE_KEY,
+  (stored) => ALL_PALETTES.find((p) => p.label === stored),
+  DEFAULT_PALETTE,
+);
+
+const loadStoredRadius = makeLoader<number>(
+  RADIUS_STORAGE_KEY,
+  (stored) => RADIUS_OPTIONS.find((r) => String(r.value) === stored)?.value,
+  DEFAULT_RADIUS,
+);
+
+const loadStoredNavMode = makeLoader<NavMode>(
+  NAV_MODE_STORAGE_KEY,
+  (stored) => NAV_MODES.find((m) => m.value === stored)?.value,
+  DEFAULT_NAV_MODE,
+);
+
+function makeTitleStyleLoader(
+  storageKey: string,
+  fallback: TitleStyle,
+): () => TitleStyle {
+  return makeLoader<TitleStyle>(
+    storageKey,
+    (stored) => TITLE_STYLES.find((s) => s.label === stored),
+    fallback,
+  );
 }
 
-function loadStoredNavMode(): NavMode {
-  try {
-    const stored = window.localStorage.getItem(NAV_MODE_STORAGE_KEY);
-    if (NAV_MODES.some((m) => m.value === stored)) return stored as NavMode;
-  } catch {
-    // localStorage unavailable -- fall back to default.
-  }
-  return DEFAULT_NAV_MODE;
+// Layers localStorage persistence on top of the plain makeState -- `set`
+// does both jobs a plain useState setter can't: updating React state and
+// best-effort persisting to localStorage, with only the storage key and
+// serialization differing per preference. `serialize` defaults to the
+// identity function, so it can be omitted when T is already a string.
+function makeLocalStorageState(
+  value: string,
+  setState: (value: string) => void,
+  storageKey: string,
+  serialize?: (value: string) => string,
+): State<string>;
+function makeLocalStorageState<T>(
+  value: T,
+  setState: (value: T) => void,
+  storageKey: string,
+  serialize: (value: T) => string,
+): State<T>;
+function makeLocalStorageState<T>(
+  value: T,
+  setState: (value: T) => void,
+  storageKey: string,
+  serialize: (value: T) => string = (v) => v as string,
+): State<T> {
+  return makeState<T>(value, (next: T) => {
+    setState(next);
+    try {
+      window.localStorage.setItem(storageKey, serialize(next));
+    } catch {
+      // Ignore write failures (private browsing, storage full, etc.).
+    }
+  });
 }
 
 export interface ThemePreferences {
-  font: string;
-  setFont: (value: string) => void;
-  palette: Palette;
-  setPalette: (value: Palette) => void;
-  radius: number;
-  setRadius: (value: number) => void;
-  navMode: NavMode;
-  setNavMode: (value: NavMode) => void;
+  font: State<string>;
+  palette: State<Palette>;
+  radius: State<number>;
+  navMode: State<NavMode>;
+  /** Applied to the summary panel's stat labels. */
+  primaryTitleStyle: State<TitleStyle>;
+  /** Applied to chart-card titles and the Denial-Level Detail heading. */
+  secondaryTitleStyle: State<TitleStyle>;
+}
+
+function makeEffectParams<T>(
+  applyFunc: (x: T) => void,
+  value: T,
+): Parameters<typeof useEffect> {
+  return [
+    () => {
+      applyFunc(value);
+    },
+    [value],
+  ];
 }
 
 export function useThemePreferences(): ThemePreferences {
@@ -72,63 +148,57 @@ export function useThemePreferences(): ThemePreferences {
   const [palette, setPaletteState] = useState<Palette>(loadStoredPalette);
   const [radius, setRadiusState] = useState<number>(loadStoredRadius);
   const [navMode, setNavModeState] = useState<NavMode>(loadStoredNavMode);
+  const [primaryTitleStyle, setPrimaryTitleStyleState] = useState<TitleStyle>(
+    makeTitleStyleLoader(
+      PRIMARY_TITLE_STYLE_STORAGE_KEY,
+      DEFAULT_PRIMARY_TITLE_STYLE,
+    ),
+  );
+  const [secondaryTitleStyle, setSecondaryTitleStyleState] =
+    useState<TitleStyle>(
+      makeTitleStyleLoader(
+        SECONDARY_TITLE_STYLE_STORAGE_KEY,
+        DEFAULT_SECONDARY_TITLE_STYLE,
+      ),
+    );
 
-  useEffect(() => {
-    applyFont(font);
-  }, [font]);
-
-  useEffect(() => {
-    applyPalette(palette);
-  }, [palette]);
-
-  useEffect(() => {
-    applyRadius(radius);
-  }, [radius]);
-
-  function setFont(value: string) {
-    setFontState(value);
-    try {
-      window.localStorage.setItem(FONT_STORAGE_KEY, value);
-    } catch {
-      // Ignore write failures (private browsing, storage full, etc.).
-    }
-  }
-
-  function setPalette(value: Palette) {
-    setPaletteState(value);
-    try {
-      window.localStorage.setItem(PALETTE_STORAGE_KEY, value.label);
-    } catch {
-      // Ignore write failures.
-    }
-  }
-
-  function setRadius(value: number) {
-    setRadiusState(value);
-    try {
-      window.localStorage.setItem(RADIUS_STORAGE_KEY, String(value));
-    } catch {
-      // Ignore write failures.
-    }
-  }
-
-  function setNavMode(value: NavMode) {
-    setNavModeState(value);
-    try {
-      window.localStorage.setItem(NAV_MODE_STORAGE_KEY, value);
-    } catch {
-      // Ignore write failures.
-    }
-  }
+  useEffect(...makeEffectParams(applyFont, font));
+  useEffect(...makeEffectParams(applyPalette, palette));
+  useEffect(...makeEffectParams(applyRadius, radius));
+  useEffect(...makeEffectParams(applyPrimaryTitleStyle, primaryTitleStyle));
+  useEffect(...makeEffectParams(applySecondaryTitleStyle, secondaryTitleStyle));
 
   return {
-    font,
-    setFont,
-    palette,
-    setPalette,
-    radius,
-    setRadius,
-    navMode,
-    setNavMode,
+    font: makeLocalStorageState(font, setFontState, FONT_STORAGE_KEY),
+    palette: makeLocalStorageState<Palette>(
+      palette,
+      setPaletteState,
+      PALETTE_STORAGE_KEY,
+      (value) => value.label,
+    ),
+    radius: makeLocalStorageState<number>(
+      radius,
+      setRadiusState,
+      RADIUS_STORAGE_KEY,
+      (value) => String(value),
+    ),
+    navMode: makeLocalStorageState<NavMode>(
+      navMode,
+      setNavModeState,
+      NAV_MODE_STORAGE_KEY,
+      (value) => value,
+    ),
+    primaryTitleStyle: makeLocalStorageState<TitleStyle>(
+      primaryTitleStyle,
+      setPrimaryTitleStyleState,
+      PRIMARY_TITLE_STYLE_STORAGE_KEY,
+      (value) => value.label,
+    ),
+    secondaryTitleStyle: makeLocalStorageState<TitleStyle>(
+      secondaryTitleStyle,
+      setSecondaryTitleStyleState,
+      SECONDARY_TITLE_STYLE_STORAGE_KEY,
+      (value) => value.label,
+    ),
   };
 }

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Denial, MetricId, metricValue } from '../../types';
 import { CategoricalChartType, CATEGORICAL_CHART_TYPES, useChartType } from '../../chartTypes';
 import ChartTypeSelect from '../select/ChartTypeSelect';
-import { CategoryTotal, ASSUMED_PIE_DIAMETER, widestLabelWidth } from './category/shared';
+import { CategoryTotal, ASSUMED_PIE_DIAMETER, widestLabelWidth, pieChartHeight } from './category/shared';
 import BarView from './category/bar';
 import PieView from './category/pie';
 import TableView from './category/table';
@@ -58,6 +58,15 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 		config.defaultChartType
 	);
 	const categoryLabel = config.categoryLabel ?? config.title;
+	// Width and height need separate formulas -- the label's category name
+	// varies the *width* margin (widestLabelWidth), but its 2-line stack is
+	// a fixed height regardless of content, so the *height* margin doesn't
+	// need to scale with the longest category name the way the width does.
+	// Recharts sizes a "50%" outerRadius off the smaller of the container's
+	// width/height (see PolarUtils.getMaxRadius), so the pie stays a true
+	// circle even though this container is wider than it is tall.
+	const pieMinWidth = ASSUMED_PIE_DIAMETER + widestLabelWidth(chartData) * 2;
+	const pieHeight = pieChartHeight();
 
 	// A single category has nothing to compare against -- omit the card
 	// entirely rather than rendering a chart with just one bar/slice/row.
@@ -65,9 +74,10 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 
 	return (
 		<section
-			className={'chart-card-exhibit'}
+			className={chartType === 'pie' ? 'chart-card-exhibit pie-chart-card' : 'chart-card-exhibit'}
 			style={{
-				backgroundColor: 'white'
+				backgroundColor: 'white',
+				...(chartType === 'pie' ? { maxWidth: pieMinWidth } : null),
 			}}
 			aria-label={config.ariaLabel}
 		>
@@ -91,7 +101,8 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 						chartData={chartData}
 						colors={config.colors}
 						metric={metric}
-						minWidth={ASSUMED_PIE_DIAMETER + widestLabelWidth(chartData) * 2}
+						minWidth={pieMinWidth}
+						height={pieHeight}
 					/>
 				) : chartType === 'table' ? (
 					<TableView chartData={chartData} categoryLabel={categoryLabel} metric={metric} />

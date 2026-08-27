@@ -8,8 +8,8 @@ export default function MetricSelect({ filters }: { filters: DashboardFilters })
 			id="metric-filter"
 			label="Metric"
 			ariaLabel="Metric"
-			value={filters.metric}
-			onChange={(next) => filters.setMetric(next as MetricId)}
+			value={filters.metric.value}
+			onChange={(next) => filters.metric.set(next as MetricId)}
 			options={METRICS.map((m) => ({ value: m.id, label: m.label }))}
 		/>
 	);

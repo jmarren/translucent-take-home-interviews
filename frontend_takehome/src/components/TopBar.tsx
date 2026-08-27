@@ -15,7 +15,7 @@ interface TopBarProps {
  * navigation is something you invoke, not something you look at.
  */
 export default function TopBar({ layoutState }: TopBarProps) {
-	const current = TABS.find((t) => t.id === layoutState.navigation.activeTab);
+	const current = TABS.find((t) => t.id === layoutState.navigation.activeTab.value);
 	const CurrentIcon = current?.icon;
 	const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPod|iPad/.test(navigator.platform ?? navigator.userAgent);
 
@@ -32,7 +32,7 @@ export default function TopBar({ layoutState }: TopBarProps) {
 			<button
 				type="button"
 				className="command-trigger"
-				onClick={() => layoutState.commandPalette.modal.setOpen(true)}
+				onClick={() => layoutState.commandPalette.open.set(true)}
 			>
 				<Search size={16} aria-hidden="true" />
 				<span>Search views, filters, settings...</span>

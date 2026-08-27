@@ -1,4 +1,11 @@
-import { PieChart, Landmark, TrendingUp, Table, Settings, LucideIcon } from 'lucide-react';
+import {
+  PieChart,
+  Landmark,
+  TrendingUp,
+  Table,
+  Settings,
+  LucideIcon,
+} from "lucide-react";
 
 export interface DashboardTab {
   id: string;
@@ -7,18 +14,18 @@ export interface DashboardTab {
 }
 
 export const TABS: DashboardTab[] = [
-  { id: 'breakdown', label: 'Breakdown', icon: PieChart },
-  { id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
-  { id: 'trends', label: 'Trends', icon: TrendingUp },
-  { id: 'records', label: 'Denial Records', icon: Table },
-  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: "breakdown", label: "Breakdown", icon: PieChart },
+  // { id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
+  { id: "trends", label: "Trends", icon: TrendingUp },
+  { id: "records", label: "Denial Records", icon: Table },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 export const TAB_DESCRIPTIONS: Record<string, string> = {
-  'payer-breakdown':
-    'Coming soon: total denied amount by payer, so you can see which insurers are denying the most claims.',
+  "payer-breakdown":
+    "Coming soon: total denied amount by payer, so you can see which insurers are denying the most claims.",
   records:
-    'Coming soon: the full, sortable table of individual denial records currently shown below the chart.',
+    "Coming soon: the full, sortable table of individual denial records currently shown below the chart.",
 };
 
 export const DEFAULT_TAB_ID = TABS[0].id;
