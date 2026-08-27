@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
-import { ALL_FONTS, DEFAULT_FONT, applyFont } from './fonts';
-import { ALL_PALETTES, DEFAULT_PALETTE, Palette, applyPalette } from './palettes';
-import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from './radii';
-import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from './navModes';
+import { useEffect, useState } from "react";
+import { ALL_FONTS, DEFAULT_FONT, applyFont } from "../fonts";
+import {
+  ALL_PALETTES,
+  DEFAULT_PALETTE,
+  Palette,
+  applyPalette,
+} from "../palettes";
+import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from "../radii";
+import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from "../navModes";
 
-const FONT_STORAGE_KEY = 'denial-dashboard:font';
-const PALETTE_STORAGE_KEY = 'denial-dashboard:palette-label';
-const RADIUS_STORAGE_KEY = 'denial-dashboard:radius';
-const NAV_MODE_STORAGE_KEY = 'denial-dashboard:nav-mode';
+const FONT_STORAGE_KEY = "denial-dashboard:font";
+const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";
+const RADIUS_STORAGE_KEY = "denial-dashboard:radius";
+const NAV_MODE_STORAGE_KEY = "denial-dashboard:nav-mode";
 
 function loadStoredFont(): string {
   try {

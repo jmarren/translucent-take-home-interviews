@@ -1,6 +1,13 @@
 import { useMemo } from "react";
-import { Denial, DEPARTMENTS, PAYERS, REASONS, MetricId, metricValue } from "./types";
-import { bucketByMonth, bucketByWeek } from "./trendBuckets";
+import {
+  Denial,
+  DEPARTMENTS,
+  PAYERS,
+  REASONS,
+  MetricId,
+  metricValue,
+} from "../types";
+import { bucketByMonth, bucketByWeek } from "../trendBuckets";
 
 export type TrendDimension = "department" | "reason" | "payer";
 
@@ -51,11 +58,12 @@ function dimensionValue(denial: Denial, dimension: TrendDimension): string {
 
 export function useMultiSeriesTrend(
   data: Denial[],
-  config: MultiSeriesTrendConfig
+  config: MultiSeriesTrendConfig,
 ): MultiSeriesTrendResult {
   return useMemo(() => {
     const seriesNames = seriesNamesFor(config.dimension);
-    const bucketFor = config.granularity === "week" ? bucketByWeek : bucketByMonth;
+    const bucketFor =
+      config.granularity === "week" ? bucketByWeek : bucketByMonth;
 
     const bucketLabels = new Map<string, string>();
     const totals = new Map<string, Map<string, number>>();
@@ -66,18 +74,24 @@ export function useMultiSeriesTrend(
 
       const seriesTotals = totals.get(bucket.key) ?? new Map<string, number>();
       const series = dimensionValue(denial, config.dimension);
-      seriesTotals.set(series, (seriesTotals.get(series) ?? 0) + metricValue(denial, config.metric));
+      seriesTotals.set(
+        series,
+        (seriesTotals.get(series) ?? 0) + metricValue(denial, config.metric),
+      );
       totals.set(bucket.key, seriesTotals);
     }
 
-    const points: MultiSeriesPoint[] = Array.from(bucketLabels, ([bucketKey, bucketLabel]) => {
-      const seriesTotals = totals.get(bucketKey) ?? new Map<string, number>();
-      const point: MultiSeriesPoint = { bucketKey, bucketLabel };
-      for (const name of seriesNames) {
-        point[name] = seriesTotals.get(name) ?? 0;
-      }
-      return point;
-    }).sort((a, b) => (a.bucketKey > b.bucketKey ? 1 : -1));
+    const points: MultiSeriesPoint[] = Array.from(
+      bucketLabels,
+      ([bucketKey, bucketLabel]) => {
+        const seriesTotals = totals.get(bucketKey) ?? new Map<string, number>();
+        const point: MultiSeriesPoint = { bucketKey, bucketLabel };
+        for (const name of seriesNames) {
+          point[name] = seriesTotals.get(name) ?? 0;
+        }
+        return point;
+      },
+    ).sort((a, b) => (a.bucketKey > b.bucketKey ? 1 : -1));
 
     return { points, seriesNames: [...seriesNames] };
   }, [data, config.granularity, config.dimension, config.metric]);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
@@ -7,7 +7,7 @@ import CategoryCard from '../components/CategoryCard';
 import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD } from '../components/BreakdownPage';
 import Layout from '../components/Layout';
 import ComingSoon from '../components/ComingSoon';
-import { DENIALS_QUERY } from '../useDenials';
+import { DENIALS_QUERY } from '../hooks/useDenials';
 import { TABS, TAB_DESCRIPTIONS } from '../tabs';
 import { TAB_PAGE_ELEMENTS } from '../tabPages';
 
@@ -162,19 +162,32 @@ test('selecting a period filters out denials outside that range', async () => {
 	expect(screen.getByText('D4')).toBeInTheDocument();
 });
 
-test('selecting the Denial Count metric switches the summary panel and chart values from dollars to counts', async () => {
+test('selecting the Denial Count metric leaves the summary panel showing dollars and an integer count', async () => {
 	const user = userEvent.setup();
 	renderDashboard(mocks);
 
 	expect(await screen.findByText('D1')).toBeInTheDocument();
 	expect(screen.getByText('Total Denied')).toBeInTheDocument();
 	expect(screen.getByText('$300')).toBeInTheDocument();
+	expect(screen.getByText('Denial Count')).toBeInTheDocument();
+	expect(screen.getByText('2')).toBeInTheDocument();
 
 	await user.click(screen.getByRole('combobox', { name: 'Metric' }));
 	await user.click(await screen.findByRole('option', { name: 'Denial Count' }));
 
-	await waitFor(() => expect(screen.getByText('Total Denials')).toBeInTheDocument());
-	expect(screen.getAllByText('2')).toHaveLength(2); // "Total Denials" and "Denial Count" both read 2 now
+	// The summary panel is metric-independent -- "Total Denied" stays in
+	// dollars and "Denial Count" stays an integer no matter which metric
+	// drives the charts, so a "Total Denials" duplicate never appears.
+	await waitFor(() => expect(screen.getByRole('combobox', { name: 'Metric' })).toHaveTextContent('Denial Count'));
+	expect(screen.queryByText('Total Denials')).not.toBeInTheDocument();
+	expect(screen.getByText('Total Denied')).toBeInTheDocument();
+	expect(screen.getByText('$300')).toBeInTheDocument();
+	// Scoped to the summary panel itself, since the metric dropdown's own
+	// selected-value text and the top-bar filter summary badge now also
+	// happen to say "Denial Count".
+	const summaryPanel = screen.getByLabelText('Summary statistics');
+	expect(within(summaryPanel).getByText('Denial Count')).toBeInTheDocument();
+	expect(within(summaryPanel).getByText('2')).toBeInTheDocument();
 });
 
 const trendsDenials = [

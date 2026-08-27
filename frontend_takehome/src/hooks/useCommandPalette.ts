@@ -6,7 +6,7 @@ import {
   SetStateAction,
   Dispatch,
 } from "react";
-import { buildCommands, Command, CommandContext } from "./commands";
+import { buildCommands, Command, CommandContext } from "../commands";
 
 export interface Modal {
   isOpen: boolean;

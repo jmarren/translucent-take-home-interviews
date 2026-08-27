@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { useMultiSeriesTrend } from "../useMultiSeriesTrend";
+import { useMultiSeriesTrend } from "../hooks/useMultiSeriesTrend";
 import { Denial, DEPARTMENTS } from "../types";
 
 function denial(overrides: Partial<Denial>): Denial {

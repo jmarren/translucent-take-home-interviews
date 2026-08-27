@@ -7,10 +7,10 @@ import PeriodSelect from './PeriodSelect';
 import MetricSelect from './MetricSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
-import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
-import { useDashboardFilters, DashboardFilters } from '../useDashboardFilters';
-import { useNavigation, Navigation } from '../useNavigation';
-import { useCommandPalette, CommandPalette } from '../useCommandPalette';
+import { useThemePreferences, ThemePreferences } from '../hooks/useThemePreferences';
+import { useDashboardFilters, DashboardFilters } from '../hooks/useDashboardFilters';
+import { useNavigation, Navigation } from '../hooks/useNavigation';
+import { useCommandPalette, CommandPalette } from '../hooks/useCommandPalette';
 
 export type LayoutState = {
 	filters: DashboardFilters,

@@ -1,6 +1,6 @@
 import LabeledSelect from './LabeledSelect';
 import { METRICS, MetricId } from '../types';
-import { DashboardFilters } from '../useDashboardFilters';
+import { DashboardFilters } from '../hooks/useDashboardFilters';
 
 export default function MetricSelect({ filters }: { filters: DashboardFilters }) {
 	return (

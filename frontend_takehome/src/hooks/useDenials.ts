@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
-import { gql, useQuery, ApolloError } from '@apollo/client';
-import { Denial } from './types';
-import { filterByPeriod, getReferenceDate } from './periods';
-import { DashboardFilters } from './useDashboardFilters';
+import { useMemo } from "react";
+import { gql, useQuery, ApolloError } from "@apollo/client";
+import { Denial } from "../types";
+import { filterByPeriod, getReferenceDate } from "../periods";
+import { DashboardFilters } from "./useDashboardFilters";
 
 export const DENIALS_QUERY = gql`
   query Denials($department: String, $payer: String, $reason: String) {
@@ -30,7 +30,9 @@ export interface UseDenialsResult {
 }
 
 export function useDenials(filters: DashboardFilters): UseDenialsResult {
-  const { loading, error, data, previousData } = useQuery<{ denials: Denial[] }>(DENIALS_QUERY, {
+  const { loading, error, data, previousData } = useQuery<{
+    denials: Denial[];
+  }>(DENIALS_QUERY, {
     variables: {
       department: filters.department || undefined,
       payer: filters.payer || undefined,
@@ -44,8 +46,14 @@ export function useDenials(filters: DashboardFilters): UseDenialsResult {
 
   const filteredDenials = useMemo(
     () => filterByPeriod(denials, filters.period, referenceDate),
-    [denials, filters.period, referenceDate]
+    [denials, filters.period, referenceDate],
   );
 
-  return { filteredDenials, unfilteredByPeriod: denials, referenceDate, isInitialLoad, error };
+  return {
+    filteredDenials,
+    unfilteredByPeriod: denials,
+    referenceDate,
+    isInitialLoad,
+    error,
+  };
 }

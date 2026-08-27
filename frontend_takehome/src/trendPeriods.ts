@@ -1,7 +1,7 @@
 import { Denial, MetricId, metricValue } from "./types";
 import { PeriodId, periodStart, startOfDay } from "./periods";
 import { bucketByMonth, bucketByWeek } from "./trendBuckets";
-import { TrendGranularity } from "./useMultiSeriesTrend";
+import { TrendGranularity } from "./hooks/useMultiSeriesTrend";
 
 export interface DateRange {
   start: Date;
@@ -26,7 +26,10 @@ function lastDayOfMonth(year: number, month: number): Date {
 // "today" is the most recent denial date in the dataset, same convention as
 // filterByPeriod. "all" has no bounded start, so it has no defined range
 // here -- callers must check hasPreviousPeriod() first.
-export function currentPeriodRange(periodId: PeriodId, referenceDate: Date): DateRange | null {
+export function currentPeriodRange(
+  periodId: PeriodId,
+  referenceDate: Date,
+): DateRange | null {
   const start = periodStart(periodId, referenceDate);
   if (!start) return null;
   return { start, end: startOfDay(referenceDate) };
@@ -43,24 +46,44 @@ export function hasPreviousPeriod(periodId: PeriodId): boolean {
 // The previous period is the same-length window immediately preceding the
 // current one (e.g. "this quarter" -> "last quarter", the 3 calendar months
 // before it -- not "the same 3 months one year back").
-export function previousPeriodRange(periodId: PeriodId, referenceDate: Date): DateRange | null {
+export function previousPeriodRange(
+  periodId: PeriodId,
+  referenceDate: Date,
+): DateRange | null {
   const today = startOfDay(referenceDate);
   switch (periodId) {
     case "last-30": {
       const currentStart = addDays(today, -29);
-      return { start: addDays(currentStart, -30), end: addDays(currentStart, -1) };
+      return {
+        start: addDays(currentStart, -30),
+        end: addDays(currentStart, -1),
+      };
     }
     case "this-month": {
-      const lastMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const lastMonthDate = new Date(
+        today.getFullYear(),
+        today.getMonth() - 1,
+        1,
+      );
       return {
         start: lastMonthDate,
-        end: lastDayOfMonth(lastMonthDate.getFullYear(), lastMonthDate.getMonth()),
+        end: lastDayOfMonth(
+          lastMonthDate.getFullYear(),
+          lastMonthDate.getMonth(),
+        ),
       };
     }
     case "this-quarter": {
       const quarterMonth = Math.floor(today.getMonth() / 3) * 3;
-      const lastQuarterStart = new Date(today.getFullYear(), quarterMonth - 3, 1);
-      const lastQuarterEnd = lastDayOfMonth(lastQuarterStart.getFullYear(), lastQuarterStart.getMonth() + 2);
+      const lastQuarterStart = new Date(
+        today.getFullYear(),
+        quarterMonth - 3,
+        1,
+      );
+      const lastQuarterEnd = lastDayOfMonth(
+        lastQuarterStart.getFullYear(),
+        lastQuarterStart.getMonth() + 2,
+      );
       return { start: lastQuarterStart, end: lastQuarterEnd };
     }
     case "this-year":
@@ -95,7 +118,7 @@ function bucketByPosition(
   denials: Denial[],
   granularity: TrendGranularity,
   dimension: (denial: Denial) => string,
-  metric: MetricId
+  metric: MetricId,
 ): PositionBucket[] {
   const bucketFor = granularity === "week" ? bucketByWeek : bucketByMonth;
   const order: string[] = [];
@@ -109,14 +132,18 @@ function bucketByPosition(
     }
     const seriesTotals = totals.get(bucket.key)!;
     const series = dimension(denial);
-    seriesTotals.set(series, (seriesTotals.get(series) ?? 0) + metricValue(denial, metric));
+    seriesTotals.set(
+      series,
+      (seriesTotals.get(series) ?? 0) + metricValue(denial, metric),
+    );
   }
 
   order.sort();
 
   return order.map((key, index) => ({
     position: index,
-    positionLabel: granularity === "week" ? `Wk ${index + 1}` : `Month ${index + 1}`,
+    positionLabel:
+      granularity === "week" ? `Wk ${index + 1}` : `Month ${index + 1}`,
     totalsBySeries: totals.get(key)!,
   }));
 }
@@ -132,14 +159,24 @@ export function buildPopBuckets(
   referenceDate: Date,
   granularity: TrendGranularity,
   dimension: (denial: Denial) => string,
-  metric: MetricId
+  metric: MetricId,
 ): PopSeriesResult | null {
   const currentRange = currentPeriodRange(periodId, referenceDate);
   const previousRange = previousPeriodRange(periodId, referenceDate);
   if (!currentRange || !previousRange) return null;
 
   return {
-    currentBuckets: bucketByPosition(filterByRange(allDenials, currentRange), granularity, dimension, metric),
-    previousBuckets: bucketByPosition(filterByRange(allDenials, previousRange), granularity, dimension, metric),
+    currentBuckets: bucketByPosition(
+      filterByRange(allDenials, currentRange),
+      granularity,
+      dimension,
+      metric,
+    ),
+    previousBuckets: bucketByPosition(
+      filterByRange(allDenials, previousRange),
+      granularity,
+      dimension,
+      metric,
+    ),
   };
 }

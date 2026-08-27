@@ -1,7 +1,7 @@
 import React from 'react';
 import BreakdownPage from './components/BreakdownPage';
-import SettingsPage from './components/SettingsPage';
 import TrendsPage from './components/TrendsPage';
+import SettingsTab from './components/SettingsTab';
 
 // The single place mapping a tab id to the page element its route renders.
 // Tabs with no entry here fall back to the generic ComingSoon placeholder
@@ -13,5 +13,5 @@ import TrendsPage from './components/TrendsPage';
 export const TAB_PAGE_ELEMENTS: Record<string, React.ReactNode> = {
 	breakdown: <BreakdownPage />,
 	trends: <TrendsPage />,
-	settings: <SettingsPage />,
+	settings: <SettingsTab />,
 };

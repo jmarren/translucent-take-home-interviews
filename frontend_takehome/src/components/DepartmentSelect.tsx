@@ -1,6 +1,6 @@
 import LabeledSelect from './LabeledSelect';
 import { DEPARTMENTS } from '../types';
-import { DashboardFilters } from '../useDashboardFilters';
+import { DashboardFilters } from '../hooks/useDashboardFilters';
 
 const ALL_DEPARTMENTS = '__all__';
 

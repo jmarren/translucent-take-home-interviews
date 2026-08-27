@@ -1,5 +1,5 @@
 import { withMovingAverages } from "../trendMovingAverage";
-import { MultiSeriesPoint } from "../useMultiSeriesTrend";
+import { MultiSeriesPoint } from "../hooks/useMultiSeriesTrend";
 
 function point(bucketKey: string, cardiology: number): MultiSeriesPoint {
   return { bucketKey, bucketLabel: bucketKey, Cardiology: cardiology };

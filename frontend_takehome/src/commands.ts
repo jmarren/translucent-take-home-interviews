@@ -13,9 +13,9 @@ import { PERIODS } from "./periods";
 import { ALL_FONTS } from "./fonts";
 import { ALL_PALETTES } from "./palettes";
 import { RADIUS_OPTIONS } from "./radii";
-import { ThemePreferences } from "./useThemePreferences";
-import { DashboardFilters } from "./useDashboardFilters";
-import { Navigation } from "./useNavigation";
+import { ThemePreferences } from "./hooks/useThemePreferences";
+import { DashboardFilters } from "./hooks/useDashboardFilters";
+import { Navigation } from "./hooks/useNavigation";
 
 export interface Command {
   id: string;

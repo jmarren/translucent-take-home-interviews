@@ -29,6 +29,24 @@ function formatterFor(metric: MetricId) {
 	return metric === 'count' ? count : currency;
 }
 
+// A rough per-character width estimate at the pie label's 15px font-size
+// (avg. ~0.6em per character), used to size layout around the label text
+// without measuring actual glyphs via canvas.
+const PIE_LABEL_FONT_SIZE = 15;
+const PIE_LABEL_CHAR_WIDTH = PIE_LABEL_FONT_SIZE * 0.6;
+
+// The pie itself has no fixed width -- it fills whatever the card gives it
+// (`outerRadius="50%"` of the ResponsiveContainer) -- but the card still
+// needs *some* min-width floor so it doesn't get squeezed smaller than the
+// pie plus its labels can actually fit. This is the assumed pie diameter
+// used for that floor, not a hard cap on how large the pie can render.
+const ASSUMED_PIE_DIAMETER = 240;
+
+function widestLabelWidth(chartData: CategoryTotal[]): number {
+	const widestChars = chartData.reduce((max, d) => Math.max(max, d.category.length), 0);
+	return Math.ceil(widestChars * PIE_LABEL_CHAR_WIDTH);
+}
+
 // Used when a card doesn't supply its own `colors` map -- assigned by
 // position rather than by category value, since a card with no natural
 // per-category identity (e.g. denial reason) has no meaningful way to pin
@@ -139,7 +157,7 @@ function renderPieLabel(total: number) {
 		const { x, y, textAnchor, fill, category, amount } = props;
 		const pct = `${((amount / total) * 100).toFixed(0)}%`;
 		return (
-			<text x={x} y={y} textAnchor={textAnchor} fill={fill} fontSize={18}>
+			<text x={x} y={y} textAnchor={textAnchor} fill={fill} fontSize={PIE_LABEL_FONT_SIZE}>
 				<tspan x={x} dy="-0.3em">{category}</tspan>
 				<tspan x={x} dy="1.2em">{pct}</tspan>
 			</text>
@@ -151,17 +169,21 @@ function PieView({
 	chartData,
 	colors,
 	metric,
+	minWidth,
 }: {
 	chartData: CategoryTotal[];
 	colors?: Record<string, string>;
 	metric: MetricId;
+	minWidth: number;
 }) {
 	const format = formatterFor(metric);
 	const total = useMemo(() => chartData.reduce((sum, d) => sum + d.amount, 0), [chartData]);
+
 	return (
-		<ResponsiveContainer width="100%" aspect={1}>
-			<PieChart margin={{ top: 8, right: 32, left: 32, bottom: 8 }}>
+		<ResponsiveContainer width="100%" minWidth={minWidth} >
+			<PieChart margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
 				<Pie
+					labelLine={false}
 					data={chartData}
 					dataKey="amount"
 					nameKey="category"
@@ -250,7 +272,12 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 				) : chartData.length === 0 ? (
 					<p>No denial data to display.</p>
 				) : chartType === 'pie' ? (
-					<PieView chartData={chartData} colors={config.colors} metric={metric} />
+					<PieView
+						chartData={chartData}
+						colors={config.colors}
+						metric={metric}
+						minWidth={ASSUMED_PIE_DIAMETER + widestLabelWidth(chartData) * 2}
+					/>
 				) : chartType === 'table' ? (
 					<TableView chartData={chartData} categoryLabel={categoryLabel} metric={metric} />
 				) : (

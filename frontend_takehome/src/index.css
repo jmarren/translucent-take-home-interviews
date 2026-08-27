@@ -145,7 +145,7 @@ h2 {
 /* Below this width the 3-up row gets too cramped for a bar/pie chart plus
    its axis labels to stay legible, so every card (including the trend
    card, which is already full-width) drops to one per row instead. */
-@media (max-width: 1549px) {
+@media (max-width: 1000px) {
   .charts-row {
     grid-template-columns: 1fr;
   }

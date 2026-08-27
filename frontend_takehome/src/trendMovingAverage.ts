@@ -1,4 +1,4 @@
-import { MultiSeriesPoint } from "./useMultiSeriesTrend";
+import { MultiSeriesPoint } from "./hooks/useMultiSeriesTrend";
 
 export type MovingAverageWindow = "off" | 3 | 6;
 
@@ -13,7 +13,7 @@ export type MovingAverageWindow = "off" | 3 | 6;
 export function withMovingAverages(
   points: MultiSeriesPoint[],
   seriesNames: string[],
-  window: MovingAverageWindow
+  window: MovingAverageWindow,
 ): MultiSeriesPoint[] {
   if (window === "off") return points;
 

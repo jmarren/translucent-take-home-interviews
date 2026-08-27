@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendDimension, TrendGranularity } from "./useMultiSeriesTrend";
+import { TrendDimension, TrendGranularity } from "./hooks/useMultiSeriesTrend";
 import { MovingAverageWindow } from "./trendMovingAverage";
 
 export interface TrendsPreferences {
@@ -18,7 +18,11 @@ export interface TrendsPreferencesState extends TrendsPreferences {
 
 const STORAGE_PREFIX = "denial-dashboard:trends:";
 
-function loadStored<T extends string>(key: string, valid: readonly T[], fallback: T): T {
+function loadStored<T extends string>(
+  key: string,
+  valid: readonly T[],
+  fallback: T,
+): T {
   try {
     const stored = window.localStorage.getItem(STORAGE_PREFIX + key);
     if (stored && valid.includes(stored as T)) return stored as T;
@@ -39,7 +43,10 @@ function loadStoredBoolean(key: string, fallback: boolean): boolean {
   return fallback;
 }
 
-function loadStoredMovingAverage(key: string, fallback: MovingAverageWindow): MovingAverageWindow {
+function loadStoredMovingAverage(
+  key: string,
+  fallback: MovingAverageWindow,
+): MovingAverageWindow {
   try {
     const stored = window.localStorage.getItem(STORAGE_PREFIX + key);
     if (stored === "off") return "off";
@@ -65,16 +72,16 @@ function writeStored(key: string, value: string) {
 // so these choices survive a reload like every other display preference.
 export function useTrendsPreferences(): TrendsPreferencesState {
   const [dimension, setDimensionState] = useState<TrendDimension>(() =>
-    loadStored("dimension", ["department", "reason", "payer"], "department")
+    loadStored("dimension", ["department", "reason", "payer"], "department"),
   );
   const [granularity, setGranularityState] = useState<TrendGranularity>(() =>
-    loadStored("granularity", ["month", "week"], "month")
+    loadStored("granularity", ["month", "week"], "month"),
   );
   const [popEnabled, setPopEnabledState] = useState<boolean>(() =>
-    loadStoredBoolean("pop-enabled", false)
+    loadStoredBoolean("pop-enabled", false),
   );
-  const [movingAverage, setMovingAverageState] = useState<MovingAverageWindow>(() =>
-    loadStoredMovingAverage("moving-average", "off")
+  const [movingAverage, setMovingAverageState] = useState<MovingAverageWindow>(
+    () => loadStoredMovingAverage("moving-average", "off"),
   );
 
   function setDimension(value: TrendDimension) {
