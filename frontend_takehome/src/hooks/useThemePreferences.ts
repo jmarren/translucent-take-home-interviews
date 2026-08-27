@@ -16,12 +16,19 @@ import {
   applyPrimaryTitleStyle,
   applySecondaryTitleStyle,
 } from "../theme/titleStyles";
+import {
+  CURSOR_STYLES,
+  DEFAULT_CURSOR_STYLE,
+  CursorStyle,
+  applyCursorStyle,
+} from "../theme/cursors";
 import { State, makeState } from "./state";
 
 const FONT_STORAGE_KEY = "denial-dashboard:font";
 const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";
 const RADIUS_STORAGE_KEY = "denial-dashboard:radius";
 const NAV_MODE_STORAGE_KEY = "denial-dashboard:nav-mode";
+const CURSOR_STYLE_STORAGE_KEY = "denial-dashboard:cursor-style";
 const PRIMARY_TITLE_STYLE_STORAGE_KEY =
   "denial-dashboard:primary-title-style-label";
 const SECONDARY_TITLE_STYLE_STORAGE_KEY =
@@ -76,6 +83,12 @@ const loadStoredNavMode = makeLoader<NavMode>(
   DEFAULT_NAV_MODE,
 );
 
+const loadStoredCursorStyle = makeLoader<CursorStyle>(
+  CURSOR_STYLE_STORAGE_KEY,
+  (stored) => CURSOR_STYLES.find((c) => c.value === stored)?.value,
+  DEFAULT_CURSOR_STYLE,
+);
+
 function makeTitleStyleLoader(
   storageKey: string,
   fallback: TitleStyle,
@@ -125,6 +138,7 @@ export interface ThemePreferences {
   palette: State<Palette>;
   radius: State<number>;
   navMode: State<NavMode>;
+  cursorStyle: State<CursorStyle>;
   /** Applied to the summary panel's stat labels. */
   primaryTitleStyle: State<TitleStyle>;
   /** Applied to chart-card titles and the Denial-Level Detail heading. */
@@ -148,6 +162,9 @@ export function useThemePreferences(): ThemePreferences {
   const [palette, setPaletteState] = useState<Palette>(loadStoredPalette);
   const [radius, setRadiusState] = useState<number>(loadStoredRadius);
   const [navMode, setNavModeState] = useState<NavMode>(loadStoredNavMode);
+  const [cursorStyle, setCursorStyleState] = useState<CursorStyle>(
+    loadStoredCursorStyle,
+  );
   const [primaryTitleStyle, setPrimaryTitleStyleState] = useState<TitleStyle>(
     makeTitleStyleLoader(
       PRIMARY_TITLE_STYLE_STORAGE_KEY,
@@ -168,6 +185,16 @@ export function useThemePreferences(): ThemePreferences {
   useEffect(...makeEffectParams(applyPrimaryTitleStyle, primaryTitleStyle));
   useEffect(...makeEffectParams(applySecondaryTitleStyle, secondaryTitleStyle));
 
+  // Depends on `palette` as well as `cursorStyle` -- unlike every other
+  // preference here, the cursor's color is baked into a literal data URI
+  // rather than a CSS variable reference (see cursors.ts), so it has to
+  // be regenerated whenever the palette changes too, not just when the
+  // cursor style itself does. Runs after the palette effect above within
+  // the same commit, so the CSS variables it reads are already current.
+  useEffect(() => {
+    applyCursorStyle(cursorStyle);
+  }, [cursorStyle, palette]);
+
   return {
     font: makeLocalStorageState(font, setFontState, FONT_STORAGE_KEY),
     palette: makeLocalStorageState<Palette>(
@@ -186,6 +213,12 @@ export function useThemePreferences(): ThemePreferences {
       navMode,
       setNavModeState,
       NAV_MODE_STORAGE_KEY,
+      (value) => value,
+    ),
+    cursorStyle: makeLocalStorageState<CursorStyle>(
+      cursorStyle,
+      setCursorStyleState,
+      CURSOR_STYLE_STORAGE_KEY,
       (value) => value,
     ),
     primaryTitleStyle: makeLocalStorageState<TitleStyle>(

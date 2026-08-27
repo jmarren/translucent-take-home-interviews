@@ -2,6 +2,7 @@ import { FONT_GROUPS } from '../theme/fonts';
 import { PALETTE_GROUPS, paletteSwatchGradient } from '../theme/palettes';
 import { RADIUS_OPTIONS } from '../theme/radii';
 import { NAV_MODES, } from '../theme/navModes';
+import { CURSOR_STYLES } from '../theme/cursors';
 import { TITLE_STYLES, TitleStyle } from '../theme/titleStyles';
 import { LayoutState } from './Layout';
 import { useOutletContext } from 'react-router-dom';
@@ -112,6 +113,29 @@ export default function SettingsTab() {
 									style={{ borderRadius: `${r.value}px` }}
 								/>
 								{r.label}
+							</button>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<section className="settings-section" aria-label="Cursor settings">
+				<h2 className="settings-section-title">Cursor</h2>
+				<p className="settings-section-description">
+					Choose the cursor shown while hovering the dashboard.
+				</p>
+				<div className="settings-group">
+					<div className="settings-options">
+						{CURSOR_STYLES.map((style) => (
+							<button
+								key={style.value}
+								type="button"
+								className="settings-option settings-nav-mode-option"
+								aria-pressed={style.value === theme.cursorStyle.value}
+								onClick={() => theme.cursorStyle.set(style.value)}
+							>
+								<span className="settings-nav-mode-label">{style.label}</span>
+								<span className="settings-nav-mode-description">{style.description}</span>
 							</button>
 						))}
 					</div>

@@ -88,7 +88,7 @@ export default function DenialsTable({ data, loading = false }: DenialsTableProp
 	const { headerRef, rowRef, maxHeight } = useCappedTableHeight(loading ? 0 : rows.length);
 
 	return (
-		<div className="denial-records-table-scroll" style={{ maxHeight }}>
+		<div className="denial-records-table-scroll custom-scrollbar" style={{ maxHeight }}>
 			<table>
 				<thead ref={headerRef}>
 					{table.getHeaderGroups().map((headerGroup) => (

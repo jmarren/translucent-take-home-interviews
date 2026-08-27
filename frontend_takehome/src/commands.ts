@@ -7,6 +7,7 @@ import {
   Type,
   Square,
   Heading,
+  MousePointer2,
 } from "lucide-react";
 import { TABS } from "./tabs";
 import { DEPARTMENTS, PAYERS, REASONS, METRICS } from "./types";
@@ -14,6 +15,7 @@ import { PERIODS } from "./periods";
 import { ALL_FONTS } from "./theme/fonts";
 import { ALL_PALETTES } from "./theme/palettes";
 import { RADIUS_OPTIONS } from "./theme/radii";
+import { CURSOR_STYLES } from "./theme/cursors";
 import { TITLE_STYLES } from "./theme/titleStyles";
 import { ThemePreferences } from "./hooks/useThemePreferences";
 import { DashboardFilters } from "./hooks/useDashboardFilters";
@@ -213,6 +215,21 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: radius.value === ctx.theme.radius.value ? "Active" : undefined,
       perform: () => {
         ctx.theme.radius.set(radius.value);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const cursorStyle of CURSOR_STYLES) {
+    commands.push({
+      id: `cursor-style:${cursorStyle.value}`,
+      label: `Cursor: ${cursorStyle.label}`,
+      group: "Appearance — Cursor",
+      icon: MousePointer2,
+      keywords: ["cursor", "pointer", "mouse", "settings"],
+      hint: cursorStyle.value === ctx.theme.cursorStyle.value ? "Active" : undefined,
+      perform: () => {
+        ctx.theme.cursorStyle.set(cursorStyle.value);
         ctx.close();
       },
     });
