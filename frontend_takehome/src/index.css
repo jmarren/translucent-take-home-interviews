@@ -105,6 +105,17 @@ h2 {
   cursor: pointer;
 }
 
+/* Wraps Select.Value (plus the selected option's icon, when it has one) so
+   the icon+text pair can sit flush left of the trigger, independent of the
+   trigger's own space-between (which is between this whole group and the
+   chevron on the far right). */
+.department-select-trigger-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
 .department-select-trigger:hover {
   border-color: var(--border-emphasis);
 }
@@ -128,6 +139,9 @@ h2 {
 }
 
 .department-select-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 400;
@@ -137,8 +151,17 @@ h2 {
   outline: none;
 }
 
+.department-select-item-icon {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
 .department-select-item[data-highlighted] {
   background-color: var(--surface-primary);
+  color: var(--surface-light);
+}
+
+.department-select-item[data-highlighted] .department-select-item-icon {
   color: var(--surface-light);
 }
 
