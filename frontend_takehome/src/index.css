@@ -413,11 +413,12 @@ table {
   width: 100%;
 }
 
-/* Same background/text pairing as .summary-panel's dark fill (--dark-slate-grey)
-   with its label color (--silver), so the Denial-Level Detail table's header
-   reads as the same dark-surface treatment as the summary stats above it. */
+/* Same dark fill as .summary-panel (--dark-slate-grey), but using its
+   higher-contrast value color (#fcfcfb, the big stat numbers) instead of
+   the softer --silver label color, for stronger contrast on the smaller
+   header text. */
 th {
-  color: var(--silver);
+  color: #fcfcfb;
   background-color: var(--dark-slate-grey);
   font-size: 0.75rem;
   font-weight: 600;

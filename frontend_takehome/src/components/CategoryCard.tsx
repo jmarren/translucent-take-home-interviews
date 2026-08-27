@@ -124,7 +124,7 @@ function renderPieLabel(total: number) {
 		const { x, y, textAnchor, fill, category, amount } = props;
 		const pct = `${((amount / total) * 100).toFixed(0)}%`;
 		return (
-			<text x={x} y={y} textAnchor={textAnchor} fill={fill} fontSize={11}>
+			<text x={x} y={y} textAnchor={textAnchor} fill={fill} fontSize={13}>
 				<tspan x={x} dy="-0.3em">{category}</tspan>
 				<tspan x={x} dy="1.2em">{pct}</tspan>
 			</text>
