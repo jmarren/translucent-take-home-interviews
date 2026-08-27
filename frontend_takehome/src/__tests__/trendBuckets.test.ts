@@ -1,4 +1,4 @@
-import { bucketByMonth, bucketByWeek } from "../trendBuckets";
+import { bucketByMonth, bucketByQuarter, bucketByWeek } from "../trendBuckets";
 
 describe("bucketByMonth", () => {
   it("keys and labels a date by its calendar month", () => {
@@ -8,6 +8,20 @@ describe("bucketByMonth", () => {
   it("sorts ascending by key across years", () => {
     const keys = ["2025-01-05", "2024-12-20", "2025-02-01"].map((d) => bucketByMonth(d).key).sort();
     expect(keys).toEqual(["2024-12", "2025-01", "2025-02"]);
+  });
+});
+
+describe("bucketByQuarter", () => {
+  it("keys and labels a date by its calendar quarter", () => {
+    expect(bucketByQuarter("2025-03-14")).toEqual({ key: "2025-Q1", label: "Q1" });
+    expect(bucketByQuarter("2025-04-01")).toEqual({ key: "2025-Q2", label: "Q2" });
+    expect(bucketByQuarter("2025-08-30")).toEqual({ key: "2025-Q3", label: "Q3" });
+    expect(bucketByQuarter("2025-12-31")).toEqual({ key: "2025-Q4", label: "Q4" });
+  });
+
+  it("sorts ascending by key across years", () => {
+    const keys = ["2025-02-01", "2024-11-20", "2025-07-01"].map((d) => bucketByQuarter(d).key).sort();
+    expect(keys).toEqual(["2024-Q4", "2025-Q1", "2025-Q3"]);
   });
 });
 

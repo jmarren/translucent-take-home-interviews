@@ -75,7 +75,7 @@ export function useTrendsPreferences(): TrendsPreferencesState {
     loadStored("dimension", ["department", "reason", "payer"], "department"),
   );
   const [granularity, setGranularityState] = useState<TrendGranularity>(() =>
-    loadStored("granularity", ["month", "week"], "month"),
+    loadStored("granularity", ["month", "quarter", "week"], "month"),
   );
   const [popEnabled, setPopEnabledState] = useState<boolean>(() =>
     loadStoredBoolean("pop-enabled", false),

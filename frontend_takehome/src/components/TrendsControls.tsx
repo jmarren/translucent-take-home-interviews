@@ -13,8 +13,9 @@ const DIMENSION_OPTIONS = [
 ] as const;
 
 const GRANULARITY_OPTIONS = [
-  { value: "month", label: "Monthly" },
   { value: "week", label: "Weekly" },
+  { value: "month", label: "Monthly" },
+  { value: "quarter", label: "Quarterly" },
 ] as const;
 
 const POP_OPTIONS = [

@@ -142,8 +142,19 @@ h2 {
   color: var(--surface-light);
 }
 
+/* flex-wrap, same as .charts-row/.top-bar/.summary-panel below -- without
+   it, the five 200px-min-width filter dropdowns force an unwrapping row
+   (1000px+) that's wider than any mobile viewport. Since nothing else in
+   the layout chain constrains width to the viewport (.dashboard-content's
+   flex: 1 only governs the vertical axis inside .dashboard's column flow),
+   that overflow was forcing the whole page wider than the viewport on
+   mobile, which is what actually made .dashboard-content read as
+   "collapsed" -- the browser zooms the oversized page out to fit, shrinking
+   everything in view together, rather than .dashboard-content itself having
+   a small width. */
 .filter-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 16px;
   margin-bottom: 20px;
@@ -370,14 +381,32 @@ h2 {
   animation: skeleton-pulse 1.6s ease-in-out infinite;
 }
 
+/* Deliberately no flex-grow here. flex-grow always distributes 100% of a
+   flex container's free space to a growing item, with no concept of
+   "only grow as far as this item's own content needs" -- so a
+   flex-grow: 1 card (tried first) grew to fill .dashboard-content's
+   entire remaining column height even for a two-row table, since
+   "leftover space in the page" and "whether this table needs more room"
+   are unrelated quantities to the flex algorithm. Growth instead comes
+   from this being a normal, content-sized block: its natural height
+   already has a ceiling, because its only child
+   (.denial-records-table-scroll) caps its own height once the row count
+   passes a threshold (computed in DenialsTable.tsx from the actual
+   rendered header/row height, not a hand-guessed pixel value -- see
+   MAX_VISIBLE_ROWS there) -- so a small dataset's card sits at its real
+   (small) content height, and a large one grows only up to heading +
+   padding + that computed cap, scrolling internally past it, never
+   stretching further just because the page has more room. */
 .denial-records-section {
   margin-top: 32px;
   background-color: white;
-  /* background-color: rgba(197, 197, 197, 0.2); */
   border-radius: var(--radius);
   padding: 20px 24px;
   border: 1px solid var(--border-muted);
   box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
+  display: flex;
+  flex-direction: column;
+  /* min-height: 500px; */
 }
 
 .denial-records-heading {
@@ -389,13 +418,16 @@ h2 {
   letter-spacing: var(--title-secondary-letter-spacing);
 }
 
-/* Fixed height + internal scroll, independent of row count, so the section
-   occupies identical space whether it's showing skeleton rows, a filtered
-   handful of results, or the full dataset -- final row count isn't knowable
-   before data arrives, so this is the one part of the page that can't match
-   its loading-state height to its loaded-state height any other way. */
+/* max-height is set inline by DenialsTable.tsx (useCappedTableHeight),
+   computed from the actual rendered header/row height times
+   MAX_VISIBLE_ROWS -- not a static value here, since a hand-guessed
+   pixel cap doesn't correspond to a specific row count and drifts out of
+   sync with the real row height (font/line-height changes, zoom, etc.).
+   Below MAX_VISIBLE_ROWS rows, no inline max-height is set at all, so
+   this region -- and .denial-records-section above, which has no
+   flex-grow of its own -- just sizes to its natural (small) content
+   height instead of being stretched or capped. */
 .denial-records-table-scroll {
-  max-height: 480px;
   overflow-y: auto;
 }
 
@@ -467,6 +499,7 @@ h2 {
 
 .trends-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 16px;
   margin-bottom: 20px;
@@ -765,6 +798,7 @@ tbody tr:nth-child(even) {
   align-items: stretch;
   margin-top: 24px;
   flex-grow: 1;
+  min-width: fit-content;
 }
 
 .sidebar {

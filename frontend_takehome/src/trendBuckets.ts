@@ -13,6 +13,13 @@ export function bucketByMonth(dateStr: string): Bucket {
   return { key, label: MONTH_LABELS[monthIndex] ?? key };
 }
 
+export function bucketByQuarter(dateStr: string): Bucket {
+  const year = Number(dateStr.slice(0, 4));
+  const month = Number(dateStr.slice(5, 7)) - 1;
+  const quarter = Math.floor(month / 3) + 1;
+  return { key: `${year}-Q${quarter}`, label: `Q${quarter}` };
+}
+
 // Standard dependency-free ISO-8601 week algorithm: shift to the Thursday of
 // the same week (ISO weeks run Mon-Sun, and a week "belongs" to the year
 // containing its Thursday), then measure how many whole weeks separate that

@@ -33,6 +33,24 @@ describe("useMultiSeriesTrend", () => {
     ]);
   });
 
+  it("sums amount per bucket per series when grouped by quarter", () => {
+    const data: Denial[] = [
+      denial({ department: "Cardiology", amount: 100, date: "2025-01-05" }),
+      denial({ department: "Cardiology", amount: 50, date: "2025-02-20" }),
+      denial({ department: "Neurology", amount: 30, date: "2025-03-10" }),
+      denial({ department: "Cardiology", amount: 20, date: "2025-04-01" }),
+    ];
+
+    const { result } = renderHook(() =>
+      useMultiSeriesTrend(data, { granularity: "quarter", dimension: "department", metric: "amount" })
+    );
+
+    expect(result.current.points).toEqual([
+      expect.objectContaining({ bucketKey: "2025-Q1", bucketLabel: "Q1", Cardiology: 150, Neurology: 30 }),
+      expect.objectContaining({ bucketKey: "2025-Q2", bucketLabel: "Q2", Cardiology: 20, Neurology: 0 }),
+    ]);
+  });
+
   it("uses the fixed canonical series list, not just values present in the data", () => {
     const data: Denial[] = [denial({ department: "Cardiology" })];
 

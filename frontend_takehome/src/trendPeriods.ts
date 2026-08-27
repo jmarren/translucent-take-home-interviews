@@ -1,7 +1,6 @@
 import { Denial, MetricId, metricValue } from "./types";
 import { PeriodId, periodStart, startOfDay } from "./periods";
-import { bucketByMonth, bucketByWeek } from "./trendBuckets";
-import { TrendGranularity } from "./hooks/useMultiSeriesTrend";
+import { TrendGranularity, bucketForGranularity } from "./hooks/useMultiSeriesTrend";
 
 export interface DateRange {
   start: Date;
@@ -109,18 +108,29 @@ export interface PositionBucket {
   totalsBySeries: Map<string, number>;
 }
 
-// Buckets a period's denials by month/week, then re-indexes each bucket by
-// its ordinal position within the period (0, 1, 2...) instead of its
-// absolute calendar key -- this is what lets "month 1 of this quarter" line
-// up with "month 1 of last quarter" on a shared x-axis regardless of which
-// actual months they fall on.
+function positionLabelPrefix(granularity: TrendGranularity): string {
+  switch (granularity) {
+    case "week":
+      return "Wk";
+    case "quarter":
+      return "Quarter";
+    case "month":
+      return "Month";
+  }
+}
+
+// Buckets a period's denials by month/week/quarter, then re-indexes each
+// bucket by its ordinal position within the period (0, 1, 2...) instead of
+// its absolute calendar key -- this is what lets "month 1 of this quarter"
+// line up with "month 1 of last quarter" on a shared x-axis regardless of
+// which actual months they fall on.
 function bucketByPosition(
   denials: Denial[],
   granularity: TrendGranularity,
   dimension: (denial: Denial) => string,
   metric: MetricId,
 ): PositionBucket[] {
-  const bucketFor = granularity === "week" ? bucketByWeek : bucketByMonth;
+  const bucketFor = bucketForGranularity(granularity);
   const order: string[] = [];
   const totals = new Map<string, Map<string, number>>();
 
@@ -140,10 +150,10 @@ function bucketByPosition(
 
   order.sort();
 
+  const prefix = positionLabelPrefix(granularity);
   return order.map((key, index) => ({
     position: index,
-    positionLabel:
-      granularity === "week" ? `Wk ${index + 1}` : `Month ${index + 1}`,
+    positionLabel: `${prefix} ${index + 1}`,
     totalsBySeries: totals.get(key)!,
   }));
 }

@@ -7,11 +7,11 @@ import {
   MetricId,
   metricValue,
 } from "../types";
-import { bucketByMonth, bucketByWeek } from "../trendBuckets";
+import { Bucket, bucketByMonth, bucketByQuarter, bucketByWeek } from "../trendBuckets";
 
 export type TrendDimension = "department" | "reason" | "payer";
 
-export type TrendGranularity = "month" | "week";
+export type TrendGranularity = "month" | "quarter" | "week";
 
 export interface MultiSeriesPoint {
   bucketKey: string;
@@ -56,14 +56,26 @@ function dimensionValue(denial: Denial, dimension: TrendDimension): string {
   }
 }
 
+export function bucketForGranularity(
+  granularity: TrendGranularity,
+): (dateStr: string) => Bucket {
+  switch (granularity) {
+    case "week":
+      return bucketByWeek;
+    case "quarter":
+      return bucketByQuarter;
+    case "month":
+      return bucketByMonth;
+  }
+}
+
 export function useMultiSeriesTrend(
   data: Denial[],
   config: MultiSeriesTrendConfig,
 ): MultiSeriesTrendResult {
   return useMemo(() => {
     const seriesNames = seriesNamesFor(config.dimension);
-    const bucketFor =
-      config.granularity === "week" ? bucketByWeek : bucketByMonth;
+    const bucketFor = bucketForGranularity(config.granularity);
 
     const bucketLabels = new Map<string, string>();
     const totals = new Map<string, Map<string, number>>();
