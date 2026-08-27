@@ -312,6 +312,8 @@ h2 {
   background-color: rgba(197, 197, 197, 0.2);
   border-radius: var(--radius);
   padding: 20px 24px;
+  border: 1px solid var(--silver);
+  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
 }
 
 .denial-records-heading {
@@ -337,10 +339,6 @@ h2 {
   position: sticky;
   top: 0;
   z-index: 1;
-  /* Needs its own opaque background (rather than inheriting th's
-     transparent one) so it still masks body rows scrolling up underneath
-     it while pinned. */
-  background-color: #fcfcfb;
 }
 
 /* Darkens the full row (not just the cell under the cursor) so the eye can
@@ -360,6 +358,8 @@ h2 {
   background-color: var(--dark-slate-grey);
   border-radius: var(--radius);
   overflow: hidden;
+
+  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
 }
 
 .summary-card {
@@ -413,12 +413,12 @@ table {
   width: 100%;
 }
 
-/* Matches .chart-card-table th's treatment (muted label, transparent
-   background) instead of a separate dark-fill/white-text style -- keeps
-   every table in the app on one header language rather than two. */
+/* Same background/text pairing as .summary-panel's dark fill (--dark-slate-grey)
+   with its label color (--silver), so the Denial-Level Detail table's header
+   reads as the same dark-surface treatment as the summary stats above it. */
 th {
-  color: var(--iron-grey);
-  background-color: transparent;
+  color: var(--silver);
+  background-color: var(--dark-slate-grey);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
