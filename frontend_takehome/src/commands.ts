@@ -8,7 +8,7 @@ import {
   Square,
 } from "lucide-react";
 import { TABS } from "./tabs";
-import { DEPARTMENTS, PAYERS, REASONS } from "./types";
+import { DEPARTMENTS, PAYERS, REASONS, METRICS } from "./types";
 import { PERIODS } from "./periods";
 import { ALL_FONTS } from "./fonts";
 import { ALL_PALETTES } from "./palettes";
@@ -149,6 +149,21 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: ctx.filters.period === period.id ? "Active" : undefined,
       perform: () => {
         ctx.filters.setPeriod(period.id);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const metric of METRICS) {
+    commands.push({
+      id: `filter:metric:${metric.id}`,
+      label: `Metric: ${metric.label}`,
+      group: "Filter by Metric",
+      icon: Filter,
+      keywords: ["metric", "amount", "count", "visualize"],
+      hint: ctx.filters.metric === metric.id ? "Active" : undefined,
+      perform: () => {
+        ctx.filters.setMetric(metric.id);
         ctx.close();
       },
     });

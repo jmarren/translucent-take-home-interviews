@@ -9,7 +9,7 @@ export interface DashboardTab {
 export const TABS: DashboardTab[] = [
   { id: 'breakdown', label: 'Breakdown', icon: PieChart },
   { id: 'payer-breakdown', label: 'Payer Breakdown', icon: Landmark },
-  { id: 'trends', label: 'Trends Over Time', icon: TrendingUp },
+  { id: 'trends', label: 'Trends', icon: TrendingUp },
   { id: 'records', label: 'Denial Records', icon: Table },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
@@ -17,8 +17,6 @@ export const TABS: DashboardTab[] = [
 export const TAB_DESCRIPTIONS: Record<string, string> = {
   'payer-breakdown':
     'Coming soon: total denied amount by payer, so you can see which insurers are denying the most claims.',
-  trends:
-    'Coming soon: denial volume and dollar amount over time, to spot spikes and seasonal patterns.',
   records:
     'Coming soon: the full, sortable table of individual denial records currently shown below the chart.',
 };

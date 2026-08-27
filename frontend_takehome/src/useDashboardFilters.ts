@@ -1,17 +1,20 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PeriodId, isValidPeriodId, DEFAULT_PERIOD, PERIODS } from './periods';
+import { MetricId, isValidMetricId, DEFAULT_METRIC, METRICS } from './types';
 
 export interface DashboardFilters {
 	department: string;
 	payer: string;
 	reason: string;
 	period: PeriodId;
+	metric: MetricId;
 	summary: string | null;
 	setDepartment: (value: string) => void;
 	setPayer: (value: string) => void;
 	setReason: (value: string) => void;
 	setPeriod: (value: PeriodId) => void;
+	setMetric: (value: MetricId) => void;
 }
 
 // Department/period are URL search params rather than route state, since
@@ -26,6 +29,8 @@ export function useDashboardFilters(): DashboardFilters {
 	const reason = searchParams.get('reason') ?? '';
 	const periodParam = searchParams.get('period');
 	const period: PeriodId = isValidPeriodId(periodParam) ? periodParam : DEFAULT_PERIOD;
+	const metricParam = searchParams.get('metric');
+	const metric: MetricId = isValidMetricId(metricParam) ? metricParam : DEFAULT_METRIC;
 
 	const summary = useMemo(() => {
 		const parts: string[] = [];
@@ -35,8 +40,11 @@ export function useDashboardFilters(): DashboardFilters {
 		if (period !== DEFAULT_PERIOD) {
 			parts.push(PERIODS.find((p) => p.id === period)?.label ?? period);
 		}
+		if (metric !== DEFAULT_METRIC) {
+			parts.push(METRICS.find((m) => m.id === metric)?.label ?? metric);
+		}
 		return parts.length > 0 ? parts.join(' · ') : null;
-	}, [department, payer, reason, period]);
+	}, [department, payer, reason, period, metric]);
 
 	function setDepartment(value: string) {
 		const next = new URLSearchParams(searchParams);
@@ -66,5 +74,24 @@ export function useDashboardFilters(): DashboardFilters {
 		setSearchParams(next, { replace: true });
 	}
 
-	return { department, payer, reason, period, summary, setDepartment, setPayer, setReason, setPeriod };
+	function setMetric(value: MetricId) {
+		const next = new URLSearchParams(searchParams);
+		if (value !== DEFAULT_METRIC) next.set('metric', value);
+		else next.delete('metric');
+		setSearchParams(next, { replace: true });
+	}
+
+	return {
+		department,
+		payer,
+		reason,
+		period,
+		metric,
+		summary,
+		setDepartment,
+		setPayer,
+		setReason,
+		setPeriod,
+		setMetric,
+	};
 }

@@ -11,7 +11,7 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import { Denial } from '../types';
+import { Denial, MetricId, metricValue } from '../types';
 import { CategoricalChartType, CATEGORICAL_CHART_TYPES, useChartType } from '../chartTypes';
 import ChartTypeSelect from './ChartTypeSelect';
 
@@ -23,11 +23,17 @@ interface CategoryTotal {
 const currency = (value: number) =>
 	`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
+const count = (value: number) => value.toLocaleString();
+
+function formatterFor(metric: MetricId) {
+	return metric === 'count' ? count : currency;
+}
+
 // Used when a card doesn't supply its own `colors` map -- assigned by
 // position rather than by category value, since a card with no natural
 // per-category identity (e.g. denial reason) has no meaningful way to pin
 // a specific color to a specific value.
-const DEFAULT_SLICE_COLORS = [
+export const DEFAULT_SLICE_COLORS = [
 	'#5b7fa6', '#2c423f', '#4c5b61', '#8a5a44', '#b08d3e', '#829191', '#949b96', '#c5c5c5',
 ];
 
@@ -56,19 +62,24 @@ interface CategoryCardProps {
 	data: Denial[];
 	loading?: boolean;
 	config: CategoryCardConfig;
+	metric: MetricId;
 }
 
 const FALLBACK_COLOR = '#949b96'; // --grey-olive-2
 
-function useCategoryTotals(data: Denial[], groupBy: (denial: Denial) => string): CategoryTotal[] {
+function useCategoryTotals(
+	data: Denial[],
+	groupBy: (denial: Denial) => string,
+	metric: MetricId
+): CategoryTotal[] {
 	return useMemo(() => {
 		const totals = new Map<string, number>();
 		for (const d of data) {
 			const category = groupBy(d);
-			totals.set(category, (totals.get(category) ?? 0) + d.amount);
+			totals.set(category, (totals.get(category) ?? 0) + metricValue(d, metric));
 		}
 		return Array.from(totals, ([category, amount]) => ({ category, amount }));
-	}, [data, groupBy]);
+	}, [data, groupBy, metric]);
 }
 
 function colorFor(category: string, index: number, colors?: Record<string, string>): string {
@@ -80,11 +91,15 @@ function BarView({
 	chartData,
 	colors,
 	wide,
+	metric,
 }: {
 	chartData: CategoryTotal[];
 	colors?: Record<string, string>;
 	wide?: boolean;
+	metric: MetricId;
 }) {
+	const format = formatterFor(metric);
+	const metricLabel = metric === 'count' ? 'Denial count' : 'Denied amount';
 	return (
 		// <div style={{ width: '100%', flex: 'stretch', minHeight: 0 }}>
 		<ResponsiveContainer width="100%" >
@@ -97,12 +112,12 @@ function BarView({
 				<CartesianGrid strokeDasharray="3 3" horizontal={false} />
 				<XAxis
 					type="number"
-					tickFormatter={currency}
+					tickFormatter={format}
 					domain={[0, (dataMax: number) => dataMax * 1.15]}
 				/>
 				<YAxis type="category" dataKey="category" width={wide ? 140 : 120} tick={{ fontSize: 13 }} />
-				<Tooltip formatter={(value: number) => [currency(value), 'Total amount']} />
-				<Bar dataKey="amount" name="Denied amount" radius={[0, 3, 3, 0]}>
+				<Tooltip formatter={(value: number) => [format(value), metricLabel]} />
+				<Bar dataKey="amount" name={metricLabel} radius={[0, 3, 3, 0]}>
 					{chartData.map((entry, index) => (
 						<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
 					))}
@@ -132,7 +147,16 @@ function renderPieLabel(total: number) {
 	};
 }
 
-function PieView({ chartData, colors }: { chartData: CategoryTotal[]; colors?: Record<string, string> }) {
+function PieView({
+	chartData,
+	colors,
+	metric,
+}: {
+	chartData: CategoryTotal[];
+	colors?: Record<string, string>;
+	metric: MetricId;
+}) {
+	const format = formatterFor(metric);
 	const total = useMemo(() => chartData.reduce((sum, d) => sum + d.amount, 0), [chartData]);
 	return (
 		<ResponsiveContainer width="100%" aspect={1}>
@@ -150,28 +174,40 @@ function PieView({ chartData, colors }: { chartData: CategoryTotal[]; colors?: R
 						<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
 					))}
 				</Pie>
-				<Tooltip formatter={(value: number, _name, item) => [currency(value), item?.payload?.category]} />
+				<Tooltip formatter={(value: number, _name, item) => [format(value), item?.payload?.category]} />
 			</PieChart>
 		</ResponsiveContainer>
 	);
 }
 
-function TableView({ chartData, categoryLabel }: { chartData: CategoryTotal[]; categoryLabel: string }) {
+function TableView({
+	chartData,
+	categoryLabel,
+	metric,
+}: {
+	chartData: CategoryTotal[];
+	categoryLabel: string;
+	metric: MetricId;
+}) {
+	const format = formatterFor(metric);
+	const metricLabel = metric === 'count' ? 'Denial count' : 'Total amount';
 	const sorted = useMemo(() => [...chartData].sort((a, b) => b.amount - a.amount), [chartData]);
 	return (
 		<table className="chart-card-table">
-			<caption className="visually-hidden">Total denied amount by {categoryLabel.toLowerCase()}</caption>
+			<caption className="visually-hidden">
+				{metricLabel} by {categoryLabel.toLowerCase()}
+			</caption>
 			<thead>
 				<tr>
 					<th scope="col">{categoryLabel}</th>
-					<th scope="col">Total amount</th>
+					<th scope="col">{metricLabel}</th>
 				</tr>
 			</thead>
 			<tbody>
 				{sorted.map((row) => (
 					<tr key={row.category}>
 						<td>{row.category}</td>
-						<td>{currency(row.amount)}</td>
+						<td>{format(row.amount)}</td>
 					</tr>
 				))}
 			</tbody>
@@ -179,8 +215,8 @@ function TableView({ chartData, categoryLabel }: { chartData: CategoryTotal[]; c
 	);
 }
 
-export default function CategoryCard({ data, loading = false, config }: CategoryCardProps) {
-	const chartData = useCategoryTotals(data, config.groupBy);
+export default function CategoryCard({ data, loading = false, config, metric }: CategoryCardProps) {
+	const chartData = useCategoryTotals(data, config.groupBy, metric);
 	const [chartType, setChartType] = useChartType<CategoricalChartType>(
 		config.chartTypeKey,
 		CATEGORICAL_CHART_TYPES,
@@ -190,7 +226,10 @@ export default function CategoryCard({ data, loading = false, config }: Category
 
 	return (
 		<section
-			className={'reason-chart-card chart-card-exhibit'}
+			className={'chart-card-exhibit'}
+			style={{
+				backgroundColor: 'white'
+			}}
 			aria-label={config.ariaLabel}
 		>
 			<div className="chart-card-header">
@@ -211,11 +250,11 @@ export default function CategoryCard({ data, loading = false, config }: Category
 				) : chartData.length === 0 ? (
 					<p>No denial data to display.</p>
 				) : chartType === 'pie' ? (
-					<PieView chartData={chartData} colors={config.colors} />
+					<PieView chartData={chartData} colors={config.colors} metric={metric} />
 				) : chartType === 'table' ? (
-					<TableView chartData={chartData} categoryLabel={categoryLabel} />
+					<TableView chartData={chartData} categoryLabel={categoryLabel} metric={metric} />
 				) : (
-					<BarView chartData={chartData} colors={config.colors} />
+					<BarView chartData={chartData} colors={config.colors} wide={config.wide} metric={metric} />
 				)}
 			</div>
 			<p className="chart-card-caption">{config.caption}</p>

@@ -19,6 +19,12 @@ export const DENIALS_QUERY = gql`
 
 export interface UseDenialsResult {
   filteredDenials: Denial[];
+  /** Same department/payer/reason-filtered set as `filteredDenials`, but
+   *  before the period filter is applied -- needed by period-over-period
+   *  comparisons, which look outside the current period's window at the
+   *  preceding one. */
+  unfilteredByPeriod: Denial[];
+  referenceDate: Date;
   isInitialLoad: boolean;
   error: ApolloError | undefined;
 }
@@ -34,11 +40,12 @@ export function useDenials(filters: DashboardFilters): UseDenialsResult {
 
   const denials = data?.denials ?? previousData?.denials ?? [];
   const isInitialLoad = loading && !previousData && !data;
+  const referenceDate = useMemo(() => getReferenceDate(denials), [denials]);
 
-  const filteredDenials = useMemo(() => {
-    const referenceDate = getReferenceDate(denials);
-    return filterByPeriod(denials, filters.period, referenceDate);
-  }, [denials, filters.period]);
+  const filteredDenials = useMemo(
+    () => filterByPeriod(denials, filters.period, referenceDate),
+    [denials, filters.period, referenceDate]
+  );
 
-  return { filteredDenials, isInitialLoad, error };
+  return { filteredDenials, unfilteredByPeriod: denials, referenceDate, isInitialLoad, error };
 }

@@ -4,6 +4,7 @@ import DepartmentSelect from './DepartmentSelect';
 import PayerSelect from './PayerSelect';
 import ReasonSelect from './ReasonSelect';
 import PeriodSelect from './PeriodSelect';
+import MetricSelect from './MetricSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
 import { useThemePreferences, ThemePreferences } from '../useThemePreferences';
@@ -79,6 +80,7 @@ function MainContent(layoutState: LayoutState) {
 					<PayerSelect filters={layoutState.filters} />
 					<ReasonSelect filters={layoutState.filters} />
 					<PeriodSelect filters={layoutState.filters} />
+					<MetricSelect filters={layoutState.filters} />
 				</div>
 			)}
 			<Outlet context={layoutState} />

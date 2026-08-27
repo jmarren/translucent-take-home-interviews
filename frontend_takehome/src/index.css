@@ -311,7 +311,8 @@ h2 {
 
 .denial-records-section {
   margin-top: 32px;
-  background-color: rgba(197, 197, 197, 0.2);
+  background-color: white;
+  /* background-color: rgba(197, 197, 197, 0.2); */
   border-radius: var(--radius);
   padding: 20px 24px;
   border: 1px solid var(--silver);
@@ -390,6 +391,82 @@ h2 {
 
 .summary-card-value-text {
   font-size: 1.10rem;
+}
+
+.trends-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.trends-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trends-chart-card {
+  height: 640px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--silver);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
+  background-color: white;
+}
+
+.trends-chart-card-body {
+  box-sizing: border-box;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.trend-delta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.trend-delta-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  background-color: var(--dark-slate-grey);
+  border-radius: var(--radius-sm);
+}
+
+.trend-delta-chip-headline {
+  background-color: var(--iron-grey);
+}
+
+.trend-delta-chip-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--silver);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trend-delta-chip-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fcfcfb;
+}
+
+.trend-delta-up {
+  color: #7fb08a;
+}
+
+.trend-delta-down {
+  color: #d98a7a;
 }
 
 /* The trend card now sits inside .charts-row alongside the bar/pie charts,
@@ -573,7 +650,8 @@ tbody tr:nth-child(even) {
 .dashboard-content {
   margin: 24px 24px;
   padding: 24px 32px;
-  background-color: #fcfcfb;
+  background-color: #f0f2f0;
+  /* background-color: #fcfcfb; */
   border-radius: var(--radius);
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
   position: relative;

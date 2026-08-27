@@ -36,19 +36,19 @@ function renderDashboard(mocks: MockedResponse[], initialPath = '/breakdown') {
 }
 
 test('renders chart title', () => {
-	render(<CategoryCard data={[]} config={REASON_CARD} />);
+	render(<CategoryCard data={[]} config={REASON_CARD} metric="amount" />);
 	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
-	render(<CategoryCard data={[]} config={DEPARTMENT_CARD} />);
+	render(<CategoryCard data={[]} config={DEPARTMENT_CARD} metric="amount" />);
 	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders payer pie chart title', () => {
-	render(<CategoryCard data={[]} config={PAYER_CARD} />);
+	render(<CategoryCard data={[]} config={PAYER_CARD} metric="amount" />);
 	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
 });
@@ -160,6 +160,107 @@ test('selecting a period filters out denials outside that range', async () => {
 
 	await waitFor(() => expect(screen.queryByText('D3')).not.toBeInTheDocument());
 	expect(screen.getByText('D4')).toBeInTheDocument();
+});
+
+test('selecting the Denial Count metric switches the summary panel and chart values from dollars to counts', async () => {
+	const user = userEvent.setup();
+	renderDashboard(mocks);
+
+	expect(await screen.findByText('D1')).toBeInTheDocument();
+	expect(screen.getByText('Total Denied')).toBeInTheDocument();
+	expect(screen.getByText('$300')).toBeInTheDocument();
+
+	await user.click(screen.getByRole('combobox', { name: 'Metric' }));
+	await user.click(await screen.findByRole('option', { name: 'Denial Count' }));
+
+	await waitFor(() => expect(screen.getByText('Total Denials')).toBeInTheDocument());
+	expect(screen.getAllByText('2')).toHaveLength(2); // "Total Denials" and "Denial Count" both read 2 now
+});
+
+const trendsDenials = [
+	{ __typename: 'Denial', id: 'D5', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
+	{ __typename: 'Denial', id: 'D6', department: 'Neurology', amount: 200, reason: 'Missing info', date: '2024-02-01', payer: 'Cigna' },
+];
+
+const trendsMocks: MockedResponse[] = [
+	{
+		request: { query: DENIALS_QUERY, variables: { department: undefined, payer: undefined, reason: undefined } },
+		result: { data: { denials: trendsDenials } },
+	},
+];
+
+test('navigating to Trends renders the real page, not the Coming Soon placeholder', async () => {
+	renderDashboard(trendsMocks, '/trends');
+
+	expect(await screen.findByRole('heading', { name: 'Trends' })).toBeInTheDocument();
+	expect(screen.queryByText(/coming soon/i)).not.toBeInTheDocument();
+});
+
+test('switching the Trends dimension picker changes which values are charted', async () => {
+	const user = userEvent.setup();
+	renderDashboard(trendsMocks, '/trends');
+
+	await screen.findByRole('heading', { name: 'Trends' });
+	expect(screen.getByText(/split by department/i)).toBeInTheDocument();
+
+	await user.click(screen.getByRole('combobox', { name: /dimension to compare over time/i }));
+	await user.click(await screen.findByRole('option', { name: 'Payer' }));
+
+	await waitFor(() => expect(screen.getByText(/split by payer/i)).toBeInTheDocument());
+});
+
+test('the compare-to-previous-period toggle is disabled when the period filter is "All Time"', async () => {
+	renderDashboard(trendsMocks, '/trends');
+
+	await screen.findByRole('heading', { name: 'Trends' });
+	const popToggle = screen.getByRole('combobox', { name: /compare to previous period/i });
+	expect(popToggle).toHaveAttribute('data-disabled');
+});
+
+test('the compare-to-previous-period toggle is enabled once a specific period is selected', async () => {
+	const user = userEvent.setup();
+	renderDashboard(trendsMocks, '/trends');
+
+	await screen.findByRole('heading', { name: 'Trends' });
+
+	await user.click(screen.getByRole('combobox', { name: 'Period' }));
+	await user.click(await screen.findByRole('option', { name: 'This Year' }));
+
+	await waitFor(() =>
+		expect(screen.getByRole('combobox', { name: /compare to previous period/i })).not.toHaveAttribute(
+			'data-disabled'
+		)
+	);
+});
+
+test('selecting a moving-average window shows the caption explaining the smoothing', async () => {
+	const user = userEvent.setup();
+	renderDashboard(trendsMocks, '/trends');
+
+	await screen.findByRole('heading', { name: 'Trends' });
+	expect(screen.queryByText(/period moving average/i)).not.toBeInTheDocument();
+
+	await user.click(screen.getByRole('combobox', { name: /moving average window/i }));
+	await user.click(await screen.findByRole('option', { name: '3-period' }));
+
+	await waitFor(() => expect(screen.getByText(/3-period moving average/i)).toBeInTheDocument());
+});
+
+test('the moving-average control is disabled while comparing to the previous period', async () => {
+	const user = userEvent.setup();
+	renderDashboard(trendsMocks, '/trends');
+
+	await screen.findByRole('heading', { name: 'Trends' });
+
+	await user.click(screen.getByRole('combobox', { name: 'Period' }));
+	await user.click(await screen.findByRole('option', { name: 'This Year' }));
+
+	await user.click(screen.getByRole('combobox', { name: /compare to previous period/i }));
+	await user.click(await screen.findByRole('option', { name: 'On' }));
+
+	await waitFor(() =>
+		expect(screen.getByRole('combobox', { name: /moving average window/i })).toHaveAttribute('data-disabled')
+	);
 });
 
 test('Cmd+K opens the command palette', async () => {

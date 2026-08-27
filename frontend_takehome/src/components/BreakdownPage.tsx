@@ -14,7 +14,7 @@ import { LayoutState } from './Layout';
 // glance, and worse for colorblind users -- not safe as 6 distinct
 // categorical pie slices. These extra hues stay muted/low-saturation to
 // match the app's aesthetic rather than introducing bright, clashing colors.
-const DEPARTMENT_COLORS: Record<string, string> = {
+export const DEPARTMENT_COLORS: Record<string, string> = {
   Cardiology: '#2c423f', // --dark-slate-grey
   Neurology: '#4c5b61', // --iron-grey
   Oncology: '#8a5a44', // muted terracotta
@@ -25,7 +25,7 @@ const DEPARTMENT_COLORS: Record<string, string> = {
 
 // Same reasoning as DEPARTMENT_COLORS, using a distinct set of hues so the
 // two pie cards don't visually alias each other when sitting side by side.
-const PAYER_COLORS: Record<string, string> = {
+export const PAYER_COLORS: Record<string, string> = {
   Medicare: '#2c423f', // --dark-slate-grey
   Humana: '#6b4d6b', // muted plum
   Cigna: '#4c5b61', // --iron-grey
@@ -40,7 +40,7 @@ export const REASON_CARD: CategoryCardConfig = {
   categoryLabel: 'Reason',
   ariaLabel: 'Denial breakdown chart',
   chartTypeAriaLabel: 'Denial breakdown chart type',
-  caption: 'Total denied dollars grouped by stated denial reason.',
+  caption: 'Grouped by stated denial reason.',
   groupBy: (d) => d.reason,
   wide: true,
 };
@@ -51,7 +51,7 @@ export const DEPARTMENT_CARD: CategoryCardConfig = {
   title: 'Departments',
   ariaLabel: 'Denial breakdown by department chart',
   chartTypeAriaLabel: 'Dept. breakdown chart type',
-  caption: 'Total denied dollars grouped by department, filed vs. total.',
+  caption: 'Grouped by department, filed vs. total.',
   groupBy: (d) => d.department,
   colors: DEPARTMENT_COLORS,
 };
@@ -62,7 +62,7 @@ export const PAYER_CARD: CategoryCardConfig = {
   title: 'Payers',
   ariaLabel: 'Denial breakdown by payer chart',
   chartTypeAriaLabel: 'Insurer breakdown chart type',
-  caption: 'Total denied dollars grouped by payer, filed vs. total.',
+  caption: 'Grouped by payer, filed vs. total.',
   groupBy: (d) => d.payer,
   colors: PAYER_COLORS,
 };
@@ -71,9 +71,9 @@ const TREND_CARD: TimeSeriesCardConfig = {
   chartTypeKey: 'trend',
   defaultChartType: 'area',
   title: 'Trend',
-  ariaLabel: 'Denied amount trend over time',
+  ariaLabel: 'Denial trend over time',
   chartTypeAriaLabel: 'Chart type for Trend',
-  caption: 'Monthly denied dollar total across the filtered range.',
+  caption: 'Monthly total across the filtered range.',
 };
 
 export default function BreakdownPage() {
@@ -84,12 +84,12 @@ export default function BreakdownPage() {
 
 	return (
 		<>
-			<SummaryStats data={filteredDenials} />
+			<SummaryStats data={filteredDenials} metric={filters.metric} />
 			<div className="charts-row">
-				<CategoryCard data={filteredDenials} loading={isInitialLoad} config={REASON_CARD} />
-				<CategoryCard data={filteredDenials} loading={isInitialLoad} config={DEPARTMENT_CARD} />
-				<CategoryCard data={filteredDenials} loading={isInitialLoad} config={PAYER_CARD} />
-				<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} />
+				<CategoryCard data={filteredDenials} loading={isInitialLoad} config={REASON_CARD} metric={filters.metric} />
+				<CategoryCard data={filteredDenials} loading={isInitialLoad} config={DEPARTMENT_CARD} metric={filters.metric} />
+				<CategoryCard data={filteredDenials} loading={isInitialLoad} config={PAYER_CARD} metric={filters.metric} />
+				<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric} />
 			</div>
 			<div className="denial-records-section">
 				<h2 className="denial-records-heading">Denial-Level Detail</h2>

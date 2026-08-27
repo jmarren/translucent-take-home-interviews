@@ -11,6 +11,7 @@ interface ChartTypeSelectProps<T extends string> {
   value: T;
   options: ChartTypeSelectOption<T>[];
   onChange: (value: T) => void;
+  disabled?: boolean;
 }
 
 // A compact, icon-trigger variant of the Radix Select used for the filter
@@ -26,9 +27,10 @@ export default function ChartTypeSelect<T extends string>({
   value,
   options,
   onChange,
+  disabled,
 }: ChartTypeSelectProps<T>) {
   return (
-    <Select.Root value={value} onValueChange={(v) => onChange(v as T)}>
+    <Select.Root value={value} onValueChange={(v) => onChange(v as T)} disabled={disabled}>
       <Select.Trigger className="chart-type-select-trigger" aria-label={ariaLabel}>
         <Select.Value />
         <Select.Icon className="chart-type-select-icon">▾</Select.Icon>

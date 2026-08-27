@@ -16,11 +16,11 @@ export function isValidPeriodId(id: string | null): id is PeriodId {
   return !!id && PERIODS.some((p) => p.id === id);
 }
 
-function startOfDay(d: Date): Date {
+export function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-function periodStart(periodId: PeriodId, referenceDate: Date): Date | null {
+export function periodStart(periodId: PeriodId, referenceDate: Date): Date | null {
   const today = startOfDay(referenceDate);
   switch (periodId) {
     case 'last-30': {
