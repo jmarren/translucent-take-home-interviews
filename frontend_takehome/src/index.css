@@ -118,14 +118,17 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* 3 category cards across the top row, with the trend card (see
-   .trend-sparkline-card below) spanning the full width of its own row
-   underneath -- explicit columns rather than flex-wrap since the trend
-   card's span needs a real grid to lock onto, not just "whatever's left". */
+/* Category cards flow left-to-right and wrap onto a new line once they no
+   longer fit at their minimum comfortable width (see `.charts-row > section`
+   below) -- flex-wrap rather than a fixed grid + breakpoint, so the layout
+   adapts continuously to the available width instead of jumping between two
+   hardcoded states. The trend card (`.trend-sparkline-card`) always forces
+   its own line via `flex-basis: 100%`, both before and after it, regardless
+   of how many category cards share the row(s) above it. */
 .charts-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
   gap: 24px;
 }
 
@@ -138,17 +141,16 @@ h2 {
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
 }
 
-.charts-row > .trend-sparkline-card {
-  grid-column: 1 / -1;
+/* Category cards (bar/pie/table): grow/shrink to share the row, but never
+   below the width a pie chart's own min-width (see CategoryCard.tsx's
+   ASSUMED_PIE_DIAMETER) needs to keep its slice labels legible -- once 3
+   cards can't all fit at that minimum, one wraps to the next line. */
+.charts-row > section:not(.trend-sparkline-card) {
+  flex: 1 1 360px;
 }
 
-/* Below this width the 3-up row gets too cramped for a bar/pie chart plus
-   its axis labels to stay legible, so every card (including the trend
-   card, which is already full-width) drops to one per row instead. */
-@media (max-width: 1000px) {
-  .charts-row {
-    grid-template-columns: 1fr;
-  }
+.charts-row > .trend-sparkline-card {
+  flex: 1 1 100%;
 }
 
 
@@ -651,8 +653,7 @@ tbody tr:nth-child(even) {
   margin: 24px 24px;
   padding: 24px 32px;
   background-color: #f0f2f0;
-  /* background-color: #fcfcfb; */
-  border-radius: var(--radius);
+  border-radius: var(--radius) 0 0 0;
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
   position: relative;
   z-index: 1;
@@ -674,7 +675,7 @@ tbody tr:nth-child(even) {
   background-color: var(--beige);
   margin: 0 0 0 24px;
   padding: 24px 32px 24px 16px;
-  border-radius: var(--radius);
+  border-radius: var(--radius) var(--radius) 0 0;
   position: relative;
   z-index: 0;
 }

@@ -1,11 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Command } from 'cmdk';
 import { Search } from 'lucide-react';
 import { LayoutState } from './Layout';
 
-interface CommandPaletteProps {
-	layoutState: LayoutState;
-}
 
 /**
  * The dashboard's primary navigation surface. `Command.Dialog` (cmdk) wraps a Radix
@@ -13,7 +10,7 @@ interface CommandPaletteProps {
  * and the dialog/combobox/listbox ARIA wiring all come for free -- we only own the
  * visual chrome and the command list itself.
  */
-export default function CommandPalette({ layoutState }: CommandPaletteProps) {
+export default function CommandPalette({ layoutState }: { layoutState: LayoutState }) {
 	const { modal, commands } = layoutState.commandPalette;
 	const [search, setSearch] = useState('');
 

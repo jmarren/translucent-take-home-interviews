@@ -71,8 +71,8 @@ export interface CategoryCardConfig {
 	/** Fixed per-category colors; categories with no entry fall back to a
 	 *  positional default. Omit entirely to always assign colors by position. */
 	colors?: Record<string, string>;
-	/** The "Reasons"/"Trend" cards are wider (800px) than the default
-	 *  432px card width -- see `.charts-row > .reason-chart-card` in index.css. */
+	/** Widens the bar view's Y-axis to fit longer category labels (e.g.
+	 *  "Reasons", whose values run longer than "Departments"/"Payers"). */
 	wide?: boolean;
 }
 
@@ -125,7 +125,7 @@ function BarView({
 				data={chartData}
 				layout="vertical"
 				width={500}
-				margin={{ top: 8, right: 24, left: 16, bottom: 8 }}
+				margin={{ top: 8, right: 24, left: 8, bottom: 8 }}
 			>
 				<CartesianGrid strokeDasharray="3 3" horizontal={false} />
 				<XAxis
