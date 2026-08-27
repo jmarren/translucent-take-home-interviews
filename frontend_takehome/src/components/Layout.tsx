@@ -1,10 +1,10 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import DepartmentSelect from './DepartmentSelect';
-import PayerSelect from './PayerSelect';
-import ReasonSelect from './ReasonSelect';
-import PeriodSelect from './PeriodSelect';
-import MetricSelect from './MetricSelect';
+import DepartmentSelect from './select/DepartmentSelect';
+import PayerSelect from './select/PayerSelect';
+import ReasonSelect from './select/ReasonSelect';
+import PeriodSelect from './select/PeriodSelect';
+import MetricSelect from './select/MetricSelect';
 import SidebarShell from './SidebarShell';
 import PaletteShell from './PaletteShell';
 import { useThemePreferences, ThemePreferences } from '../hooks/useThemePreferences';

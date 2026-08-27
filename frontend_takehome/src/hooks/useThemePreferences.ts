@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { ALL_FONTS, DEFAULT_FONT, applyFont } from "../fonts";
+import { ALL_FONTS, DEFAULT_FONT, applyFont } from "../theme/fonts";
 import {
   ALL_PALETTES,
   DEFAULT_PALETTE,
   Palette,
   applyPalette,
-} from "../palettes";
-import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from "../radii";
-import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from "../navModes";
+} from "../theme/palettes";
+import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from "../theme/radii";
+import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from "../theme/navModes";
 
 const FONT_STORAGE_KEY = "denial-dashboard:font";
 const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";

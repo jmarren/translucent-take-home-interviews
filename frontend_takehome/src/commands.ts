@@ -10,9 +10,9 @@ import {
 import { TABS } from "./tabs";
 import { DEPARTMENTS, PAYERS, REASONS, METRICS } from "./types";
 import { PERIODS } from "./periods";
-import { ALL_FONTS } from "./fonts";
-import { ALL_PALETTES } from "./palettes";
-import { RADIUS_OPTIONS } from "./radii";
+import { ALL_FONTS } from "./theme/fonts";
+import { ALL_PALETTES } from "./theme/palettes";
+import { RADIUS_OPTIONS } from "./theme/radii";
 import { ThemePreferences } from "./hooks/useThemePreferences";
 import { DashboardFilters } from "./hooks/useDashboardFilters";
 import { Navigation } from "./hooks/useNavigation";

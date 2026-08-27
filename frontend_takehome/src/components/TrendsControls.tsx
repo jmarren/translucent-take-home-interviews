@@ -1,6 +1,6 @@
 import React from "react";
-import LabeledSelect from "./LabeledSelect";
-import ChartTypeSelect from "./ChartTypeSelect";
+import LabeledSelect from "./select/LabeledSelect";
+import ChartTypeSelect from "./select/ChartTypeSelect";
 import { TrendsPreferencesState } from "../trendsPreferences";
 import { PeriodId } from "../periods";
 import { hasPreviousPeriod } from "../trendPeriods";

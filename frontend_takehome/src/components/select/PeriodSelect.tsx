@@ -1,6 +1,6 @@
 import LabeledSelect from './LabeledSelect';
-import { PERIODS, PeriodId } from '../periods';
-import { DashboardFilters } from '../hooks/useDashboardFilters';
+import { PERIODS, PeriodId } from '../../periods';
+import { DashboardFilters } from '../../hooks/useDashboardFilters';
 
 
 export default function PeriodSelect({ filters }: { filters: DashboardFilters }) {

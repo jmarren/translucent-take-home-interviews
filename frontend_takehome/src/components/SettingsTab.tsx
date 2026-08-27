@@ -1,7 +1,7 @@
-import { FONT_GROUPS } from '../fonts';
-import { PALETTE_GROUPS, paletteSwatchGradient } from '../palettes';
-import { RADIUS_OPTIONS } from '../radii';
-import { NAV_MODES, } from '../navModes';
+import { FONT_GROUPS } from '../theme/fonts';
+import { PALETTE_GROUPS, paletteSwatchGradient } from '../theme/palettes';
+import { RADIUS_OPTIONS } from '../theme/radii';
+import { NAV_MODES, } from '../theme/navModes';
 import { LayoutState } from './Layout';
 import { useOutletContext } from 'react-router-dom';
 

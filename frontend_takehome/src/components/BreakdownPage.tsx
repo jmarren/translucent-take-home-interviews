@@ -1,7 +1,7 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
-import CategoryCard, { CategoryCardConfig } from './CategoryCard';
-import TimeSeriesCard, { TimeSeriesCardConfig } from './TimeSeriesCard';
+import CategoryCard, { CategoryCardConfig } from './cards/CategoryCard';
+import TimeSeriesCard, { TimeSeriesCardConfig } from './cards/TimeSeriesCard';
 import DenialsTable from './DenialsTable';
 import SummaryStats from './SummaryStats';
 import { useDenials } from '../hooks/useDenials';
@@ -67,7 +67,7 @@ export const PAYER_CARD: CategoryCardConfig = {
 	colors: PAYER_COLORS,
 };
 
-const TREND_CARD: TimeSeriesCardConfig = {
+export const TREND_CARD: TimeSeriesCardConfig = {
 	chartTypeKey: 'trend',
 	defaultChartType: 'area',
 	title: 'Trend',

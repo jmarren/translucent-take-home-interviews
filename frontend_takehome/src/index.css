@@ -117,12 +117,22 @@ h2 {
 }
 
 /* Category cards flow left-to-right and wrap onto a new line once they no
-   longer fit at their minimum comfortable width (see `.charts-row > section`
-   below) -- flex-wrap rather than a fixed grid + breakpoint, so the layout
-   adapts continuously to the available width instead of jumping between two
-   hardcoded states. The trend card (`.trend-sparkline-card`) always forces
-   its own line via `flex-basis: 100%`, both before and after it, regardless
-   of how many category cards share the row(s) above it. */
+   longer fit at their minimum comfortable width -- flex-wrap rather than a
+   fixed grid + breakpoint, so column count adapts continuously to available
+   width. Cards now size to their own content height (bar/pie charts no
+   longer stretch to fill a fixed 576px card -- see CategoryCard.tsx's
+   barChartHeight/MAX_BAR_THICKNESS), and `align-items: stretch` (flex's
+   default, kept explicit here) makes every card sharing a row grow to match
+   that row's tallest card -- CSS multi-column masonry was tried first, but
+   columns lay out independently with no visibility into a sibling column's
+   actual height, which left a gap below a short card where a taller
+   neighboring column continued past it. Row-based stretch has no such gap:
+   every card in a row bottoms out even with its tallest row-mate, at the
+   cost of being row-based rather than true column-packed masonry (a card
+   sitting alone in a short row still won't match an unrelated row above or
+   below it -- acceptable since bar thickness is now capped, keeping height
+   variance between cards modest). The trend card (`.trend-sparkline-card`)
+   always forces its own line via `flex-basis: 100%`. */
 .charts-row {
   display: flex;
   flex-wrap: wrap;
@@ -131,7 +141,6 @@ h2 {
 }
 
 .charts-row > section {
-  height: 576px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--silver);
@@ -469,22 +478,32 @@ h2 {
   color: #d98a7a;
 }
 
-/* The trend card now sits inside .charts-row alongside the bar/pie charts,
-   so it inherits their shared chrome and 576px height from
-   `.charts-row > section` instead of keeping its own separate size. This
-   class only adds the extra min-width/overflow safety the sparkline's
-   flexible chart body needs on top of `.chart-card-body`. */
+/* The trend card sits inside .charts-row alongside the bar/pie cards, which
+   now size to their own content height (see CategoryCard.tsx's
+   barChartHeight) rather than a shared fixed card height -- so this card
+   needs its own explicit chart height instead of inheriting one from a
+   common ancestor. 420px gives the trend line real room to read, given the
+   card already spans the full row width alone; matches the loading
+   skeleton's reserved height (TimeSeriesCard.tsx) so nothing shifts once
+   real data replaces it. */
 .trend-sparkline-body {
+  /* .chart-card-body sets `flex: 1`, which expands to `flex-basis: 0%` --
+     without overriding flex-basis here, this element's hypothetical
+     main-axis (vertical, since its parent is a column flex container) size
+     is 0 regardless of the explicit `height` below, since flex-basis takes
+     priority over height whenever it isn't `auto`. That collapsed the chart
+     area to zero height with nothing available to grow into (the card's own
+     height is otherwise content-driven, not fixed), which is why the chart
+     never actually rendered even though the card shell looked fine. */
+  flex: 0 0 auto;
   box-sizing: border-box;
   width: 100%;
-  flex: stretch;
-  min-height: 0;
+  height: 420px;
   min-width: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 16px;
-  /* padding: 8px 16px 16px; */
 }
 
 table {

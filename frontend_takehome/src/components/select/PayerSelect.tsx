@@ -1,6 +1,6 @@
 import LabeledSelect from './LabeledSelect';
-import { PAYERS } from '../types';
-import { DashboardFilters } from '../hooks/useDashboardFilters';
+import { PAYERS } from '../../types';
+import { DashboardFilters } from '../../hooks/useDashboardFilters';
 
 const ALL_PAYERS = '__all__';
 

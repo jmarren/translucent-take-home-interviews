@@ -1,6 +1,6 @@
 import LabeledSelect from './LabeledSelect';
-import { REASONS } from '../types';
-import { DashboardFilters } from '../hooks/useDashboardFilters';
+import { REASONS } from '../../types';
+import { DashboardFilters } from '../../hooks/useDashboardFilters';
 
 const ALL_REASONS = '__all__';
 

@@ -20,9 +20,9 @@ import { buildPopBuckets, PositionBucket } from "../trendPeriods";
 import { computeDeltaStats } from "../trendDeltaStats";
 import { MovingAverageWindow, withMovingAverages } from "../trendMovingAverage";
 import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from "../chartTypes";
-import ChartTypeSelect from "./ChartTypeSelect";
+import ChartTypeSelect from "./select/ChartTypeSelect";
 import { DEPARTMENT_COLORS, PAYER_COLORS } from "./BreakdownPage";
-import { DEFAULT_SLICE_COLORS } from "./CategoryCard";
+import { DEFAULT_SLICE_COLORS } from "./cards/category/shared";
 
 const currency = (value: number) =>
 	`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;

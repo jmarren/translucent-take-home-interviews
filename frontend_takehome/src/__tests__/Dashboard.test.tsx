@@ -3,8 +3,9 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import CategoryCard from '../components/CategoryCard';
-import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD } from '../components/BreakdownPage';
+import CategoryCard from '../components/cards/CategoryCard';
+import TimeSeriesCard from '../components/cards/TimeSeriesCard';
+import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD, TREND_CARD } from '../components/BreakdownPage';
 import Layout from '../components/Layout';
 import ComingSoon from '../components/ComingSoon';
 import { DENIALS_QUERY } from '../hooks/useDenials';
@@ -35,22 +36,53 @@ function renderDashboard(mocks: MockedResponse[], initialPath = '/breakdown') {
 	);
 }
 
+const twoCategoryDenials = [
+	{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
+	{ id: 'D2', department: 'Neurology', amount: 200, reason: 'Missing info', date: '2024-01-02', payer: 'Cigna' },
+];
+
 test('renders chart title', () => {
-	render(<CategoryCard data={[]} config={REASON_CARD} metric="amount" />);
+	render(<CategoryCard data={twoCategoryDenials} config={REASON_CARD} metric="amount" />);
 	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
-	render(<CategoryCard data={[]} config={DEPARTMENT_CARD} metric="amount" />);
+	render(<CategoryCard data={twoCategoryDenials} config={DEPARTMENT_CARD} metric="amount" />);
 	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders payer pie chart title', () => {
-	render(<CategoryCard data={[]} config={PAYER_CARD} metric="amount" />);
+	render(<CategoryCard data={twoCategoryDenials} config={PAYER_CARD} metric="amount" />);
 	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
+});
+
+test('omits the category card entirely when there is only one category to show', () => {
+	const singleCategoryDenial = [
+		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
+	];
+	render(<CategoryCard data={singleCategoryDenial} config={DEPARTMENT_CARD} metric="amount" />);
+	expect(screen.queryByText(/Departments/i)).not.toBeInTheDocument();
+});
+
+test('omits the trend card entirely when there is only one month of data', () => {
+	const singleMonthDenials = [
+		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
+		{ id: 'D2', department: 'Neurology', amount: 200, reason: 'Missing info', date: '2024-01-15', payer: 'Cigna' },
+	];
+	render(<TimeSeriesCard data={singleMonthDenials} config={TREND_CARD} metric="amount" />);
+	expect(screen.queryByText('Trend')).not.toBeInTheDocument();
+});
+
+test('renders the trend card when it has more than one month of data', () => {
+	const twoMonthDenials = [
+		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
+		{ id: 'D2', department: 'Neurology', amount: 200, reason: 'Missing info', date: '2024-02-15', payer: 'Cigna' },
+	];
+	render(<TimeSeriesCard data={twoMonthDenials} config={TREND_CARD} metric="amount" />);
+	expect(screen.getByText('Trend')).toBeInTheDocument();
 });
 
 const allDenials = [
