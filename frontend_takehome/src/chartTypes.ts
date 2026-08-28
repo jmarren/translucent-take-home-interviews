@@ -16,9 +16,9 @@ export interface ChartTypeOption<T extends string> {
 export type CategoricalChartType = 'bar' | 'vertical-bar' | 'pie' | 'table';
 
 export const CATEGORICAL_CHART_TYPES: ChartTypeOption<CategoricalChartType>[] = [
-  { value: 'bar', label: 'Bar chart (horizontal)' },
-  { value: 'vertical-bar', label: 'Bar chart (vertical)' },
-  { value: 'pie', label: 'Pie chart' },
+  { value: 'bar', label: 'Horizontal Bar' },
+  { value: 'vertical-bar', label: 'Vertical Bar' },
+  { value: 'pie', label: 'Pie' },
   { value: 'table', label: 'Table' },
 ];
 
@@ -30,9 +30,9 @@ export const CATEGORICAL_CHART_TYPES: ChartTypeOption<CategoricalChartType>[] = 
 export type TimeSeriesChartType = 'area' | 'line' | 'bar';
 
 export const TIME_SERIES_CHART_TYPES: ChartTypeOption<TimeSeriesChartType>[] = [
-  { value: 'area', label: 'Area chart' },
-  { value: 'line', label: 'Line chart' },
-  { value: 'bar', label: 'Bar chart' },
+  { value: 'area', label: 'Area' },
+  { value: 'line', label: 'Line' },
+  { value: 'bar', label: 'Bar' },
 ];
 
 const STORAGE_PREFIX = 'denial-dashboard:chart-type:';
