@@ -43,19 +43,19 @@ const twoCategoryDenials = [
 ];
 
 test('renders chart title', () => {
-	render(<CategoryCard data={twoCategoryDenials} config={REASON_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={twoCategoryDenials} config={REASON_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
-	render(<CategoryCard data={twoCategoryDenials} config={DEPARTMENT_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={twoCategoryDenials} config={DEPARTMENT_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders payer pie chart title', () => {
-	render(<CategoryCard data={twoCategoryDenials} config={PAYER_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={twoCategoryDenials} config={PAYER_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
 });
@@ -64,7 +64,7 @@ test('omits the category card entirely when there is only one category to show',
 	const singleCategoryDenial = [
 		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
 	];
-	render(<CategoryCard data={singleCategoryDenial} config={DEPARTMENT_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={singleCategoryDenial} config={DEPARTMENT_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
 	expect(screen.queryByText(/Departments/i)).not.toBeInTheDocument();
 });
 
@@ -73,7 +73,7 @@ test('omits the trend card entirely when there is only one month of data', () =>
 		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
 		{ id: 'D2', department: 'Neurology', amount: 200, reason: 'Missing info', date: '2024-01-15', payer: 'Cigna' },
 	];
-	render(<TimeSeriesCard data={singleMonthDenials} config={TREND_CARD} metric="amount" color={DEFAULT_VIZ_PALETTE.colors[0]} animationsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<TimeSeriesCard data={singleMonthDenials} config={TREND_CARD} metric="amount" color={DEFAULT_VIZ_PALETTE.colors[0]} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
 	expect(screen.queryByText('Trend')).not.toBeInTheDocument();
 });
 
@@ -82,7 +82,7 @@ test('renders the trend card when it has more than one month of data', () => {
 		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
 		{ id: 'D2', department: 'Neurology', amount: 200, reason: 'Missing info', date: '2024-02-15', payer: 'Cigna' },
 	];
-	render(<TimeSeriesCard data={twoMonthDenials} config={TREND_CARD} metric="amount" color={DEFAULT_VIZ_PALETTE.colors[0]} animationsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<TimeSeriesCard data={twoMonthDenials} config={TREND_CARD} metric="amount" color={DEFAULT_VIZ_PALETTE.colors[0]} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
 	expect(screen.getByText('Trend')).toBeInTheDocument();
 });
 

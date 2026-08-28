@@ -175,6 +175,33 @@ export default function SettingsTab() {
 				</div>
 			</section>
 
+			<section className="settings-section" aria-label="Chart caption settings">
+				<h2 className="settings-section-title">Chart Captions</h2>
+				<p className="settings-section-description">
+					Choose whether the descriptive caption at the bottom of each chart card is shown.
+				</p>
+				<div className="settings-group">
+					<div className="settings-options">
+						<button
+							type="button"
+							className="settings-option"
+							aria-pressed={theme.chartCaptionsEnabled.value}
+							onClick={() => theme.chartCaptionsEnabled.set(true)}
+						>
+							On
+						</button>
+						<button
+							type="button"
+							className="settings-option"
+							aria-pressed={!theme.chartCaptionsEnabled.value}
+							onClick={() => theme.chartCaptionsEnabled.set(false)}
+						>
+							Off
+						</button>
+					</div>
+				</div>
+			</section>
+
 			<section className="settings-section" aria-label="Trend color settings">
 				<h2 className="settings-section-title">Trend Color</h2>
 				<p className="settings-section-description">

@@ -53,6 +53,7 @@ export default function BreakdownPage() {
 	const { filteredDenials, isInitialLoad, error } = useDenials(filters);
 	const vizColors = theme.vizPalette.value.colors;
 	const animationsEnabled = theme.chartAnimationsEnabled.value;
+	const captionsEnabled = theme.chartCaptionsEnabled.value;
 	// Which card (identified by its own config.chartTypeKey) is expanded to
 	// fill the row, if any -- lifted up here rather than kept local to each
 	// card, since expanding one card also means hiding its siblings, which
@@ -76,16 +77,16 @@ export default function BreakdownPage() {
 			<SummaryStats data={filteredDenials} metric={filters.metric.value} />
 			<div className={chartsRowClassName}>
 				{isVisible(REASON_CARD.chartTypeKey) && (
-					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={REASON_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
+					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={REASON_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
 				)}
 				{isVisible(DEPARTMENT_CARD.chartTypeKey) && (
-					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={DEPARTMENT_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
+					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={DEPARTMENT_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
 				)}
 				{isVisible(PAYER_CARD.chartTypeKey) && (
-					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={PAYER_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
+					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={PAYER_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
 				)}
 				{isVisible(TREND_CARD.chartTypeKey) && (
-					<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric.value} color={theme.trendColor.value} animationsEnabled={animationsEnabled} expanded={expandedCard === TREND_CARD.chartTypeKey} onToggleExpand={toggleExpand(TREND_CARD.chartTypeKey)} />
+					<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric.value} color={theme.trendColor.value} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === TREND_CARD.chartTypeKey} onToggleExpand={toggleExpand(TREND_CARD.chartTypeKey)} />
 				)}
 			</div>
 			<div className="denial-records-section">

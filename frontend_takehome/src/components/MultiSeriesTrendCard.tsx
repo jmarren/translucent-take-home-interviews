@@ -56,6 +56,7 @@ interface MultiSeriesTrendCardProps {
 	chartType: TimeSeriesChartType;
 	vizColors: string[];
 	animationsEnabled: boolean;
+	captionsEnabled: boolean;
 }
 
 interface SimpleViewProps {
@@ -286,6 +287,7 @@ export default function MultiSeriesTrendCard({
 	chartType,
 	vizColors,
 	animationsEnabled,
+	captionsEnabled,
 }: MultiSeriesTrendCardProps) {
 	const { points, seriesNames } = useMultiSeriesTrend(data, {
 		granularity: prefs.granularity.value,
@@ -349,14 +351,16 @@ export default function MultiSeriesTrendCard({
 					/>
 				)}
 			</div>
-			<p className="chart-card-caption">
-				{metric === "count" ? "Denial count" : "Total denied dollars"} over time, split by {prefs.dimension.value}
-				{popPoints
-					? " — solid lines are the current period, dashed are the previous period."
-					: !prefs.popEnabled.value && prefs.movingAverage.value !== "off"
-						? ` — smoothed as a ${prefs.movingAverage.value}-period moving average.`
-						: "."}
-			</p>
+			{captionsEnabled && (
+				<p className="chart-card-caption">
+					{metric === "count" ? "Denial count" : "Total denied dollars"} over time, split by {prefs.dimension.value}
+					{popPoints
+						? " — solid lines are the current period, dashed are the previous period."
+						: !prefs.popEnabled.value && prefs.movingAverage.value !== "off"
+							? ` — smoothed as a ${prefs.movingAverage.value}-period moving average.`
+							: "."}
+				</p>
+			)}
 		</section>
 	);
 }

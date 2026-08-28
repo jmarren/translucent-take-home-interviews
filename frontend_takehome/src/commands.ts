@@ -11,6 +11,7 @@ import {
   MousePointer2,
   PanelLeft,
   Sparkles,
+  Captions,
 } from "lucide-react";
 import { TABS } from "./tabs";
 import { DEPARTMENTS, PAYERS, REASONS, METRICS } from "./types";
@@ -288,6 +289,22 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: enabled === ctx.theme.commandPaletteEnabled.value ? "Active" : undefined,
       perform: () => {
         ctx.theme.commandPaletteEnabled.set(enabled);
+        ctx.close();
+      },
+    });
+  }
+
+  // Same on/off shape as chart-animations/command-palette above.
+  for (const enabled of [true, false]) {
+    commands.push({
+      id: `chart-captions:${enabled}`,
+      label: `Chart Captions: ${enabled ? "On" : "Off"}`,
+      group: "Appearance — Chart Captions",
+      icon: Captions,
+      keywords: ["caption", "description", "chart", "settings"],
+      hint: enabled === ctx.theme.chartCaptionsEnabled.value ? "Active" : undefined,
+      perform: () => {
+        ctx.theme.chartCaptionsEnabled.set(enabled);
         ctx.close();
       },
     });

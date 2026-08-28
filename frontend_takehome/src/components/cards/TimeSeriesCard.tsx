@@ -31,6 +31,7 @@ interface TimeSeriesCardProps {
 	metric: MetricId;
 	color: string;
 	animationsEnabled: boolean;
+	captionsEnabled: boolean;
 	expanded: boolean;
 	onToggleExpand: () => void;
 }
@@ -57,7 +58,7 @@ function useMonthlyTrend(
 	}, [data, groupByMonth, metric]);
 }
 
-export default function TimeSeriesCard({ data, loading = false, config, metric, color, animationsEnabled, expanded, onToggleExpand }: TimeSeriesCardProps) {
+export default function TimeSeriesCard({ data, loading = false, config, metric, color, animationsEnabled, captionsEnabled, expanded, onToggleExpand }: TimeSeriesCardProps) {
 	const groupByMonth = config.groupByMonth ?? defaultGroupByMonth;
 	const trend = useMonthlyTrend(data, groupByMonth, metric);
 	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
@@ -108,7 +109,7 @@ export default function TimeSeriesCard({ data, loading = false, config, metric, 
 					<AreaView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />
 				)}
 			</div>
-			<p className="chart-card-caption">{config.caption}</p>
+			{captionsEnabled && <p className="chart-card-caption">{config.caption}</p>}
 		</section>
 	);
 }

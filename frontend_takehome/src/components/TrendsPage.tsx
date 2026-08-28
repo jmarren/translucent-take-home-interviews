@@ -37,6 +37,7 @@ export default function TrendsPage() {
 				chartType={chartType}
 				vizColors={theme.vizPalette.value.colors}
 				animationsEnabled={theme.chartAnimationsEnabled.value}
+				captionsEnabled={theme.chartCaptionsEnabled.value}
 			/>
 		</div>
 	);

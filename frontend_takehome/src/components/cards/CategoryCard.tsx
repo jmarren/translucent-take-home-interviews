@@ -34,6 +34,7 @@ interface CategoryCardProps {
 	metric: MetricId;
 	vizColors: string[];
 	animationsEnabled: boolean;
+	captionsEnabled: boolean;
 	expanded: boolean;
 	onToggleExpand: () => void;
 }
@@ -53,7 +54,7 @@ function useCategoryTotals(
 	}, [data, groupBy, metric]);
 }
 
-export default function CategoryCard({ data, loading = false, config, metric, vizColors, animationsEnabled, expanded, onToggleExpand }: CategoryCardProps) {
+export default function CategoryCard({ data, loading = false, config, metric, vizColors, animationsEnabled, captionsEnabled, expanded, onToggleExpand }: CategoryCardProps) {
 	const chartData = useCategoryTotals(data, config.groupBy, metric);
 	const [chartType, setChartType] = useChartType<CategoricalChartType>(
 		config.chartTypeKey,
@@ -145,7 +146,7 @@ export default function CategoryCard({ data, loading = false, config, metric, vi
 					<BarView chartData={chartData} vizColors={vizColors} wide={config.wide} metric={metric} animationsEnabled={animationsEnabled} expanded={expanded} />
 				)}
 			</div>
-			<p className="chart-card-caption">{config.caption}</p>
+			{captionsEnabled && <p className="chart-card-caption">{config.caption}</p>}
 		</section>
 	);
 }

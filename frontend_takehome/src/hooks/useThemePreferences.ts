@@ -39,6 +39,7 @@ const HEX_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
 
 const DEFAULT_CHART_ANIMATIONS_ENABLED = true;
 const DEFAULT_COMMAND_PALETTE_ENABLED = true;
+const DEFAULT_CHART_CAPTIONS_ENABLED = true;
 
 const FONT_STORAGE_KEY = "denial-dashboard:font";
 const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";
@@ -51,6 +52,8 @@ const TREND_COLOR_STORAGE_KEY = "denial-dashboard:trend-color";
 const SIDEBAR_STYLE_STORAGE_KEY = "denial-dashboard:sidebar-style";
 const CHART_ANIMATIONS_ENABLED_STORAGE_KEY =
   "denial-dashboard:chart-animations-enabled";
+const CHART_CAPTIONS_ENABLED_STORAGE_KEY =
+  "denial-dashboard:chart-captions-enabled";
 const PRIMARY_TITLE_STYLE_STORAGE_KEY =
   "denial-dashboard:primary-title-style-label";
 const SECONDARY_TITLE_STYLE_STORAGE_KEY =
@@ -112,6 +115,13 @@ const loadStoredChartAnimationsEnabled = makeLoader<boolean>(
   DEFAULT_CHART_ANIMATIONS_ENABLED,
 );
 
+const loadStoredChartCaptionsEnabled = makeLoader<boolean>(
+  CHART_CAPTIONS_ENABLED_STORAGE_KEY,
+  (stored) =>
+    stored === "true" ? true : stored === "false" ? false : undefined,
+  DEFAULT_CHART_CAPTIONS_ENABLED,
+);
+
 function makeTitleStyleLoader(
   storageKey: string,
   fallback: TitleStyle,
@@ -142,6 +152,8 @@ export interface ThemePreferences {
   secondaryTitleStyle: State<TitleStyle>;
   /** Whether charts animate in (pie slices fanning out, bars growing, etc.) -- Recharts' own `isAnimationActive`. */
   chartAnimationsEnabled: State<boolean>;
+  /** Whether the descriptive caption at the bottom of each chart card is shown. */
+  chartCaptionsEnabled: State<boolean>;
 }
 
 function makeEffectParams<T>(
@@ -168,6 +180,9 @@ export function useThemePreferences(): ThemePreferences {
   const trendColorState = useState<string>(loadStoredTrendColor);
   const chartAnimationsEnabledState = useState<boolean>(
     loadStoredChartAnimationsEnabled,
+  );
+  const chartCaptionsEnabledState = useState<boolean>(
+    loadStoredChartCaptionsEnabled,
   );
 
   // These, unlike the four above, also feed a useEffect below (bare, or via
@@ -259,6 +274,11 @@ export function useThemePreferences(): ThemePreferences {
     chartAnimationsEnabled: makeLocalStorageState<boolean>(
       chartAnimationsEnabledState,
       CHART_ANIMATIONS_ENABLED_STORAGE_KEY,
+      (value) => String(value),
+    ),
+    chartCaptionsEnabled: makeLocalStorageState<boolean>(
+      chartCaptionsEnabledState,
+      CHART_CAPTIONS_ENABLED_STORAGE_KEY,
       (value) => String(value),
     ),
   };
