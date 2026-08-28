@@ -378,6 +378,22 @@ h2 {
   font-weight: var(--title-secondary-font-weight);
   text-transform: var(--title-secondary-text-transform);
   letter-spacing: var(--title-secondary-letter-spacing);
+  /* .chart-card-header centers this against the fixed-height controls
+     beside it (--chart-card-control-height) via align-items: center, but
+     that centers the <h2>'s line BOX, not its visible glyphs -- with no
+     line-height set, the browser's default (~1.2) adds invisible
+     half-leading space above/below the text that isn't symmetric with the
+     glyphs' own cap-height/descender space, so the title reads slightly
+     off-center next to the controls even though the boxes line up exactly.
+     line-height: 1 collapses that gap for every selectable font (see
+     theme/fonts.ts -- this can't assume one typeface's specific metrics);
+     text-box-trim further corrects for whatever asymmetry remains in
+     browsers that support it (Chrome/Edge 133+, Safari 18.2+, Firefox
+     154+ as of writing), with no effect where it doesn't -- the standard,
+     purpose-built fix for optically centering text against sibling UI,
+     rather than a line-height hack alone. */
+  line-height: 1;
+  text-box: trim-both cap alphabetic;
 }
 
 /* Houses the title plus the per-card chart-type dropdown on one row, with
