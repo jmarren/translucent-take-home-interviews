@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { Denial, MetricId, metricValue } from '../../types';
 import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from '../../chartTypes';
 import ChartTypeSelect from '../select/ChartTypeSelect';
@@ -30,6 +31,8 @@ interface TimeSeriesCardProps {
 	metric: MetricId;
 	color: string;
 	animationsEnabled: boolean;
+	expanded: boolean;
+	onToggleExpand: () => void;
 }
 
 function defaultGroupByMonth(denial: Denial): string {
@@ -54,7 +57,7 @@ function useMonthlyTrend(
 	}, [data, groupByMonth, metric]);
 }
 
-export default function TimeSeriesCard({ data, loading = false, config, metric, color, animationsEnabled }: TimeSeriesCardProps) {
+export default function TimeSeriesCard({ data, loading = false, config, metric, color, animationsEnabled, expanded, onToggleExpand }: TimeSeriesCardProps) {
 	const groupByMonth = config.groupByMonth ?? defaultGroupByMonth;
 	const trend = useMonthlyTrend(data, groupByMonth, metric);
 	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
@@ -67,16 +70,32 @@ export default function TimeSeriesCard({ data, loading = false, config, metric, 
 	// rather than rendering a single, meaningless point.
 	if (!loading && trend.length <= 1) return null;
 
+	const sectionClassName = [
+		'trend-sparkline-card',
+		'chart-card-exhibit',
+		expanded ? 'chart-card-expanded' : null,
+	].filter(Boolean).join(' ');
+
 	return (
-		<section className="trend-sparkline-card chart-card-exhibit" aria-label={config.ariaLabel} style={{ backgroundColor: 'white' }}>
+		<section className={sectionClassName} aria-label={config.ariaLabel} style={{ backgroundColor: 'white' }}>
 			<div className="chart-card-header">
 				<h2 className="chart-card-title">{config.title}</h2>
-				<ChartTypeSelect
-					ariaLabel={config.chartTypeAriaLabel}
-					value={chartType}
-					options={TIME_SERIES_CHART_TYPES}
-					onChange={setChartType}
-				/>
+				<div className="chart-card-header-controls">
+					<ChartTypeSelect
+						ariaLabel={config.chartTypeAriaLabel}
+						value={chartType}
+						options={TIME_SERIES_CHART_TYPES}
+						onChange={setChartType}
+					/>
+					<button
+						type="button"
+						className="chart-card-expand-button"
+						aria-label={expanded ? 'Collapse' : 'Expand'}
+						onClick={onToggleExpand}
+					>
+						{expanded ? <Minimize2 size={16} aria-hidden="true" /> : <Maximize2 size={16} aria-hidden="true" />}
+					</button>
+				</div>
 			</div>
 			<div className="chart-card-body trend-sparkline-body">
 				{loading ? (

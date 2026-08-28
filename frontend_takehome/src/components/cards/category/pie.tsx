@@ -29,6 +29,7 @@ export default function PieView({
 	minWidth,
 	height,
 	animationsEnabled,
+	expanded,
 }: {
 	chartData: CategoryTotal[];
 	vizColors: string[];
@@ -36,6 +37,7 @@ export default function PieView({
 	minWidth: number;
 	height: number;
 	animationsEnabled: boolean;
+	expanded: boolean;
 }) {
 	const format = formatterFor(metric);
 	const total = useMemo(() => chartData.reduce((sum, d) => sum + d.amount, 0), [chartData]);
@@ -47,8 +49,10 @@ export default function PieView({
 		// than that, the pie (whose diameter is governed by `height`, not
 		// width) just sits centered in a much wider box, wasting horizontal
 		// space either side instead of the container matching what it needs.
-		<div className="pie-chart-wrapper" style={{ width: '100%', maxWidth: minWidth, margin: '0 auto' }}>
-			<ResponsiveContainer width="100%" height={height} minWidth={minWidth}>
+		// Expanded lifts that cap entirely, since a bigger pie is exactly
+		// the point of expanding the card.
+		<div className="pie-chart-wrapper" style={{ width: '100%', maxWidth: expanded ? 'none' : minWidth, margin: '0 auto' }}>
+			<ResponsiveContainer width="100%" height={expanded ? '100%' : height} minWidth={minWidth}>
 				<PieChart margin={{ top: 8, right: 8, left: 8, bottom: 8 }} >
 					<Pie
 						labelLine={false}

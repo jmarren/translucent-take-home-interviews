@@ -14,17 +14,19 @@ export default function VerticalBarView({
 	metric,
 	minWidth,
 	animationsEnabled,
+	expanded,
 }: {
 	chartData: CategoryTotal[];
 	vizColors: string[];
 	metric: MetricId;
 	minWidth: number;
 	animationsEnabled: boolean;
+	expanded: boolean;
 }) {
 	const format = formatterFor(metric);
 	const metricLabel = metric === 'count' ? 'Denial count' : 'Denied amount';
 	return (
-		<ResponsiveContainer width="100%" height={VERTICAL_BAR_CHART_HEIGHT} minWidth={minWidth}>
+		<ResponsiveContainer width="100%" height={expanded ? '100%' : VERTICAL_BAR_CHART_HEIGHT} minWidth={minWidth}>
 			<BarChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
 				<CartesianGrid strokeDasharray="3 3" vertical={false} />
 				{/* interval={0} forces every category to get a tick label --

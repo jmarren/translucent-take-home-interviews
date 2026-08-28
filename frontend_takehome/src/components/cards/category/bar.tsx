@@ -9,17 +9,19 @@ export default function BarView({
 	wide,
 	metric,
 	animationsEnabled,
+	expanded,
 }: {
 	chartData: CategoryTotal[];
 	vizColors: string[];
 	wide?: boolean;
 	metric: MetricId;
 	animationsEnabled: boolean;
+	expanded: boolean;
 }) {
 	const format = formatterFor(metric);
 	const metricLabel = metric === 'count' ? 'Denial count' : 'Denied amount';
 	return (
-		<ResponsiveContainer width="100%" height={barChartHeight(chartData.length)}>
+		<ResponsiveContainer width="100%" height={expanded ? '100%' : barChartHeight(chartData.length)}>
 			<BarChart
 				data={chartData}
 				layout="vertical"

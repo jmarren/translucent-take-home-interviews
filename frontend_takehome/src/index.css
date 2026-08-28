@@ -180,7 +180,8 @@ h2 {
 }
 
 .department-select-trigger:focus-visible,
-.chart-type-select-trigger:focus-visible {
+.chart-type-select-trigger:focus-visible,
+.chart-card-expand-button:focus-visible {
   outline: 2px solid var(--surface-primary);
   outline-offset: 1px;
 }
@@ -310,6 +311,28 @@ h2 {
   flex: 1 1 850px;
 }
 
+/* Expanded-card mode: .charts-row switches from a wrapping row of
+   content-sized cards to a single-item column that gives its one visible
+   card (the rest are unmounted by BreakdownPage, not just hidden) real
+   flex-grow room down to .dashboard-content's own bottom edge -- the same
+   mechanism .trends-page/.trends-chart-card already use to fill the page.
+   Scoped to this modifier class (rather than making .charts-row
+   unconditionally flex: 1) so the normal, no-card-expanded layout stays
+   purely content-sized and doesn't stretch or push .denial-records-section
+   around when nothing is expanded. */
+.charts-row.has-expanded-card {
+  flex-wrap: nowrap;
+  flex: 1;
+  min-height: 0;
+}
+
+.charts-row.has-expanded-card > .chart-card-expanded {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: none;
+  min-width: 0;
+}
+
 
 /* Shared chart-card padding rhythm: the bar/pie chart cards (.charts-row >
    section) and the trend sparkline card (.trend-sparkline-card) all apply
@@ -343,6 +366,39 @@ h2 {
   margin: 0 0 12px;
   padding: 0 0 10px;
   border-bottom: 1px solid var(--border-accent);
+}
+
+/* Groups the chart-type dropdown and the expand button on the header's
+   right side, so .chart-card-header's own justify-content: space-between
+   still just splits title vs. "everything else" into two pieces. */
+.chart-card-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Same icon-button shape as .chart-type-select-trigger just above --
+   border/radius/padding/cursor/hover all match, since these two controls
+   sit side by side in the header and should read as one family. Its own
+   class rather than reusing .chart-type-select-trigger directly, since
+   this button is icon-only (square-ish padding) rather than
+   trigger-plus-chevron. */
+.chart-card-expand-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background-color: transparent;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  padding: 5px;
+  cursor: pointer;
+}
+
+.chart-card-expand-button:hover {
+  border-color: var(--border-emphasis);
+  color: var(--text-primary);
 }
 
 .chart-type-select-trigger {
@@ -693,6 +749,16 @@ h2 {
   display: flex;
   flex-direction: column;
   padding: 16px 0;
+}
+
+/* Expanded: let this grow with the now-tall card instead of staying
+   pinned at its normal 420px -- flex: 1 1 auto (rather than the 0 0 auto
+   above) actually participates in .chart-card-body's flex-grow, and
+   height: auto stops the fixed pixel value from overriding that growth
+   the same way the comment above explains flex-basis normally would. */
+.chart-card-expanded .trend-sparkline-body {
+  flex: 1 1 auto;
+  height: auto;
 }
 
 table {

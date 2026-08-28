@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { Denial, MetricId, metricValue } from '../../types';
 import { CategoricalChartType, CATEGORICAL_CHART_TYPES, useChartType } from '../../chartTypes';
 import ChartTypeSelect from '../select/ChartTypeSelect';
@@ -33,6 +34,8 @@ interface CategoryCardProps {
 	metric: MetricId;
 	vizColors: string[];
 	animationsEnabled: boolean;
+	expanded: boolean;
+	onToggleExpand: () => void;
 }
 
 function useCategoryTotals(
@@ -50,7 +53,7 @@ function useCategoryTotals(
 	}, [data, groupBy, metric]);
 }
 
-export default function CategoryCard({ data, loading = false, config, metric, vizColors, animationsEnabled }: CategoryCardProps) {
+export default function CategoryCard({ data, loading = false, config, metric, vizColors, animationsEnabled, expanded, onToggleExpand }: CategoryCardProps) {
 	const chartData = useCategoryTotals(data, config.groupBy, metric);
 	const [chartType, setChartType] = useChartType<CategoricalChartType>(
 		config.chartTypeKey,
@@ -73,12 +76,20 @@ export default function CategoryCard({ data, loading = false, config, metric, vi
 	// entirely rather than rendering a chart with just one bar/slice/row.
 	if (!loading && chartData.length <= 1) return null;
 
+	const sectionClassName = [
+		'chart-card-exhibit',
+		chartType === 'pie' ? 'pie-chart-card' : null,
+		expanded ? 'chart-card-expanded' : null,
+	].filter(Boolean).join(' ');
+
 	return (
 		<section
-			className={chartType === 'pie' ? 'chart-card-exhibit pie-chart-card' : 'chart-card-exhibit'}
+			className={sectionClassName}
 			style={{
 				backgroundColor: 'white',
-				...(chartType === 'pie' ? { maxWidth: pieMinWidth } : null),
+				// Expanded lifts both width caps below entirely -- growing to
+				// fill the row is the whole point of expanding.
+				...(expanded ? null : chartType === 'pie' ? { maxWidth: pieMinWidth } : null),
 				// Without this, .charts-row's flex: 1 1 360px lets the card
 				// shrink below what its own vertical-bar chart needs (via
 				// ResponsiveContainer's minWidth), leaving the chart
@@ -87,18 +98,28 @@ export default function CategoryCard({ data, loading = false, config, metric, vi
 				// not a cap, since a vertical bar chart (unlike a pie, which
 				// has a fixed natural diameter) should still be free to grow
 				// wider than its minimum when the row has the room.
-				...(chartType === 'vertical-bar' ? { minWidth: verticalBarMinWidth } : null),
+				...(expanded ? null : chartType === 'vertical-bar' ? { minWidth: verticalBarMinWidth } : null),
 			}}
 			aria-label={config.ariaLabel}
 		>
 			<div className="chart-card-header">
 				<h2 className="chart-card-title">{config.title}</h2>
-				<ChartTypeSelect
-					ariaLabel={config.chartTypeAriaLabel}
-					value={chartType}
-					options={CATEGORICAL_CHART_TYPES}
-					onChange={setChartType}
-				/>
+				<div className="chart-card-header-controls">
+					<ChartTypeSelect
+						ariaLabel={config.chartTypeAriaLabel}
+						value={chartType}
+						options={CATEGORICAL_CHART_TYPES}
+						onChange={setChartType}
+					/>
+					<button
+						type="button"
+						className="chart-card-expand-button"
+						aria-label={expanded ? 'Collapse' : 'Expand'}
+						onClick={onToggleExpand}
+					>
+						{expanded ? <Minimize2 size={16} aria-hidden="true" /> : <Maximize2 size={16} aria-hidden="true" />}
+					</button>
+				</div>
 			</div>
 			<div className="chart-card-body" >
 				{loading ? (
@@ -114,13 +135,14 @@ export default function CategoryCard({ data, loading = false, config, metric, vi
 						minWidth={pieMinWidth}
 						height={pieHeight}
 						animationsEnabled={animationsEnabled}
+						expanded={expanded}
 					/>
 				) : chartType === 'table' ? (
 					<TableView chartData={chartData} categoryLabel={categoryLabel} metric={metric} />
 				) : chartType === 'vertical-bar' ? (
-					<VerticalBarView chartData={chartData} vizColors={vizColors} metric={metric} minWidth={verticalBarMinWidth} animationsEnabled={animationsEnabled} />
+					<VerticalBarView chartData={chartData} vizColors={vizColors} metric={metric} minWidth={verticalBarMinWidth} animationsEnabled={animationsEnabled} expanded={expanded} />
 				) : (
-					<BarView chartData={chartData} vizColors={vizColors} wide={config.wide} metric={metric} animationsEnabled={animationsEnabled} />
+					<BarView chartData={chartData} vizColors={vizColors} wide={config.wide} metric={metric} animationsEnabled={animationsEnabled} expanded={expanded} />
 				)}
 			</div>
 			<p className="chart-card-caption">{config.caption}</p>
