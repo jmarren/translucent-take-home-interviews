@@ -49,6 +49,12 @@
   --title-secondary-letter-spacing: 0.04em;
   --title-secondary-color-on-light: var(--text-secondary);
   --title-secondary-color-on-dark: var(--border-muted);
+  /* Shared by .chart-type-select-trigger and .chart-card-expand-button --
+     the two sit side by side in a chart card's header and need matching
+     heights despite different content (label + chevron glyph vs. a bare
+     16px icon), so both set height explicitly to this rather than trying
+     to match padding to text line-height by eye. */
+  --chart-card-control-height: 28px;
 
 }
 
@@ -399,20 +405,27 @@ h2 {
 }
 
 /* Same icon-button shape as .chart-type-select-trigger just above --
-   border/radius/padding/cursor/hover all match, since these two controls
-   sit side by side in the header and should read as one family. Its own
-   class rather than reusing .chart-type-select-trigger directly, since
-   this button is icon-only (square-ish padding) rather than
-   trigger-plus-chevron. */
+   border/radius/cursor/hover all match, since these two controls sit side
+   by side in the header and should read as one family. Its own class
+   rather than reusing .chart-type-select-trigger directly, since this
+   button is icon-only (square padding) rather than trigger-plus-chevron.
+   Explicit height (shared with .chart-type-select-trigger via the same
+   variable, box-sizing: border-box so the shared border doesn't add on
+   top of it) rather than matching padding to the select's text line-height
+   by eye -- the two controls have different content (a 16px icon vs. a
+   0.8rem label + chevron glyph), so equal padding alone doesn't produce
+   equal heights. */
 .chart-card-expand-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  height: var(--chart-card-control-height);
   color: var(--text-secondary);
   background-color: transparent;
   border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
-  padding: 5px;
+  padding: 0 5px;
   cursor: pointer;
 }
 
@@ -426,13 +439,15 @@ h2 {
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
+  box-sizing: border-box;
+  height: var(--chart-card-control-height);
   font-family: inherit;
   font-size: 0.8rem;
   color: var(--text-secondary);
   background-color: transparent;
   border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
-  padding: 4px 8px;
+  padding: 0 8px;
   cursor: pointer;
 }
 
