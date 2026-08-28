@@ -1,7 +1,6 @@
 import { FONT_GROUPS } from '../theme/fonts';
 import { PALETTE_GROUPS, paletteSwatchGradient } from '../theme/palettes';
 import { RADIUS_OPTIONS } from '../theme/radii';
-import { NAV_MODES, } from '../theme/navModes';
 import { SIDEBAR_STYLES } from '../theme/sidebarStyles';
 import { CURSOR_STYLES } from '../theme/cursors';
 import { VIZ_PALETTES } from '../theme/vizPalettes';
@@ -15,25 +14,29 @@ export default function SettingsTab() {
 
 	return (
 		<div className="settings-tab">
-			<section className="settings-section" aria-label="Navigation settings">
-				<h2 className="settings-section-title">Navigation</h2>
+			<section className="settings-section" aria-label="Command palette settings">
+				<h2 className="settings-section-title">Command Palette</h2>
 				<p className="settings-section-description">
-					Choose how you move between views in the dashboard.
+					Choose whether Cmd+K/Ctrl+K and the command palette are available for navigating and changing settings.
 				</p>
 				<div className="settings-group">
 					<div className="settings-options">
-						{NAV_MODES.map((mode) => (
-							<button
-								key={mode.value}
-								type="button"
-								className="settings-option settings-nav-mode-option"
-								aria-pressed={mode.value === theme.navMode.value}
-								onClick={() => theme.navMode.set(mode.value)}
-							>
-								<span className="settings-nav-mode-label">{mode.label}</span>
-								<span className="settings-nav-mode-description">{mode.description}</span>
-							</button>
-						))}
+						<button
+							type="button"
+							className="settings-option"
+							aria-pressed={theme.commandPaletteEnabled.value}
+							onClick={() => theme.commandPaletteEnabled.set(true)}
+						>
+							On
+						</button>
+						<button
+							type="button"
+							className="settings-option"
+							aria-pressed={!theme.commandPaletteEnabled.value}
+							onClick={() => theme.commandPaletteEnabled.set(false)}
+						>
+							Off
+						</button>
 					</div>
 				</div>
 			</section>
@@ -41,8 +44,7 @@ export default function SettingsTab() {
 			<section className="settings-section" aria-label="Sidebar style settings">
 				<h2 className="settings-section-title">Sidebar Style</h2>
 				<p className="settings-section-description">
-					Choose how the sidebar renders in Sidebar navigation mode.
-					{theme.navMode.value !== 'sidebar' && ' Only takes effect when Navigation above is set to Sidebar.'}
+					Choose how the always-present sidebar renders.
 				</p>
 				<div className="settings-group">
 					<div className="settings-options">
@@ -52,7 +54,6 @@ export default function SettingsTab() {
 								type="button"
 								className="settings-option settings-nav-mode-option"
 								aria-pressed={style.value === theme.sidebarStyle.value}
-								disabled={theme.navMode.value !== 'sidebar'}
 								onClick={() => theme.sidebarStyle.set(style.value)}
 							>
 								<span className="settings-nav-mode-label">{style.label}</span>

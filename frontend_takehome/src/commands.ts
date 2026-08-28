@@ -273,6 +273,26 @@ export function buildCommands(ctx: CommandContext): Command[] {
     });
   }
 
+  // Same on/off shape as chart-animations above. Turning this off from
+  // inside the palette still works for the rest of the current session
+  // (closing here doesn't un-mount the palette), but Cmd+K/Ctrl+K and any
+  // future palette open stop working immediately -- toggling it back on
+  // requires Settings.
+  for (const enabled of [true, false]) {
+    commands.push({
+      id: `command-palette:${enabled}`,
+      label: `Command Palette: ${enabled ? "On" : "Off"}`,
+      group: "Appearance — Command Palette",
+      icon: Search,
+      keywords: ["command", "palette", "search", "cmd+k", "ctrl+k", "settings"],
+      hint: enabled === ctx.theme.commandPaletteEnabled.value ? "Active" : undefined,
+      perform: () => {
+        ctx.theme.commandPaletteEnabled.set(enabled);
+        ctx.close();
+      },
+    });
+  }
+
   for (const vizPalette of VIZ_PALETTES) {
     commands.push({
       id: `viz-palette:${vizPalette.label}`,

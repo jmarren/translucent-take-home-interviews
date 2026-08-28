@@ -30,7 +30,7 @@ function makeCommandEffectParams(
   setOpen: Dispatch<SetStateAction<boolean>>,
 ): Parameters<typeof useEffect> {
   let callback = () => {
-    if (ctx.theme.navMode.value !== "palette") return;
+    if (!ctx.theme.commandPaletteEnabled.value) return;
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
@@ -41,12 +41,12 @@ function makeCommandEffectParams(
     return () => document.removeEventListener("keydown", handleKeyDown);
   };
 
-  return [callback, [ctx.theme.navMode.value]];
+  return [callback, [ctx.theme.commandPaletteEnabled.value]];
 }
 
-// The global Cmd+K/Ctrl+K listener only makes sense in palette nav mode --
-// callers pass `enabled` rather than this hook reaching into theme
-// preferences itself, so it stays independent of nav-mode internals.
+// The global Cmd+K/Ctrl+K listener only attaches while the command palette
+// preference is enabled -- independent of the sidebar, which is always
+// present regardless of this toggle.
 export function useCommandPalette(
   ctx: Omit<CommandContext, "close">,
 ): CommandPalette {

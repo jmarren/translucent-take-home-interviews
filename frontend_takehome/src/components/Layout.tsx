@@ -6,7 +6,6 @@ import ReasonSelect from './select/ReasonSelect';
 import PeriodSelect from './select/PeriodSelect';
 import MetricSelect from './select/MetricSelect';
 import SidebarShell from './SidebarShell';
-import PaletteShell from './PaletteShell';
 import { useThemePreferences, ThemePreferences } from '../hooks/useThemePreferences';
 import { useDashboardFilters, DashboardFilters } from '../hooks/useDashboardFilters';
 import { useNavigation, Navigation } from '../hooks/useNavigation';
@@ -49,21 +48,6 @@ export default function Layout() {
 
 	const mainContent = MainContent(layoutState);
 
-	if (theme.navMode.value === 'sidebar') {
-		return WrapSidebarShell(mainContent, layoutState);
-	}
-	return WrapPaletteShell(mainContent, layoutState);
-}
-
-function WrapPaletteShell(mainContent: React.ReactNode, layoutState: LayoutState) {
-	return (
-		<PaletteShell layoutState={layoutState}>
-			{mainContent}
-		</PaletteShell>
-	);
-}
-
-function WrapSidebarShell(mainContent: React.ReactNode, layoutState: LayoutState) {
 	return (
 		<SidebarShell layoutState={layoutState}>
 			{mainContent}

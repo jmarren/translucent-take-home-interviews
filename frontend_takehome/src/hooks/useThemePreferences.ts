@@ -7,7 +7,6 @@ import {
   applyPalette,
 } from "../theme/palettes";
 import { RADIUS_OPTIONS, DEFAULT_RADIUS, applyRadius } from "../theme/radii";
-import { NAV_MODES, DEFAULT_NAV_MODE, NavMode } from "../theme/navModes";
 import {
   TITLE_STYLES,
   DEFAULT_PRIMARY_TITLE_STYLE,
@@ -39,11 +38,13 @@ import { makeLoader, makeLocalStorageState } from "./localStorageState";
 const HEX_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
 
 const DEFAULT_CHART_ANIMATIONS_ENABLED = true;
+const DEFAULT_COMMAND_PALETTE_ENABLED = true;
 
 const FONT_STORAGE_KEY = "denial-dashboard:font";
 const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";
 const RADIUS_STORAGE_KEY = "denial-dashboard:radius";
-const NAV_MODE_STORAGE_KEY = "denial-dashboard:nav-mode";
+const COMMAND_PALETTE_ENABLED_STORAGE_KEY =
+  "denial-dashboard:command-palette-enabled";
 const CURSOR_STYLE_STORAGE_KEY = "denial-dashboard:cursor-style";
 const VIZ_PALETTE_STORAGE_KEY = "denial-dashboard:viz-palette-label";
 const TREND_COLOR_STORAGE_KEY = "denial-dashboard:trend-color";
@@ -73,10 +74,11 @@ const loadStoredRadius = makeLoader<number>(
   DEFAULT_RADIUS,
 );
 
-const loadStoredNavMode = makeLoader<NavMode>(
-  NAV_MODE_STORAGE_KEY,
-  (stored) => NAV_MODES.find((m) => m.value === stored)?.value,
-  DEFAULT_NAV_MODE,
+const loadStoredCommandPaletteEnabled = makeLoader<boolean>(
+  COMMAND_PALETTE_ENABLED_STORAGE_KEY,
+  (stored) =>
+    stored === "true" ? true : stored === "false" ? false : undefined,
+  DEFAULT_COMMAND_PALETTE_ENABLED,
 );
 
 const loadStoredCursorStyle = makeLoader<CursorStyle>(
@@ -125,8 +127,9 @@ export interface ThemePreferences {
   font: State<string>;
   palette: State<Palette>;
   radius: State<number>;
-  navMode: State<NavMode>;
-  /** Only meaningful in sidebar nav mode -- how wide the sidebar renders and whether it shows labels. */
+  /** Whether Cmd+K/Ctrl+K and the command palette modal are available -- independent of the sidebar, which is always present. */
+  commandPaletteEnabled: State<boolean>;
+  /** How wide the always-present sidebar renders and whether it shows labels. */
   sidebarStyle: State<SidebarStyle>;
   cursorStyle: State<CursorStyle>;
   /** Colors chart data (bars, pie slices, trend lines) -- separate from `palette`, which colors UI chrome. */
@@ -157,7 +160,9 @@ export function useThemePreferences(): ThemePreferences {
   // These four are only ever read back out through the makeLocalStorageState
   // calls below, so their useState() pairs pass straight through rather than
   // being destructored into named bindings this function never otherwise uses.
-  const navModeState = useState<NavMode>(loadStoredNavMode);
+  const commandPaletteEnabledState = useState<boolean>(
+    loadStoredCommandPaletteEnabled,
+  );
   const sidebarStyleState = useState<SidebarStyle>(loadStoredSidebarStyle);
   const vizPaletteState = useState<VizPalette>(loadStoredVizPalette);
   const trendColorState = useState<string>(loadStoredTrendColor);
@@ -217,10 +222,10 @@ export function useThemePreferences(): ThemePreferences {
       RADIUS_STORAGE_KEY,
       (value) => String(value),
     ),
-    navMode: makeLocalStorageState<NavMode>(
-      navModeState,
-      NAV_MODE_STORAGE_KEY,
-      (value) => value,
+    commandPaletteEnabled: makeLocalStorageState<boolean>(
+      commandPaletteEnabledState,
+      COMMAND_PALETTE_ENABLED_STORAGE_KEY,
+      (value) => String(value),
     ),
     sidebarStyle: makeLocalStorageState<SidebarStyle>(
       sidebarStyleState,

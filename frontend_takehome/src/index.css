@@ -180,8 +180,7 @@ h2 {
 }
 
 .department-select-trigger:focus-visible,
-.chart-type-select-trigger:focus-visible,
-.command-trigger:focus-visible {
+.chart-type-select-trigger:focus-visible {
   outline: 2px solid var(--surface-primary);
   outline-offset: 1px;
 }
@@ -227,7 +226,7 @@ h2 {
   color: var(--surface-light);
 }
 
-/* flex-wrap, same as .charts-row/.top-bar/.summary-panel below -- without
+/* flex-wrap, same as .charts-row/.summary-panel below -- without
    it, the five 200px-min-width filter dropdowns force an unwrapping row
    (1000px+) that's wider than any mobile viewport. Since nothing else in
    the layout chain constrains width to the viewport (.dashboard-content's
@@ -783,80 +782,6 @@ tbody tr:nth-child(even) {
   border: 0;
 }
 
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  margin: 24px 24px 0;
-  padding: 14px 20px;
-  background-color: var(--surface-accent);
-  border-radius: var(--radius);
-}
-
-.top-bar-current {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  color: var(--text-primary);
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-
-.top-bar-current-icon {
-  flex-shrink: 0;
-  color: var(--text-secondary);
-}
-
-.top-bar-current-label {
-  white-space: nowrap;
-}
-
-.top-bar-filter-summary {
-  font-weight: 500;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.top-bar-filter-summary::before {
-  content: '·';
-  margin-right: 8px;
-}
-
-.command-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: inherit;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  background-color: var(--surface-light);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  cursor: pointer;
-  min-width: 260px;
-  max-width: 100%;
-}
-
-.command-trigger span {
-  flex: 1;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.command-trigger:hover {
-  border-color: var(--border-emphasis);
-}
-
-.command-trigger-kbd,
 .command-palette-esc-hint {
   flex-shrink: 0;
   font-family: inherit;
@@ -885,18 +810,14 @@ tbody tr:nth-child(even) {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  /* In palette-shell (topbar) mode .dashboard-content is a direct child of
-     .dashboard, so it needs its own flex-grow to fill the space left after
-     the top bar -- sidebar mode's .dashboard-layout .dashboard-content
-     below sets the same flex, since .dashboard-content there is nested one
-     level deeper. */
+  /* Grows to fill whatever vertical space .dashboard-layout leaves after
+     the sidebar -- .dashboard-layout .dashboard-content below re-declares
+     the same flex: 1 alongside the margin/shadow suited to sitting beside
+     the sidebar specifically. */
   flex: 1;
 }
 
-/* Sidebar nav mode -- an alternative to the top-bar/command-palette layout
-   above. .dashboard-layout wraps the sidebar + content area side by side;
-   nested here, .dashboard-content gets a different margin/shadow suited to
-   sitting beside a sidebar instead of below a full-width top bar. */
+/* Wraps the sidebar + content area side by side. */
 .dashboard-layout {
   display: flex;
   align-items: stretch;

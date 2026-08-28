@@ -1,9 +1,7 @@
-// Only meaningful when ThemePreferences.navMode is "sidebar" -- palette
-// (topbar) nav mode has no sidebar to style. Kept as its own preference
-// rather than folded into NavMode itself, since "which nav surface" and
-// "how wide is the sidebar" are independent choices (this app remembers
-// a sidebar style even while palette mode is active, so switching back
-// to sidebar mode doesn't lose it).
+// The sidebar is always present -- this only controls how it renders
+// (full width, icons-only, or a hover/focus flyout), independent of
+// ThemePreferences.commandPaletteEnabled, which just toggles whether
+// Cmd+K/Ctrl+K and the command palette modal are also available.
 export type SidebarStyle = "expanded" | "icons-only" | "flyout";
 
 export interface SidebarStyleOption {
