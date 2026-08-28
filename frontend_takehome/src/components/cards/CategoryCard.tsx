@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { Denial, MetricId, metricValue } from '../../types';
 import { CategoricalChartType, CATEGORICAL_CHART_TYPES, useChartType } from '../../hooks/useChartType';
-import { UseDenialsResult } from '../../hooks/useDenials';
-import { ThemePreferences } from '../../hooks/useThemePreferences';
+import { CategoryCardData } from '../BreakdownPage';
 import ChartTypeSelect from '../select/ChartTypeSelect';
 import { CategoryTotal, ASSUMED_PIE_DIAMETER, widestLabelWidth, pieChartHeight, verticalBarChartMinWidth } from './category/shared';
 import BarView from './category/bar';
@@ -30,10 +29,8 @@ export interface CategoryCardConfig {
 }
 
 interface CategoryCardProps {
-	denials: UseDenialsResult;
+	data: CategoryCardData;
 	config: CategoryCardConfig;
-	metric: MetricId;
-	theme: ThemePreferences;
 	expanded: boolean;
 	onToggleExpand: () => void;
 }
@@ -53,12 +50,13 @@ function useCategoryTotals(
 	}, [data, groupBy, metric]);
 }
 
-export default function CategoryCard({ denials, config, metric, theme, expanded, onToggleExpand }: CategoryCardProps) {
-	const { filteredDenials: data, isInitialLoad: loading } = denials;
+export default function CategoryCard({ data, config, expanded, onToggleExpand }: CategoryCardProps) {
+	const { denials, metric, theme } = data;
+	const { filteredDenials: denialsData, isInitialLoad: loading } = denials;
 	const vizColors = theme.vizPalette.value.colors;
 	const animationsEnabled = theme.chartAnimationsEnabled.value;
 	const captionsEnabled = theme.chartCaptionsEnabled.value;
-	const chartData = useCategoryTotals(data, config.groupBy, metric);
+	const chartData = useCategoryTotals(denialsData, config.groupBy, metric);
 	const chartType = useChartType<CategoricalChartType>(
 		config.chartTypeKey,
 		CATEGORICAL_CHART_TYPES,

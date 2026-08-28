@@ -5,7 +5,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import CategoryCard from '../components/cards/CategoryCard';
 import TimeSeriesCard from '../components/cards/TimeSeriesCard';
-import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD, TREND_CARD } from '../components/BreakdownPage';
+import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD, TREND_CARD, CategoryCardData } from '../components/BreakdownPage';
 import { DEFAULT_VIZ_PALETTE } from '../theme/vizPalettes';
 import Layout from '../components/Layout';
 import ComingSoon from '../components/ComingSoon';
@@ -54,6 +54,14 @@ function mockDenials(filteredDenials: Denial[], isInitialLoad = false): UseDenia
 	};
 }
 
+function mockCategoryCardData(filteredDenials: Denial[], isInitialLoad = false): CategoryCardData {
+	return {
+		denials: mockDenials(filteredDenials, isInitialLoad),
+		metric: 'amount',
+		theme: mockTheme(),
+	};
+}
+
 function renderDashboard(mocks: MockedResponse[], initialPath = '/breakdown') {
 	return render(
 		<MockedProvider mocks={mocks}>
@@ -84,19 +92,19 @@ const twoCategoryDenials = [
 ];
 
 test('renders chart title', () => {
-	render(<CategoryCard denials={mockDenials(twoCategoryDenials)} config={REASON_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={mockCategoryCardData(twoCategoryDenials)} config={REASON_CARD} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
-	render(<CategoryCard denials={mockDenials(twoCategoryDenials)} config={DEPARTMENT_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={mockCategoryCardData(twoCategoryDenials)} config={DEPARTMENT_CARD} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders payer pie chart title', () => {
-	render(<CategoryCard denials={mockDenials(twoCategoryDenials)} config={PAYER_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={mockCategoryCardData(twoCategoryDenials)} config={PAYER_CARD} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
 });
@@ -105,7 +113,7 @@ test('omits the category card entirely when there is only one category to show',
 	const singleCategoryDenial = [
 		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
 	];
-	render(<CategoryCard denials={mockDenials(singleCategoryDenial)} config={DEPARTMENT_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard data={mockCategoryCardData(singleCategoryDenial)} config={DEPARTMENT_CARD} expanded={false} onToggleExpand={() => {}} />);
 	expect(screen.queryByText(/Departments/i)).not.toBeInTheDocument();
 });
 

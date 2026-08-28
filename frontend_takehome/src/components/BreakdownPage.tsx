@@ -4,8 +4,23 @@ import CategoryCard, { CategoryCardConfig } from './cards/CategoryCard';
 import TimeSeriesCard, { TimeSeriesCardConfig } from './cards/TimeSeriesCard';
 import DenialsTable from './DenialsTable';
 import SummaryStats from './SummaryStats';
-import { useDenials } from '../hooks/useDenials';
+import { useDenials, UseDenialsResult } from '../hooks/useDenials';
+import { ThemePreferences } from '../hooks/useThemePreferences';
+import { MetricId } from '../types';
 import { LayoutState } from './Layout';
+
+// Bundles the three pieces every CategoryCard instance needs that are
+// identical across every card on this page -- the filtered dataset,
+// which metric to plot, and the theme preferences a card reads its own
+// display settings from (viz colors, chart animations, captions).
+// Passed as one prop rather than three so CategoryCard doesn't have to
+// re-list them individually, and every call site below shares the exact
+// same object instead of re-threading the same three values each time.
+export interface CategoryCardData {
+	denials: UseDenialsResult;
+	metric: MetricId;
+	theme: ThemePreferences;
+}
 
 export const REASON_CARD: CategoryCardConfig = {
 	chartTypeKey: 'reason',
@@ -52,6 +67,7 @@ export default function BreakdownPage() {
 	const { filters, theme } = useOutletContext<LayoutState>();
 	const denials = useDenials(filters);
 	const { filteredDenials, isInitialLoad, error } = denials;
+	const categoryCardData: CategoryCardData = { denials, metric: filters.metric.value, theme };
 	const vizColors = theme.vizPalette.value.colors;
 	const animationsEnabled = theme.chartAnimationsEnabled.value;
 	const captionsEnabled = theme.chartCaptionsEnabled.value;
@@ -78,13 +94,13 @@ export default function BreakdownPage() {
 			<SummaryStats data={filteredDenials} metric={filters.metric.value} />
 			<div className={chartsRowClassName}>
 				{isVisible(REASON_CARD.chartTypeKey) && (
-					<CategoryCard denials={denials} config={REASON_CARD} metric={filters.metric.value} theme={theme} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
+					<CategoryCard data={categoryCardData} config={REASON_CARD} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
 				)}
 				{isVisible(DEPARTMENT_CARD.chartTypeKey) && (
-					<CategoryCard denials={denials} config={DEPARTMENT_CARD} metric={filters.metric.value} theme={theme} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
+					<CategoryCard data={categoryCardData} config={DEPARTMENT_CARD} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
 				)}
 				{isVisible(PAYER_CARD.chartTypeKey) && (
-					<CategoryCard denials={denials} config={PAYER_CARD} metric={filters.metric.value} theme={theme} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
+					<CategoryCard data={categoryCardData} config={PAYER_CARD} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
 				)}
 				{isVisible(TREND_CARD.chartTypeKey) && (
 					<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric.value} color={theme.trendColor.value} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === TREND_CARD.chartTypeKey} onToggleExpand={toggleExpand(TREND_CARD.chartTypeKey)} />
