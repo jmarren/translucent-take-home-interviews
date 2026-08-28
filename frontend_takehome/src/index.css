@@ -532,6 +532,67 @@ h2 {
   transition: max-width 0.3s ease-in-out;
 }
 
+/* Hovered pie slice grows 10%, easing in, with its label growing and
+   moving outward along with it -- driven entirely by plain CSS (:hover,
+   :has()), not React state + inline styles. That's deliberate, not just
+   simpler: Recharts' Pie re-triggers its own internal re-entrance
+   animation (recreating each slice's <path> via its react-smooth
+   wrapper) whenever ANY prop reaching a slice changes -- including a
+   hover-driven style prop -- as long as the Chart Animations preference
+   is on. Every hover-driven React re-render was replacing the DOM node
+   before a CSS transition on it could ever animate, confirmed by
+   tagging the element and watching it fail to survive a single hover
+   (getBoundingClientRect already at the final scaled size on the very
+   first sampled frame, never interpolating). Plain :hover never touches
+   a React prop or Recharts' render tree at all, so it can't retrigger
+   that system.
+   transform-origin: 50% 50% relies on the default transform-box:
+   view-box (not fill-box) -- that measures percentages against the
+   chart's own root <svg> viewBox, and since Pie is centered at cx="50%"
+   cy="50%" of that same box with symmetric margins, 50% 50% lands
+   exactly on the pie's true center for every slice's own bounding box,
+   without needing each slice's individual absolute cx/cy (not readable
+   from plain CSS at all). */
+.recharts-pie .recharts-sector {
+  transform-origin: 50% 50%;
+  transition: transform 0.3s ease-in;
+}
+
+.recharts-pie .recharts-sector:hover {
+  transform: scale(1.1);
+}
+
+/* Labels sit in a separate sibling group from their sectors
+   (.recharts-pie-labels, after every .recharts-pie-sector), in the same
+   left-to-right order -- :has() lets the Nth sector's :hover state
+   select the Nth label from here, its only sibling group, since CSS has
+   no way to parametrize "match my own position" across sibling groups.
+   One rule per index, capped at 8 -- comfortably above every pie's
+   actual category count today (Departments: 6, Payers: 5) with headroom
+   for a larger one later; a pie past this cap simply stops getting the
+   label half of the effect for its excess slices; the sector itself
+   still scales via the :hover rule above regardless. Same transform as
+   the sector (same transform-origin reasoning: this label's own text
+   element's bounding-box center coincides with the pie's center along
+   the same view-box math), so the label visually grows/moves in lockstep
+   with its slice rather than staying fixed while the slice grows out
+   from under it. */
+.recharts-pie .recharts-pie-labels > .recharts-layer text {
+  transform-origin: 50% 50%;
+  transition: transform 0.3s ease-in;
+}
+
+.recharts-pie:has(.recharts-pie-sector:nth-child(1):hover) .recharts-pie-labels > .recharts-layer:nth-child(1) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(2):hover) .recharts-pie-labels > .recharts-layer:nth-child(2) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(3):hover) .recharts-pie-labels > .recharts-layer:nth-child(3) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(4):hover) .recharts-pie-labels > .recharts-layer:nth-child(4) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(5):hover) .recharts-pie-labels > .recharts-layer:nth-child(5) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(6):hover) .recharts-pie-labels > .recharts-layer:nth-child(6) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(7):hover) .recharts-pie-labels > .recharts-layer:nth-child(7) text,
+.recharts-pie:has(.recharts-pie-sector:nth-child(8):hover) .recharts-pie-labels > .recharts-layer:nth-child(8) text {
+  transform: scale(1.1);
+}
+
 /* BarView (the horizontal category bar chart) sets ResponsiveContainer's
    height from the filtered category count (barChartHeight), so a card can
    grow/shrink in height purely from a filter change. Recharts always
