@@ -19,7 +19,7 @@ import { useMultiSeriesTrend, MultiSeriesPoint } from "../hooks/useMultiSeriesTr
 import { buildPopBuckets, PositionBucket } from "../trends/trendPeriods";
 import { computeDeltaStats } from "../trends/trendDeltaStats";
 import { MovingAverageWindow, withMovingAverages } from "../trends/trendMovingAverage";
-import { TimeSeriesChartType } from "../chartTypes";
+import { TimeSeriesChartType } from "../hooks/useChartType";
 
 const currency = (value: number) =>
 	`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;

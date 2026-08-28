@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-dom";
 import { useDenials } from "../hooks/useDenials";
 import { useTrendsPreferences } from "../hooks/useTrendsPreferences";
-import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from "../chartTypes";
+import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from "../hooks/useChartType";
 import { LayoutState } from "./Layout";
 import TrendsControls from "./TrendsControls";
 import MultiSeriesTrendCard from "./MultiSeriesTrendCard";
@@ -10,7 +10,7 @@ export default function TrendsPage() {
 	const { filters, theme } = useOutletContext<LayoutState>();
 	const { filteredDenials, unfilteredByPeriod, referenceDate, isInitialLoad, error } = useDenials(filters);
 	const prefs = useTrendsPreferences();
-	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
+	const chartType = useChartType<TimeSeriesChartType>(
 		"trends-page",
 		TIME_SERIES_CHART_TYPES,
 		"line"
@@ -23,8 +23,8 @@ export default function TrendsPage() {
 			<TrendsControls
 				prefs={prefs}
 				periodId={filters.period.value}
-				chartType={chartType}
-				onChartTypeChange={setChartType}
+				chartType={chartType.value}
+				onChartTypeChange={chartType.set}
 			/>
 			<MultiSeriesTrendCard
 				data={filteredDenials}
@@ -34,7 +34,7 @@ export default function TrendsPage() {
 				prefs={prefs}
 				periodId={filters.period.value}
 				metric={filters.metric.value}
-				chartType={chartType}
+				chartType={chartType.value}
 				vizColors={theme.vizPalette.value.colors}
 				animationsEnabled={theme.chartAnimationsEnabled.value}
 				captionsEnabled={theme.chartCaptionsEnabled.value}

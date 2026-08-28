@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { Denial, MetricId, metricValue } from '../../types';
-import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from '../../chartTypes';
+import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from '../../hooks/useChartType';
 import ChartTypeSelect from '../select/ChartTypeSelect';
 import { MonthTotal } from './time-series/shared';
 import AreaView from './time-series/area';
@@ -61,7 +61,7 @@ function useMonthlyTrend(
 export default function TimeSeriesCard({ data, loading = false, config, metric, color, animationsEnabled, captionsEnabled, expanded, onToggleExpand }: TimeSeriesCardProps) {
 	const groupByMonth = config.groupByMonth ?? defaultGroupByMonth;
 	const trend = useMonthlyTrend(data, groupByMonth, metric);
-	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
+	const chartType = useChartType<TimeSeriesChartType>(
 		config.chartTypeKey,
 		TIME_SERIES_CHART_TYPES,
 		config.defaultChartType
@@ -84,9 +84,9 @@ export default function TimeSeriesCard({ data, loading = false, config, metric, 
 				<div className="chart-card-header-controls">
 					<ChartTypeSelect
 						ariaLabel={config.chartTypeAriaLabel}
-						value={chartType}
+						value={chartType.value}
 						options={TIME_SERIES_CHART_TYPES}
-						onChange={setChartType}
+						onChange={chartType.set}
 					/>
 					<button
 						type="button"
@@ -101,9 +101,9 @@ export default function TimeSeriesCard({ data, loading = false, config, metric, 
 			<div className="chart-card-body trend-sparkline-body">
 				{loading ? (
 					<div className="chart-skeleton" style={{ height: 420 }} aria-hidden="true" />
-				) : chartType === 'line' ? (
+				) : chartType.value === 'line' ? (
 					<LineView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />
-				) : chartType === 'bar' ? (
+				) : chartType.value === 'bar' ? (
 					<BarByMonthView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />
 				) : (
 					<AreaView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />

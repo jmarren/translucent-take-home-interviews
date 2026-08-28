@@ -5,7 +5,7 @@ import { TrendsPreferences, TREND_DIMENSIONS, TREND_GRANULARITIES } from "../hoo
 import { TrendDimension } from "../hooks/useMultiSeriesTrend";
 import { PeriodId } from "../periods";
 import { hasPreviousPeriod } from "../trends/trendPeriods";
-import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES } from "../chartTypes";
+import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES } from "../hooks/useChartType";
 
 const POP_OPTIONS = [
   { value: "off", label: "Off" },
