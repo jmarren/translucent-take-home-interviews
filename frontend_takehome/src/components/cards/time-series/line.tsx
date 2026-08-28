@@ -5,7 +5,6 @@ import { MonthTotal, formatterFor } from './shared';
 
 export default function LineView({ trend, metric, color, animationsEnabled }: { trend: MonthTotal[]; metric: MetricId; color: string; animationsEnabled: boolean }) {
 	const format = formatterFor(metric);
-	const metricLabel = metric === 'count' ? 'Denial count' : 'Total amount';
 	return (
 		<ResponsiveContainer width="100%" >
 			<LineChart data={trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
@@ -17,8 +16,12 @@ export default function LineView({ trend, metric, color, animationsEnabled }: { 
 					tickLine={false}
 					axisLine={false}
 				/>
+				{/* No metric name in the tooltip value line -- it just repeats
+				    the Metric filter's own current selection. labelFormatter
+				    (the month) stays, since that's not shown anywhere else
+				    on the chart. */}
 				<Tooltip
-					formatter={(value: number) => [format(value), metricLabel]}
+					formatter={(value: number) => [format(value), undefined]}
 					labelFormatter={(_, payload) => payload?.[0]?.payload?.month ?? ''}
 				/>
 				<Line

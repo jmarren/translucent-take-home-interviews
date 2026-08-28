@@ -25,6 +25,9 @@ export default function VerticalBarView({
 }) {
 	const format = formatterFor(metric);
 	const metricLabel = metric === 'count' ? 'Denial count' : 'Denied amount';
+	// No name/category in the tooltip -- the category is already the XAxis
+	// tick label right below it, and the metric name just repeats the
+	// Metric filter's own current selection, so both would be pure noise.
 	return (
 		<ResponsiveContainer width="100%" height={expanded ? '100%' : VERTICAL_BAR_CHART_HEIGHT} minWidth={minWidth}>
 			<BarChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
@@ -45,7 +48,7 @@ export default function VerticalBarView({
 					axisLine={false}
 					domain={[0, (dataMax: number) => dataMax * 1.15]}
 				/>
-				<Tooltip formatter={(value: number) => [format(value), metricLabel]} />
+				<Tooltip formatter={(value: number) => [format(value), undefined]} labelFormatter={() => ''} />
 				<Bar dataKey="amount" name={metricLabel} radius={[3, 3, 0, 0]} isAnimationActive={animationsEnabled}>
 					{chartData.map((entry, index) => (
 						<Cell key={entry.category} fill={colorFor(index, vizColors)} />

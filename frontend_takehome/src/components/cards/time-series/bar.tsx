@@ -17,8 +17,12 @@ export default function BarByMonthView({ trend, metric, color, animationsEnabled
 					tickLine={false}
 					axisLine={false}
 				/>
+				{/* No metric name in the tooltip value line -- it just repeats
+				    the Metric filter's own current selection. labelFormatter
+				    (the month) stays, since that's not shown anywhere else
+				    on the chart. */}
 				<Tooltip
-					formatter={(value: number) => [format(value), metricLabel]}
+					formatter={(value: number) => [format(value), undefined]}
 					labelFormatter={(_, payload) => payload?.[0]?.payload?.month ?? ''}
 				/>
 				<Bar dataKey="amount" fill={color} name={metricLabel} radius={[3, 3, 0, 0]} isAnimationActive={animationsEnabled} />
