@@ -63,6 +63,13 @@ export const TREND_CARD: TimeSeriesCardConfig = {
 	caption: 'Monthly total across the filtered range.',
 };
 
+// Rendered via .map() below so each card's chartTypeKey is only written
+// once, rather than once each for visibility, config, expanded, and
+// onToggleExpand -- the individual consts above stay separately exported
+// too, since Dashboard.test.tsx renders CategoryCard directly against a
+// specific one.
+const CATEGORY_CARDS: CategoryCardConfig[] = [REASON_CARD, DEPARTMENT_CARD, PAYER_CARD];
+
 export default function BreakdownPage() {
 	const { filters, theme } = useOutletContext<LayoutState>();
 	const denials = useDenials(filters);
@@ -81,29 +88,32 @@ export default function BreakdownPage() {
 
 	const chartsRowClassName = expandedCard ? 'charts-row has-expanded-card' : 'charts-row';
 
-	function isVisible(key: string): boolean {
-		return expandedCard === null || expandedCard === key;
+	// Derives the whole expand/collapse contract for one card's key in a
+	// single call -- whether it should render at all while another card is
+	// expanded, plus the expanded/onToggleExpand pair every card
+	// (CategoryCard and TimeSeriesCard alike) accepts.
+	function expandStateFor(key: string) {
+		return {
+			visible: expandedCard === null || expandedCard === key,
+			expanded: expandedCard === key,
+			onToggleExpand: () => setExpandedCard((current) => (current === key ? null : key)),
+		};
 	}
 
-	function toggleExpand(key: string): () => void {
-		return () => setExpandedCard((current) => (current === key ? null : key));
-	}
+	const trendCardState = expandStateFor(TREND_CARD.chartTypeKey);
 
 	return (
 		<>
 			<SummaryStats data={filteredDenials} metric={filters.metric.value} />
 			<div className={chartsRowClassName}>
-				{isVisible(REASON_CARD.chartTypeKey) && (
-					<CategoryCard data={categoryCardData} config={REASON_CARD} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
-				)}
-				{isVisible(DEPARTMENT_CARD.chartTypeKey) && (
-					<CategoryCard data={categoryCardData} config={DEPARTMENT_CARD} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
-				)}
-				{isVisible(PAYER_CARD.chartTypeKey) && (
-					<CategoryCard data={categoryCardData} config={PAYER_CARD} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
-				)}
-				{isVisible(TREND_CARD.chartTypeKey) && (
-					<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric.value} color={theme.trendColor.value} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === TREND_CARD.chartTypeKey} onToggleExpand={toggleExpand(TREND_CARD.chartTypeKey)} />
+				{CATEGORY_CARDS.map((config) => {
+					const { visible, expanded, onToggleExpand } = expandStateFor(config.chartTypeKey);
+					return visible && (
+						<CategoryCard key={config.chartTypeKey} data={categoryCardData} config={config} expanded={expanded} onToggleExpand={onToggleExpand} />
+					);
+				})}
+				{trendCardState.visible && (
+					<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric.value} color={theme.trendColor.value} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={trendCardState.expanded} onToggleExpand={trendCardState.onToggleExpand} />
 				)}
 			</div>
 			<div className="denial-records-section">
