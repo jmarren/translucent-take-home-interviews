@@ -50,7 +50,8 @@ export const TREND_CARD: TimeSeriesCardConfig = {
 
 export default function BreakdownPage() {
 	const { filters, theme } = useOutletContext<LayoutState>();
-	const { filteredDenials, isInitialLoad, error } = useDenials(filters);
+	const denials = useDenials(filters);
+	const { filteredDenials, isInitialLoad, error } = denials;
 	const vizColors = theme.vizPalette.value.colors;
 	const animationsEnabled = theme.chartAnimationsEnabled.value;
 	const captionsEnabled = theme.chartCaptionsEnabled.value;
@@ -77,13 +78,13 @@ export default function BreakdownPage() {
 			<SummaryStats data={filteredDenials} metric={filters.metric.value} />
 			<div className={chartsRowClassName}>
 				{isVisible(REASON_CARD.chartTypeKey) && (
-					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={REASON_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
+					<CategoryCard denials={denials} config={REASON_CARD} metric={filters.metric.value} theme={theme} expanded={expandedCard === REASON_CARD.chartTypeKey} onToggleExpand={toggleExpand(REASON_CARD.chartTypeKey)} />
 				)}
 				{isVisible(DEPARTMENT_CARD.chartTypeKey) && (
-					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={DEPARTMENT_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
+					<CategoryCard denials={denials} config={DEPARTMENT_CARD} metric={filters.metric.value} theme={theme} expanded={expandedCard === DEPARTMENT_CARD.chartTypeKey} onToggleExpand={toggleExpand(DEPARTMENT_CARD.chartTypeKey)} />
 				)}
 				{isVisible(PAYER_CARD.chartTypeKey) && (
-					<CategoryCard data={filteredDenials} loading={isInitialLoad} config={PAYER_CARD} metric={filters.metric.value} vizColors={vizColors} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
+					<CategoryCard denials={denials} config={PAYER_CARD} metric={filters.metric.value} theme={theme} expanded={expandedCard === PAYER_CARD.chartTypeKey} onToggleExpand={toggleExpand(PAYER_CARD.chartTypeKey)} />
 				)}
 				{isVisible(TREND_CARD.chartTypeKey) && (
 					<TimeSeriesCard data={filteredDenials} loading={isInitialLoad} config={TREND_CARD} metric={filters.metric.value} color={theme.trendColor.value} animationsEnabled={animationsEnabled} captionsEnabled={captionsEnabled} expanded={expandedCard === TREND_CARD.chartTypeKey} onToggleExpand={toggleExpand(TREND_CARD.chartTypeKey)} />

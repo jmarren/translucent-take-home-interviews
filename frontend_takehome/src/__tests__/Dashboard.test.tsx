@@ -9,9 +9,50 @@ import { REASON_CARD, DEPARTMENT_CARD, PAYER_CARD, TREND_CARD } from '../compone
 import { DEFAULT_VIZ_PALETTE } from '../theme/vizPalettes';
 import Layout from '../components/Layout';
 import ComingSoon from '../components/ComingSoon';
-import { DENIALS_QUERY } from '../hooks/useDenials';
+import { Denial } from '../types';
+import { DENIALS_QUERY, UseDenialsResult } from '../hooks/useDenials';
+import { ThemePreferences } from '../hooks/useThemePreferences';
+import { makeState } from '../hooks/state';
+import { DEFAULT_FONT } from '../theme/fonts';
+import { DEFAULT_PALETTE } from '../theme/palettes';
+import { DEFAULT_RADIUS } from '../theme/radii';
+import { DEFAULT_SIDEBAR_STYLE } from '../theme/sidebarStyles';
+import { DEFAULT_CURSOR_STYLE } from '../theme/cursors';
+import { DEFAULT_TREND_COLOR } from '../theme/vizPalettes';
+import { DEFAULT_PRIMARY_TITLE_STYLE, DEFAULT_SECONDARY_TITLE_STYLE } from '../theme/titleStyles';
 import { TABS, TAB_DESCRIPTIONS } from '../tabs';
 import { TAB_PAGE_ELEMENTS } from '../tabPages';
+
+// Minimal ThemePreferences for isolated CategoryCard tests -- only
+// vizPalette/chartAnimationsEnabled/chartCaptionsEnabled are ever read by
+// CategoryCard, but the prop is typed as the full ThemePreferences, so
+// every field needs a real (if unused) State<T>.
+function mockTheme(overrides: Partial<{ [K in keyof ThemePreferences]: ThemePreferences[K]['value'] }> = {}): ThemePreferences {
+	return {
+		font: makeState(overrides.font ?? DEFAULT_FONT, () => {}),
+		palette: makeState(overrides.palette ?? DEFAULT_PALETTE, () => {}),
+		radius: makeState(overrides.radius ?? DEFAULT_RADIUS, () => {}),
+		commandPaletteEnabled: makeState(overrides.commandPaletteEnabled ?? true, () => {}),
+		sidebarStyle: makeState(overrides.sidebarStyle ?? DEFAULT_SIDEBAR_STYLE, () => {}),
+		cursorStyle: makeState(overrides.cursorStyle ?? DEFAULT_CURSOR_STYLE, () => {}),
+		vizPalette: makeState(overrides.vizPalette ?? DEFAULT_VIZ_PALETTE, () => {}),
+		trendColor: makeState(overrides.trendColor ?? DEFAULT_TREND_COLOR, () => {}),
+		primaryTitleStyle: makeState(overrides.primaryTitleStyle ?? DEFAULT_PRIMARY_TITLE_STYLE, () => {}),
+		secondaryTitleStyle: makeState(overrides.secondaryTitleStyle ?? DEFAULT_SECONDARY_TITLE_STYLE, () => {}),
+		chartAnimationsEnabled: makeState(overrides.chartAnimationsEnabled ?? true, () => {}),
+		chartCaptionsEnabled: makeState(overrides.chartCaptionsEnabled ?? true, () => {}),
+	};
+}
+
+function mockDenials(filteredDenials: Denial[], isInitialLoad = false): UseDenialsResult {
+	return {
+		filteredDenials,
+		unfilteredByPeriod: filteredDenials,
+		referenceDate: new Date(),
+		isInitialLoad,
+		error: undefined,
+	};
+}
 
 function renderDashboard(mocks: MockedResponse[], initialPath = '/breakdown') {
 	return render(
@@ -43,19 +84,19 @@ const twoCategoryDenials = [
 ];
 
 test('renders chart title', () => {
-	render(<CategoryCard data={twoCategoryDenials} config={REASON_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard denials={mockDenials(twoCategoryDenials)} config={REASON_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Reasons/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders department pie chart title', () => {
-	render(<CategoryCard data={twoCategoryDenials} config={DEPARTMENT_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard denials={mockDenials(twoCategoryDenials)} config={DEPARTMENT_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Departments/i);
 	expect(title).toBeInTheDocument();
 });
 
 test('renders payer pie chart title', () => {
-	render(<CategoryCard data={twoCategoryDenials} config={PAYER_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard denials={mockDenials(twoCategoryDenials)} config={PAYER_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
 	const title = screen.getByText(/Payers/i);
 	expect(title).toBeInTheDocument();
 });
@@ -64,7 +105,7 @@ test('omits the category card entirely when there is only one category to show',
 	const singleCategoryDenial = [
 		{ id: 'D1', department: 'Cardiology', amount: 100, reason: 'Coding error', date: '2024-01-01', payer: 'Aetna' },
 	];
-	render(<CategoryCard data={singleCategoryDenial} config={DEPARTMENT_CARD} metric="amount" vizColors={DEFAULT_VIZ_PALETTE.colors} animationsEnabled={true} captionsEnabled={true} expanded={false} onToggleExpand={() => {}} />);
+	render(<CategoryCard denials={mockDenials(singleCategoryDenial)} config={DEPARTMENT_CARD} metric="amount" theme={mockTheme()} expanded={false} onToggleExpand={() => {}} />);
 	expect(screen.queryByText(/Departments/i)).not.toBeInTheDocument();
 });
 
