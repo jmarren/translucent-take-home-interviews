@@ -266,6 +266,11 @@ h2 {
   border: 1px solid var(--border-muted);
   border-radius: var(--radius);
   box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
+  /* CategoryCard sets max-width (pie) / min-width (vertical-bar) inline,
+     both derived from the filtered data (category count, label length) --
+     without this, changing filters snaps the card to its new width instead
+     of matching the chart's own animated transition. */
+  transition: max-width 0.3s ease-in-out, min-width 0.3s ease-in-out;
 }
 
 /* Category cards (bar/pie/table): grow/shrink to share the row, but never
@@ -410,13 +415,31 @@ h2 {
   text-align: right;
 }
 
-.chart-card-body { 
+.chart-card-body {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+/* PieView's own wrapper div carries the same filter-driven max-width
+   (widestLabelWidth) that .charts-row > section's pie-chart-card rule
+   above transitions -- both need to move together or the pie visibly
+   lags behind (or outruns) the card's own edge while resizing. */
+.pie-chart-wrapper {
+  transition: max-width 0.3s ease-in-out;
+}
+
+/* BarView (the horizontal category bar chart) sets ResponsiveContainer's
+   height from the filtered category count (barChartHeight), so a card can
+   grow/shrink in height purely from a filter change. Recharts always
+   applies this class to that wrapper div, so transitioning it here
+   animates the height change the same way the bars themselves already
+   animate via Recharts' own isAnimationActive. */
+.chart-card-body .recharts-responsive-container {
+  transition: height 0.3s ease-in-out;
 }
 
 .chart-card-caption {
