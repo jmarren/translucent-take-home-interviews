@@ -51,7 +51,7 @@ export default function PieView({
 		// space either side instead of the container matching what it needs.
 		// Expanded lifts that cap entirely, since a bigger pie is exactly
 		// the point of expanding the card.
-		<div className="pie-chart-wrapper" style={{ width: '100%', maxWidth: expanded ? 'none' : minWidth, margin: '0 auto' }}>
+		<div className="pie-chart-wrapper" style={{ width: '100%', maxWidth: expanded ? 'none' : minWidth, height: expanded ? '100%' : undefined, margin: '0 auto' }}>
 			<ResponsiveContainer width="100%" height={expanded ? '100%' : height} minWidth={minWidth}>
 				<PieChart margin={{ top: 8, right: 8, left: 8, bottom: 8 }} >
 					<Pie
