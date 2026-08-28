@@ -1,10 +1,26 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type State<T> = {
   value: T;
   set: (x: T) => void;
 };
 
-export function makeState<T>(value: T, set: (x: T) => void): State<T> {
-  return { value, set };
+// Accepts either a plain (value, set) pair, or a useState() tuple
+// directly -- makeState(useState(initial)) -- so a value that's plain
+// local component state doesn't need destructuring into two named
+// bindings just to wrap it, the way useNavigation's `activeTab`
+// (derived from the route) or useDashboardFilters' filters (backed by
+// URL search params) still need to, since neither has a real
+// Dispatch<SetStateAction<T>> to pass through as-is.
+export function makeState<T>(value: T, set: (x: T) => void): State<T>;
+export function makeState<T>(pair: [T, Dispatch<SetStateAction<T>>]): State<T>;
+export function makeState<T>(
+  valueOrPair: T | [T, Dispatch<SetStateAction<T>>],
+  set?: (x: T) => void,
+): State<T> {
+  if (set) return { value: valueOrPair as T, set };
+  const [value, setValue] = valueOrPair as [T, Dispatch<SetStateAction<T>>];
+  return { value, set: setValue };
 }
 
 // Given an object type whose properties are a mix of State<T> and plain

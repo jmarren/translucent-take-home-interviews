@@ -50,12 +50,13 @@ function makeCommandEffectParams(
 export function useCommandPalette(
   ctx: Omit<CommandContext, "close">,
 ): CommandPalette {
-  const [isOpen, setOpen] = useState<boolean>(false);
+  const openState = useState<boolean>(false);
+  const [isOpen, setOpen] = openState;
 
   useEffect(...makeCommandEffectParams(ctx, setOpen));
 
   const close = useCallback(() => setOpen(false), []);
-  const open = makeState<boolean>(isOpen, setOpen);
+  const open = makeState<boolean>(openState);
 
   const commands = useMemo(...makeCommandsMemoParams({ ...ctx, close }));
 
