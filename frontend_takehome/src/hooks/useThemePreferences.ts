@@ -154,21 +154,24 @@ function makeEffectParams<T>(
 }
 
 export function useThemePreferences(): ThemePreferences {
+  // These four are only ever read back out through the makeLocalStorageState
+  // calls below, so their useState() pairs pass straight through rather than
+  // being destructored into named bindings this function never otherwise uses.
+  const navModeState = useState<NavMode>(loadStoredNavMode);
+  const sidebarStyleState = useState<SidebarStyle>(loadStoredSidebarStyle);
+  const vizPaletteState = useState<VizPalette>(loadStoredVizPalette);
+  const trendColorState = useState<string>(loadStoredTrendColor);
+  const chartAnimationsEnabledState = useState<boolean>(
+    loadStoredChartAnimationsEnabled,
+  );
+
+  // These, unlike the four above, also feed a useEffect below (bare, or via
+  // makeEffectParams) that needs the current value named on its own.
   const [font, setFontState] = useState<string>(loadStoredFont);
   const [palette, setPaletteState] = useState<Palette>(loadStoredPalette);
   const [radius, setRadiusState] = useState<number>(loadStoredRadius);
-  const [navMode, setNavModeState] = useState<NavMode>(loadStoredNavMode);
-  const [sidebarStyle, setSidebarStyleState] = useState<SidebarStyle>(
-    loadStoredSidebarStyle,
-  );
   const [cursorStyle, setCursorStyleState] = useState<CursorStyle>(
     loadStoredCursorStyle,
-  );
-  const [vizPalette, setVizPaletteState] = useState<VizPalette>(
-    loadStoredVizPalette,
-  );
-  const [trendColor, setTrendColorState] = useState<string>(
-    loadStoredTrendColor,
   );
   const [primaryTitleStyle, setPrimaryTitleStyleState] = useState<TitleStyle>(
     makeTitleStyleLoader(
@@ -183,8 +186,6 @@ export function useThemePreferences(): ThemePreferences {
         DEFAULT_SECONDARY_TITLE_STYLE,
       ),
     );
-  const [chartAnimationsEnabled, setChartAnimationsEnabledState] =
-    useState<boolean>(loadStoredChartAnimationsEnabled);
 
   useEffect(...makeEffectParams(applyFont, font));
   useEffect(...makeEffectParams(applyPalette, palette));
@@ -217,14 +218,12 @@ export function useThemePreferences(): ThemePreferences {
       (value) => String(value),
     ),
     navMode: makeLocalStorageState<NavMode>(
-      navMode,
-      setNavModeState,
+      navModeState,
       NAV_MODE_STORAGE_KEY,
       (value) => value,
     ),
     sidebarStyle: makeLocalStorageState<SidebarStyle>(
-      sidebarStyle,
-      setSidebarStyleState,
+      sidebarStyleState,
       SIDEBAR_STYLE_STORAGE_KEY,
       (value) => value,
     ),
@@ -235,12 +234,11 @@ export function useThemePreferences(): ThemePreferences {
       (value) => value,
     ),
     vizPalette: makeLocalStorageState<VizPalette>(
-      vizPalette,
-      setVizPaletteState,
+      vizPaletteState,
       VIZ_PALETTE_STORAGE_KEY,
       (value) => value.label,
     ),
-    trendColor: makeLocalStorageState(trendColor, setTrendColorState, TREND_COLOR_STORAGE_KEY),
+    trendColor: makeLocalStorageState(trendColorState, TREND_COLOR_STORAGE_KEY),
     primaryTitleStyle: makeLocalStorageState<TitleStyle>(
       primaryTitleStyle,
       setPrimaryTitleStyleState,
@@ -254,8 +252,7 @@ export function useThemePreferences(): ThemePreferences {
       (value) => value.label,
     ),
     chartAnimationsEnabled: makeLocalStorageState<boolean>(
-      chartAnimationsEnabled,
-      setChartAnimationsEnabledState,
+      chartAnimationsEnabledState,
       CHART_ANIMATIONS_ENABLED_STORAGE_KEY,
       (value) => String(value),
     ),

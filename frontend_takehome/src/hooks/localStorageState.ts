@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { State, makeState } from "./state";
 
 // Reads a raw string out of localStorage, swallowing the "unavailable"
@@ -30,9 +31,20 @@ export function makeLoader<T>(
 // best-effort persisting to localStorage, with only the storage key and
 // serialization differing per preference. `serialize` defaults to the
 // identity function, so it can be omitted when T is already a string.
+// Each (value, setState) overload also has a useState()-tuple twin, the
+// same way makeState() does -- see state.ts -- so a preference whose
+// value doesn't need naming outside this call (most of them: see
+// useThemePreferences.ts/useTrendsPreferences.ts) can pass its `useState`
+// pair straight through instead of destructuring it just to re-pass both
+// halves.
 export function makeLocalStorageState(
   value: string,
   setState: (value: string) => void,
+  storageKey: string,
+  serialize?: (value: string) => string,
+): State<string>;
+export function makeLocalStorageState(
+  pair: [string, Dispatch<SetStateAction<string>>],
   storageKey: string,
   serialize?: (value: string) => string,
 ): State<string>;
@@ -43,11 +55,32 @@ export function makeLocalStorageState<T>(
   serialize: (value: T) => string,
 ): State<T>;
 export function makeLocalStorageState<T>(
-  value: T,
-  setState: (value: T) => void,
+  pair: [T, Dispatch<SetStateAction<T>>],
   storageKey: string,
-  serialize: (value: T) => string = (v) => v as string,
+  serialize: (value: T) => string,
+): State<T>;
+export function makeLocalStorageState<T>(
+  valueOrPair: T | [T, Dispatch<SetStateAction<T>>],
+  setStateOrStorageKey: ((value: T) => void) | string,
+  storageKeyOrSerialize?: string | ((value: T) => string),
+  maybeSerialize?: (value: T) => string,
 ): State<T> {
+  let value: T;
+  let setState: (value: T) => void;
+  let storageKey: string;
+  let serialize: (value: T) => string;
+
+  if (Array.isArray(valueOrPair)) {
+    [value, setState] = valueOrPair;
+    storageKey = setStateOrStorageKey as string;
+    serialize = (storageKeyOrSerialize as (value: T) => string) ?? ((v) => v as unknown as string);
+  } else {
+    value = valueOrPair;
+    setState = setStateOrStorageKey as (value: T) => void;
+    storageKey = storageKeyOrSerialize as string;
+    serialize = maybeSerialize ?? ((v) => v as unknown as string);
+  }
+
   return makeState<T>(value, (next: T) => {
     setState(next);
     try {

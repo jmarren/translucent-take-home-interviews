@@ -73,33 +73,32 @@ const loadStoredMovingAverage = makeLoader<MovingAverageWindow>(
 // app -- see useThemePreferences.ts -- so these choices survive a reload
 // like every other display preference.
 export function useTrendsPreferences(): TrendsPreferences {
-  const [dimension, setDimensionState] = useState<TrendDimension>(loadStoredDimension);
-  const [granularity, setGranularityState] = useState<TrendGranularity>(loadStoredGranularity);
-  const [popEnabled, setPopEnabledState] = useState<boolean>(loadStoredPopEnabled);
-  const [movingAverage, setMovingAverageState] = useState<MovingAverageWindow>(loadStoredMovingAverage);
+  // None of these four are read back out bare anywhere in this hook --
+  // each useState() pair passes straight through to makeLocalStorageState
+  // rather than being destructured into named bindings otherwise unused.
+  const dimensionState = useState<TrendDimension>(loadStoredDimension);
+  const granularityState = useState<TrendGranularity>(loadStoredGranularity);
+  const popEnabledState = useState<boolean>(loadStoredPopEnabled);
+  const movingAverageState = useState<MovingAverageWindow>(loadStoredMovingAverage);
 
   return {
     dimension: makeLocalStorageState<TrendDimension>(
-      dimension,
-      setDimensionState,
+      dimensionState,
       DIMENSION_STORAGE_KEY,
       (value) => value,
     ),
     granularity: makeLocalStorageState<TrendGranularity>(
-      granularity,
-      setGranularityState,
+      granularityState,
       GRANULARITY_STORAGE_KEY,
       (value) => value,
     ),
     popEnabled: makeLocalStorageState<boolean>(
-      popEnabled,
-      setPopEnabledState,
+      popEnabledState,
       POP_ENABLED_STORAGE_KEY,
       (value) => String(value),
     ),
     movingAverage: makeLocalStorageState<MovingAverageWindow>(
-      movingAverage,
-      setMovingAverageState,
+      movingAverageState,
       MOVING_AVERAGE_STORAGE_KEY,
       (value) => String(value),
     ),
