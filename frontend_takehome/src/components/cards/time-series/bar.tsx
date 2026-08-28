@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recha
 import { MetricId } from '../../../types';
 import { MonthTotal, formatterFor } from './shared';
 
-export default function BarByMonthView({ trend, metric }: { trend: MonthTotal[]; metric: MetricId }) {
+export default function BarByMonthView({ trend, metric, color, animationsEnabled }: { trend: MonthTotal[]; metric: MetricId; color: string; animationsEnabled: boolean }) {
 	const format = formatterFor(metric);
 	const metricLabel = metric === 'count' ? 'Denial count' : 'Denied amount';
 	return (
@@ -21,7 +21,7 @@ export default function BarByMonthView({ trend, metric }: { trend: MonthTotal[];
 					formatter={(value: number) => [format(value), metricLabel]}
 					labelFormatter={(_, payload) => payload?.[0]?.payload?.month ?? ''}
 				/>
-				<Bar dataKey="amount" fill="#5b7fa6" name={metricLabel} radius={[3, 3, 0, 0]} />
+				<Bar dataKey="amount" fill={color} name={metricLabel} radius={[3, 3, 0, 0]} isAnimationActive={animationsEnabled} />
 			</BarChart>
 		</ResponsiveContainer>
 	);

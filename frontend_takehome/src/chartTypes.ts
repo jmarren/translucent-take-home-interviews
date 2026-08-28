@@ -7,12 +7,17 @@ export interface ChartTypeOption<T extends string> {
 
 // Categorical cards (aggregate by a fixed set of category values, e.g.
 // denial reason or department) can all render the same "category -> total"
-// shape as a vertical bar, a pie, or a plain sorted table -- all three read
-// the identical aggregated data with no reshaping.
-export type CategoricalChartType = 'bar' | 'pie' | 'table';
+// shape as a bar (horizontal or vertical), a pie, or a plain sorted table
+// -- all four read the identical aggregated data with no reshaping.
+// "bar" specifically means horizontal bars (Recharts' own `layout:
+// 'vertical'`, confusingly -- that names the *category axis's* direction,
+// not which way the bars extend) -- "vertical-bar" is the other
+// orientation, bars standing upright with category names along the X-axis.
+export type CategoricalChartType = 'bar' | 'vertical-bar' | 'pie' | 'table';
 
 export const CATEGORICAL_CHART_TYPES: ChartTypeOption<CategoricalChartType>[] = [
-  { value: 'bar', label: 'Bar chart' },
+  { value: 'bar', label: 'Bar chart (horizontal)' },
+  { value: 'vertical-bar', label: 'Bar chart (vertical)' },
   { value: 'pie', label: 'Pie chart' },
   { value: 'table', label: 'Table' },
 ];

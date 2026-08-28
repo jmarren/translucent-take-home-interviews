@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'rec
 import { MetricId } from '../../../types';
 import { MonthTotal, formatterFor } from './shared';
 
-export default function LineView({ trend, metric }: { trend: MonthTotal[]; metric: MetricId }) {
+export default function LineView({ trend, metric, color, animationsEnabled }: { trend: MonthTotal[]; metric: MetricId; color: string; animationsEnabled: boolean }) {
 	const format = formatterFor(metric);
 	const metricLabel = metric === 'count' ? 'Denial count' : 'Total amount';
 	return (
@@ -24,9 +24,10 @@ export default function LineView({ trend, metric }: { trend: MonthTotal[]; metri
 				<Line
 					type="monotone"
 					dataKey="amount"
-					stroke="#5b7fa6"
+					stroke={color}
 					strokeWidth={2}
 					dot={{ r: 3 }}
+					isAnimationActive={animationsEnabled}
 				/>
 			</LineChart>
 		</ResponsiveContainer>

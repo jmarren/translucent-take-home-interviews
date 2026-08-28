@@ -2,8 +2,9 @@ import React, { useMemo } from 'react';
 import { Denial, MetricId, metricValue } from '../../types';
 import { CategoricalChartType, CATEGORICAL_CHART_TYPES, useChartType } from '../../chartTypes';
 import ChartTypeSelect from '../select/ChartTypeSelect';
-import { CategoryTotal, ASSUMED_PIE_DIAMETER, widestLabelWidth, pieChartHeight } from './category/shared';
+import { CategoryTotal, ASSUMED_PIE_DIAMETER, widestLabelWidth, pieChartHeight, verticalBarChartMinWidth } from './category/shared';
 import BarView from './category/bar';
+import VerticalBarView from './category/verticalBar';
 import PieView from './category/pie';
 import TableView from './category/table';
 
@@ -20,9 +21,6 @@ export interface CategoryCardConfig {
 	caption: string;
 	/** Groups a denial into a category value, e.g. `(d) => d.department`. */
 	groupBy: (denial: Denial) => string;
-	/** Fixed per-category colors; categories with no entry fall back to a
-	 *  positional default. Omit entirely to always assign colors by position. */
-	colors?: Record<string, string>;
 	/** Widens the bar view's Y-axis to fit longer category labels (e.g.
 	 *  "Reasons", whose values run longer than "Departments"/"Payers"). */
 	wide?: boolean;
@@ -33,6 +31,8 @@ interface CategoryCardProps {
 	loading?: boolean;
 	config: CategoryCardConfig;
 	metric: MetricId;
+	vizColors: string[];
+	animationsEnabled: boolean;
 }
 
 function useCategoryTotals(
@@ -50,7 +50,7 @@ function useCategoryTotals(
 	}, [data, groupBy, metric]);
 }
 
-export default function CategoryCard({ data, loading = false, config, metric }: CategoryCardProps) {
+export default function CategoryCard({ data, loading = false, config, metric, vizColors, animationsEnabled }: CategoryCardProps) {
 	const chartData = useCategoryTotals(data, config.groupBy, metric);
 	const [chartType, setChartType] = useChartType<CategoricalChartType>(
 		config.chartTypeKey,
@@ -67,6 +67,7 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 	// circle even though this container is wider than it is tall.
 	const pieMinWidth = ASSUMED_PIE_DIAMETER + widestLabelWidth(chartData) * 2;
 	const pieHeight = pieChartHeight();
+	const verticalBarMinWidth = verticalBarChartMinWidth(chartData);
 
 	// A single category has nothing to compare against -- omit the card
 	// entirely rather than rendering a chart with just one bar/slice/row.
@@ -78,6 +79,15 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 			style={{
 				backgroundColor: 'white',
 				...(chartType === 'pie' ? { maxWidth: pieMinWidth } : null),
+				// Without this, .charts-row's flex: 1 1 360px lets the card
+				// shrink below what its own vertical-bar chart needs (via
+				// ResponsiveContainer's minWidth), leaving the chart
+				// overflowing a too-narrow card instead of the card growing
+				// to fit -- unlike the pie's maxWidth above, this is a floor,
+				// not a cap, since a vertical bar chart (unlike a pie, which
+				// has a fixed natural diameter) should still be free to grow
+				// wider than its minimum when the row has the room.
+				...(chartType === 'vertical-bar' ? { minWidth: verticalBarMinWidth } : null),
 			}}
 			aria-label={config.ariaLabel}
 		>
@@ -99,15 +109,18 @@ export default function CategoryCard({ data, loading = false, config, metric }: 
 				) : chartType === 'pie' ? (
 					<PieView
 						chartData={chartData}
-						colors={config.colors}
+						vizColors={vizColors}
 						metric={metric}
 						minWidth={pieMinWidth}
 						height={pieHeight}
+						animationsEnabled={animationsEnabled}
 					/>
 				) : chartType === 'table' ? (
 					<TableView chartData={chartData} categoryLabel={categoryLabel} metric={metric} />
+				) : chartType === 'vertical-bar' ? (
+					<VerticalBarView chartData={chartData} vizColors={vizColors} metric={metric} minWidth={verticalBarMinWidth} animationsEnabled={animationsEnabled} />
 				) : (
-					<BarView chartData={chartData} colors={config.colors} wide={config.wide} metric={metric} />
+					<BarView chartData={chartData} vizColors={vizColors} wide={config.wide} metric={metric} animationsEnabled={animationsEnabled} />
 				)}
 			</div>
 			<p className="chart-card-caption">{config.caption}</p>

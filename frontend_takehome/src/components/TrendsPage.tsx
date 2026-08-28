@@ -7,7 +7,7 @@ import TrendsControls from "./TrendsControls";
 import MultiSeriesTrendCard from "./MultiSeriesTrendCard";
 
 export default function TrendsPage() {
-	const { filters } = useOutletContext<LayoutState>();
+	const { filters, theme } = useOutletContext<LayoutState>();
 	const { filteredDenials, unfilteredByPeriod, referenceDate, isInitialLoad, error } = useDenials(filters);
 	const prefs = useTrendsPreferences();
 	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
@@ -35,6 +35,8 @@ export default function TrendsPage() {
 				periodId={filters.period.value}
 				metric={filters.metric.value}
 				chartType={chartType}
+				vizColors={theme.vizPalette.value.colors}
+				animationsEnabled={theme.chartAnimationsEnabled.value}
 			/>
 		</div>
 	);

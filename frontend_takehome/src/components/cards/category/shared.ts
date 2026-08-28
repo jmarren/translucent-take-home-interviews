@@ -14,19 +14,12 @@ export function formatterFor(metric: MetricId) {
 	return metric === 'count' ? count : currency;
 }
 
-// Used when a card doesn't supply its own `colors` map -- assigned by
-// position rather than by category value, since a card with no natural
-// per-category identity (e.g. denial reason) has no meaningful way to pin
-// a specific color to a specific value.
-export const DEFAULT_SLICE_COLORS = [
-	'#5b7fa6', '#2c423f', '#4c5b61', '#8a5a44', '#b08d3e', '#829191', '#949b96', '#c5c5c5',
-];
-
-const FALLBACK_COLOR = '#949b96'; // default palette's greyOlive2
-
-export function colorFor(category: string, index: number, colors?: Record<string, string>): string {
-	if (colors) return colors[category] ?? FALLBACK_COLOR;
-	return DEFAULT_SLICE_COLORS[index % DEFAULT_SLICE_COLORS.length];
+// Every category gets its color by position in the user's chosen viz
+// palette (theme/vizPalettes.ts) -- no per-category identity is pinned
+// to a specific value, so switching palettes recolors every chart
+// uniformly, including Department/Payer.
+export function colorFor(index: number, vizColors: string[]): string {
+	return vizColors[index % vizColors.length];
 }
 
 // A horizontal bar's thickness used to just be "576px card height / category
@@ -47,6 +40,42 @@ const BAR_CHART_VERTICAL_PADDING = 16; // margin.top + margin.bottom
 
 export function barChartHeight(categoryCount: number): number {
 	return categoryCount * BAR_THICKNESS + BAR_CHART_VERTICAL_PADDING;
+}
+
+// A vertical bar chart's height doesn't scale with category count the way
+// the horizontal bar's does above -- more categories there means more rows
+// stacked vertically (so the chart needs more height to keep each bar the
+// same thickness), but more categories here just means each vertical bar
+// gets narrower within a fixed height, the same way the pie chart's
+// diameter (ASSUMED_PIE_DIAMETER below) doesn't grow with category count
+// either. Picked to roughly match pieChartHeight()'s scale, so a vertical
+// bar card doesn't look wildly shorter/taller than a pie or horizontal bar
+// card sharing the same row (.charts-row stretches every card in a row to
+// its tallest member either way, but a huge height mismatch would still
+// waste a lot of visible whitespace in the shorter cards).
+export const VERTICAL_BAR_CHART_HEIGHT = 320;
+
+// Width, unlike height, DOES need to scale with category count here --
+// Recharts' XAxis silently drops whichever tick labels don't fit rather
+// than wrapping or rotating them, so a fixed-width chart with several
+// long category names (e.g. Reasons) was rendering with some labels
+// missing entirely rather than visibly cramped. Each category gets a
+// slot at least MIN_BAR_SLOT_WIDTH wide (enough for the bar itself plus
+// tick spacing even for a short label), or wide enough for its own
+// label text at the X-axis's 12px tick font -- whichever is larger --
+// summed across every category, the same "sum a fixed-or-content-driven
+// slot per item" shape barChartHeight() above already uses for the
+// horizontal bar's height.
+const VERTICAL_BAR_TICK_FONT_SIZE = 12;
+const VERTICAL_BAR_LABEL_CHAR_WIDTH = VERTICAL_BAR_TICK_FONT_SIZE * 0.6;
+const MIN_BAR_SLOT_WIDTH = 64;
+const VERTICAL_BAR_CHART_HORIZONTAL_PADDING = 16; // margin.left + margin.right
+
+export function verticalBarChartMinWidth(chartData: CategoryTotal[]): number {
+	const slotWidths = chartData.map((d) =>
+		Math.max(MIN_BAR_SLOT_WIDTH, Math.ceil(d.category.length * VERTICAL_BAR_LABEL_CHAR_WIDTH) + 16),
+	);
+	return slotWidths.reduce((sum, width) => sum + width, 0) + VERTICAL_BAR_CHART_HORIZONTAL_PADDING;
 }
 
 // A rough per-character width estimate at the pie label's 15px font-size,

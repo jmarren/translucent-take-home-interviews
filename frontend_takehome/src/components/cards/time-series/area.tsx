@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'rec
 import { MetricId } from '../../../types';
 import { MonthTotal, formatterFor } from './shared';
 
-export default function AreaView({ trend, metric }: { trend: MonthTotal[]; metric: MetricId }) {
+export default function AreaView({ trend, metric, color, animationsEnabled }: { trend: MonthTotal[]; metric: MetricId; color: string; animationsEnabled: boolean }) {
 	const format = formatterFor(metric);
 	const metricLabel = metric === 'count' ? 'Denial count' : 'Total amount';
 	return (
@@ -11,8 +11,8 @@ export default function AreaView({ trend, metric }: { trend: MonthTotal[]; metri
 			<AreaChart data={trend} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
 				<defs>
 					<linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-						<stop offset="0%" stopColor="#5b7fa6" stopOpacity={0.35} />
-						<stop offset="100%" stopColor="#5b7fa6" stopOpacity={0} />
+						<stop offset="0%" stopColor={color} stopOpacity={0.35} />
+						<stop offset="100%" stopColor={color} stopOpacity={0} />
 					</linearGradient>
 				</defs>
 				<XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
@@ -30,9 +30,10 @@ export default function AreaView({ trend, metric }: { trend: MonthTotal[]; metri
 				<Area
 					type="monotone"
 					dataKey="amount"
-					stroke="#5b7fa6"
+					stroke={color}
 					strokeWidth={2}
 					fill="url(#trendFill)"
+					isAnimationActive={animationsEnabled}
 				/>
 			</AreaChart>
 		</ResponsiveContainer>

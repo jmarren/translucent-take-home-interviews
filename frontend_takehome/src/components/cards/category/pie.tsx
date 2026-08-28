@@ -24,16 +24,18 @@ function renderPieLabel(total: number) {
 
 export default function PieView({
 	chartData,
-	colors,
+	vizColors,
 	metric,
 	minWidth,
 	height,
+	animationsEnabled,
 }: {
 	chartData: CategoryTotal[];
-	colors?: Record<string, string>;
+	vizColors: string[];
 	metric: MetricId;
 	minWidth: number;
 	height: number;
+	animationsEnabled: boolean;
 }) {
 	const format = formatterFor(metric);
 	const total = useMemo(() => chartData.reduce((sum, d) => sum + d.amount, 0), [chartData]);
@@ -57,9 +59,10 @@ export default function PieView({
 						cy="50%"
 						outerRadius="50%"
 						label={renderPieLabel(total)}
+						isAnimationActive={animationsEnabled}
 					>
 						{chartData.map((entry, index) => (
-							<Cell key={entry.category} fill={colorFor(entry.category, index, colors)} />
+							<Cell key={entry.category} fill={colorFor(index, vizColors)} />
 						))}
 					</Pie>
 					<Tooltip formatter={(value: number, _name, item) => [format(value), item?.payload?.category]} />

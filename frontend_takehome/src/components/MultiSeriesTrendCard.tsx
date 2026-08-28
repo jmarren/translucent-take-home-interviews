@@ -20,8 +20,6 @@ import { buildPopBuckets, PositionBucket } from "../trendPeriods";
 import { computeDeltaStats } from "../trendDeltaStats";
 import { MovingAverageWindow, withMovingAverages } from "../trendMovingAverage";
 import { TimeSeriesChartType } from "../chartTypes";
-import { DEPARTMENT_COLORS, PAYER_COLORS } from "./BreakdownPage";
-import { DEFAULT_SLICE_COLORS } from "./cards/category/shared";
 
 const currency = (value: number) =>
 	`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
@@ -39,13 +37,10 @@ function compactFormatterFor(metric: MetricId) {
 	return metric === "count" ? plainCount : compactCurrency;
 }
 
-function colorsFor(seriesNames: string[]): Record<string, string> {
-	if (seriesNames.every((name) => name in DEPARTMENT_COLORS)) return DEPARTMENT_COLORS;
-	if (seriesNames.every((name) => name in PAYER_COLORS)) return PAYER_COLORS;
-
+function colorsFor(seriesNames: string[], vizColors: string[]): Record<string, string> {
 	const colors: Record<string, string> = {};
 	seriesNames.forEach((name, index) => {
-		colors[name] = DEFAULT_SLICE_COLORS[index % DEFAULT_SLICE_COLORS.length];
+		colors[name] = vizColors[index % vizColors.length];
 	});
 	return colors;
 }
@@ -59,6 +54,8 @@ interface MultiSeriesTrendCardProps {
 	periodId: PeriodId;
 	metric: MetricId;
 	chartType: TimeSeriesChartType;
+	vizColors: string[];
+	animationsEnabled: boolean;
 }
 
 interface SimpleViewProps {
@@ -68,9 +65,10 @@ interface SimpleViewProps {
 	chartType: TimeSeriesChartType;
 	movingAverage: MovingAverageWindow;
 	metric: MetricId;
+	animationsEnabled: boolean;
 }
 
-function SimpleView({ points, seriesNames, colors, chartType, movingAverage, metric }: SimpleViewProps) {
+function SimpleView({ points, seriesNames, colors, chartType, movingAverage, metric, animationsEnabled }: SimpleViewProps) {
 	const format = formatterFor(metric);
 	const compactFormat = compactFormatterFor(metric);
 	const commonAxisProps = {
@@ -91,7 +89,7 @@ function SimpleView({ points, seriesNames, colors, chartType, movingAverage, met
 					<YAxis tickFormatter={compactFormat} width={56} {...commonAxisProps} />
 					<Tooltip formatter={(value: number, name) => [format(value), name]} />
 					{seriesNames.map((name) => (
-						<Bar key={name} dataKey={name} fill={colors[name]} radius={[3, 3, 0, 0]} />
+						<Bar key={name} dataKey={name} fill={colors[name]} radius={[3, 3, 0, 0]} isAnimationActive={animationsEnabled} />
 					))}
 				</BarChart>
 			</ResponsiveContainer>
@@ -115,6 +113,7 @@ function SimpleView({ points, seriesNames, colors, chartType, movingAverage, met
 							fill={colors[name]}
 							fillOpacity={0.12}
 							strokeWidth={2}
+							isAnimationActive={animationsEnabled}
 						/>
 					))}
 				</AreaChart>
@@ -137,6 +136,7 @@ function SimpleView({ points, seriesNames, colors, chartType, movingAverage, met
 						stroke={colors[name]}
 						strokeWidth={2}
 						dot={{ r: 2 }}
+						isAnimationActive={animationsEnabled}
 					/>
 				))}
 			</LineChart>
@@ -173,11 +173,12 @@ function buildPopPoints(
 	return points;
 }
 
-function PopView({ points, seriesNames, colors, metric }: {
+function PopView({ points, seriesNames, colors, metric, animationsEnabled }: {
 	points: PopPoint[];
 	seriesNames: string[];
 	colors: Record<string, string>;
 	metric: MetricId;
+	animationsEnabled: boolean;
 }) {
 	const format = formatterFor(metric);
 	const compactFormat = compactFormatterFor(metric);
@@ -196,6 +197,7 @@ function PopView({ points, seriesNames, colors, metric }: {
 						stroke={colors[name]}
 						strokeWidth={2}
 						dot={{ r: 2 }}
+						isAnimationActive={animationsEnabled}
 					/>
 				))}
 				{seriesNames.map((name) => (
@@ -207,6 +209,7 @@ function PopView({ points, seriesNames, colors, metric }: {
 						strokeWidth={2}
 						strokeDasharray="5 5"
 						dot={{ r: 2 }}
+						isAnimationActive={animationsEnabled}
 					/>
 				))}
 			</LineChart>
@@ -281,13 +284,15 @@ export default function MultiSeriesTrendCard({
 	periodId,
 	metric,
 	chartType,
+	vizColors,
+	animationsEnabled,
 }: MultiSeriesTrendCardProps) {
 	const { points, seriesNames } = useMultiSeriesTrend(data, {
 		granularity: prefs.granularity,
 		dimension: prefs.dimension,
 		metric,
 	});
-	const colors = useMemo(() => colorsFor(seriesNames), [seriesNames]);
+	const colors = useMemo(() => colorsFor(seriesNames, vizColors), [seriesNames, vizColors]);
 
 	const popBuckets = useMemo(() => {
 		if (!prefs.popEnabled) return null;
@@ -331,7 +336,7 @@ export default function MultiSeriesTrendCard({
 				) : points.length === 0 ? (
 					<p>No denial data to display.</p>
 				) : popPoints ? (
-					<PopView points={popPoints} seriesNames={seriesNames} colors={colors} metric={metric} />
+					<PopView points={popPoints} seriesNames={seriesNames} colors={colors} metric={metric} animationsEnabled={animationsEnabled} />
 				) : (
 					<SimpleView
 						points={points}
@@ -340,6 +345,7 @@ export default function MultiSeriesTrendCard({
 						chartType={chartType}
 						movingAverage={prefs.popEnabled ? "off" : prefs.movingAverage}
 						metric={metric}
+						animationsEnabled={animationsEnabled}
 					/>
 				)}
 			</div>

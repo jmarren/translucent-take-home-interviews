@@ -4,10 +4,13 @@ import {
   Filter,
   Calendar,
   Palette,
+  SwatchBook,
   Type,
   Square,
   Heading,
   MousePointer2,
+  PanelLeft,
+  Sparkles,
 } from "lucide-react";
 import { TABS } from "./tabs";
 import { DEPARTMENTS, PAYERS, REASONS, METRICS } from "./types";
@@ -16,6 +19,8 @@ import { ALL_FONTS } from "./theme/fonts";
 import { ALL_PALETTES } from "./theme/palettes";
 import { RADIUS_OPTIONS } from "./theme/radii";
 import { CURSOR_STYLES } from "./theme/cursors";
+import { VIZ_PALETTES } from "./theme/vizPalettes";
+import { SIDEBAR_STYLES } from "./theme/sidebarStyles";
 import { TITLE_STYLES } from "./theme/titleStyles";
 import { ThemePreferences } from "./hooks/useThemePreferences";
 import { DashboardFilters } from "./hooks/useDashboardFilters";
@@ -230,6 +235,54 @@ export function buildCommands(ctx: CommandContext): Command[] {
       hint: cursorStyle.value === ctx.theme.cursorStyle.value ? "Active" : undefined,
       perform: () => {
         ctx.theme.cursorStyle.set(cursorStyle.value);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const sidebarStyle of SIDEBAR_STYLES) {
+    commands.push({
+      id: `sidebar-style:${sidebarStyle.value}`,
+      label: `Sidebar Style: ${sidebarStyle.label}`,
+      group: "Appearance — Sidebar Style",
+      icon: PanelLeft,
+      keywords: ["sidebar", "nav", "navigation", "icons", "flyout", "settings"],
+      hint: sidebarStyle.value === ctx.theme.sidebarStyle.value ? "Active" : undefined,
+      perform: () => {
+        ctx.theme.sidebarStyle.set(sidebarStyle.value);
+        ctx.close();
+      },
+    });
+  }
+
+  // No options array to loop over here (just an on/off toggle, not a
+  // small set of named presets the way every other appearance command
+  // is), so these two are written out directly rather than mapped.
+  for (const enabled of [true, false]) {
+    commands.push({
+      id: `chart-animations:${enabled}`,
+      label: `Chart Animations: ${enabled ? "On" : "Off"}`,
+      group: "Appearance — Chart Animations",
+      icon: Sparkles,
+      keywords: ["animation", "animate", "motion", "chart", "transition", "settings"],
+      hint: enabled === ctx.theme.chartAnimationsEnabled.value ? "Active" : undefined,
+      perform: () => {
+        ctx.theme.chartAnimationsEnabled.set(enabled);
+        ctx.close();
+      },
+    });
+  }
+
+  for (const vizPalette of VIZ_PALETTES) {
+    commands.push({
+      id: `viz-palette:${vizPalette.label}`,
+      label: `Visualization Colors: ${vizPalette.label}`,
+      group: "Appearance — Visualization Colors",
+      icon: SwatchBook,
+      keywords: ["palette", "color", "colour", "chart", "visualization", "settings"],
+      hint: vizPalette.label === ctx.theme.vizPalette.value.label ? "Active" : undefined,
+      perform: () => {
+        ctx.theme.vizPalette.set(vizPalette);
         ctx.close();
       },
     });

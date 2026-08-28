@@ -28,6 +28,8 @@ interface TimeSeriesCardProps {
 	loading?: boolean;
 	config: TimeSeriesCardConfig;
 	metric: MetricId;
+	color: string;
+	animationsEnabled: boolean;
 }
 
 function defaultGroupByMonth(denial: Denial): string {
@@ -52,7 +54,7 @@ function useMonthlyTrend(
 	}, [data, groupByMonth, metric]);
 }
 
-export default function TimeSeriesCard({ data, loading = false, config, metric }: TimeSeriesCardProps) {
+export default function TimeSeriesCard({ data, loading = false, config, metric, color, animationsEnabled }: TimeSeriesCardProps) {
 	const groupByMonth = config.groupByMonth ?? defaultGroupByMonth;
 	const trend = useMonthlyTrend(data, groupByMonth, metric);
 	const [chartType, setChartType] = useChartType<TimeSeriesChartType>(
@@ -80,11 +82,11 @@ export default function TimeSeriesCard({ data, loading = false, config, metric }
 				{loading ? (
 					<div className="chart-skeleton" style={{ height: 420 }} aria-hidden="true" />
 				) : chartType === 'line' ? (
-					<LineView trend={trend} metric={metric} />
+					<LineView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />
 				) : chartType === 'bar' ? (
-					<BarByMonthView trend={trend} metric={metric} />
+					<BarByMonthView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />
 				) : (
-					<AreaView trend={trend} metric={metric} />
+					<AreaView trend={trend} metric={metric} color={color} animationsEnabled={animationsEnabled} />
 				)}
 			</div>
 			<p className="chart-card-caption">{config.caption}</p>

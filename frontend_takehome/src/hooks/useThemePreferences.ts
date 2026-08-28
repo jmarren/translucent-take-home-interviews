@@ -22,13 +22,33 @@ import {
   CursorStyle,
   applyCursorStyle,
 } from "../theme/cursors";
+import {
+  VIZ_PALETTES,
+  DEFAULT_VIZ_PALETTE,
+  DEFAULT_TREND_COLOR,
+  VizPalette,
+} from "../theme/vizPalettes";
+import {
+  SIDEBAR_STYLES,
+  DEFAULT_SIDEBAR_STYLE,
+  SidebarStyle,
+} from "../theme/sidebarStyles";
 import { State, makeState } from "./state";
+
+const HEX_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
+
+const DEFAULT_CHART_ANIMATIONS_ENABLED = true;
 
 const FONT_STORAGE_KEY = "denial-dashboard:font";
 const PALETTE_STORAGE_KEY = "denial-dashboard:palette-label";
 const RADIUS_STORAGE_KEY = "denial-dashboard:radius";
 const NAV_MODE_STORAGE_KEY = "denial-dashboard:nav-mode";
 const CURSOR_STYLE_STORAGE_KEY = "denial-dashboard:cursor-style";
+const VIZ_PALETTE_STORAGE_KEY = "denial-dashboard:viz-palette-label";
+const TREND_COLOR_STORAGE_KEY = "denial-dashboard:trend-color";
+const SIDEBAR_STYLE_STORAGE_KEY = "denial-dashboard:sidebar-style";
+const CHART_ANIMATIONS_ENABLED_STORAGE_KEY =
+  "denial-dashboard:chart-animations-enabled";
 const PRIMARY_TITLE_STYLE_STORAGE_KEY =
   "denial-dashboard:primary-title-style-label";
 const SECONDARY_TITLE_STYLE_STORAGE_KEY =
@@ -89,6 +109,31 @@ const loadStoredCursorStyle = makeLoader<CursorStyle>(
   DEFAULT_CURSOR_STYLE,
 );
 
+const loadStoredVizPalette = makeLoader<VizPalette>(
+  VIZ_PALETTE_STORAGE_KEY,
+  (stored) => VIZ_PALETTES.find((p) => p.label === stored),
+  DEFAULT_VIZ_PALETTE,
+);
+
+const loadStoredTrendColor = makeLoader<string>(
+  TREND_COLOR_STORAGE_KEY,
+  (stored) => (stored && HEX_COLOR_PATTERN.test(stored) ? stored : undefined),
+  DEFAULT_TREND_COLOR,
+);
+
+const loadStoredSidebarStyle = makeLoader<SidebarStyle>(
+  SIDEBAR_STYLE_STORAGE_KEY,
+  (stored) => SIDEBAR_STYLES.find((s) => s.value === stored)?.value,
+  DEFAULT_SIDEBAR_STYLE,
+);
+
+const loadStoredChartAnimationsEnabled = makeLoader<boolean>(
+  CHART_ANIMATIONS_ENABLED_STORAGE_KEY,
+  (stored) =>
+    stored === "true" ? true : stored === "false" ? false : undefined,
+  DEFAULT_CHART_ANIMATIONS_ENABLED,
+);
+
 function makeTitleStyleLoader(
   storageKey: string,
   fallback: TitleStyle,
@@ -138,11 +183,19 @@ export interface ThemePreferences {
   palette: State<Palette>;
   radius: State<number>;
   navMode: State<NavMode>;
+  /** Only meaningful in sidebar nav mode -- how wide the sidebar renders and whether it shows labels. */
+  sidebarStyle: State<SidebarStyle>;
   cursorStyle: State<CursorStyle>;
+  /** Colors chart data (bars, pie slices, trend lines) -- separate from `palette`, which colors UI chrome. */
+  vizPalette: State<VizPalette>;
+  /** Accent color for the Breakdown page's single-series Trend card, independent of `vizPalette`. */
+  trendColor: State<string>;
   /** Applied to the summary panel's stat labels. */
   primaryTitleStyle: State<TitleStyle>;
   /** Applied to chart-card titles and the Denial-Level Detail heading. */
   secondaryTitleStyle: State<TitleStyle>;
+  /** Whether charts animate in (pie slices fanning out, bars growing, etc.) -- Recharts' own `isAnimationActive`. */
+  chartAnimationsEnabled: State<boolean>;
 }
 
 function makeEffectParams<T>(
@@ -162,8 +215,17 @@ export function useThemePreferences(): ThemePreferences {
   const [palette, setPaletteState] = useState<Palette>(loadStoredPalette);
   const [radius, setRadiusState] = useState<number>(loadStoredRadius);
   const [navMode, setNavModeState] = useState<NavMode>(loadStoredNavMode);
+  const [sidebarStyle, setSidebarStyleState] = useState<SidebarStyle>(
+    loadStoredSidebarStyle,
+  );
   const [cursorStyle, setCursorStyleState] = useState<CursorStyle>(
     loadStoredCursorStyle,
+  );
+  const [vizPalette, setVizPaletteState] = useState<VizPalette>(
+    loadStoredVizPalette,
+  );
+  const [trendColor, setTrendColorState] = useState<string>(
+    loadStoredTrendColor,
   );
   const [primaryTitleStyle, setPrimaryTitleStyleState] = useState<TitleStyle>(
     makeTitleStyleLoader(
@@ -178,6 +240,8 @@ export function useThemePreferences(): ThemePreferences {
         DEFAULT_SECONDARY_TITLE_STYLE,
       ),
     );
+  const [chartAnimationsEnabled, setChartAnimationsEnabledState] =
+    useState<boolean>(loadStoredChartAnimationsEnabled);
 
   useEffect(...makeEffectParams(applyFont, font));
   useEffect(...makeEffectParams(applyPalette, palette));
@@ -215,12 +279,25 @@ export function useThemePreferences(): ThemePreferences {
       NAV_MODE_STORAGE_KEY,
       (value) => value,
     ),
+    sidebarStyle: makeLocalStorageState<SidebarStyle>(
+      sidebarStyle,
+      setSidebarStyleState,
+      SIDEBAR_STYLE_STORAGE_KEY,
+      (value) => value,
+    ),
     cursorStyle: makeLocalStorageState<CursorStyle>(
       cursorStyle,
       setCursorStyleState,
       CURSOR_STYLE_STORAGE_KEY,
       (value) => value,
     ),
+    vizPalette: makeLocalStorageState<VizPalette>(
+      vizPalette,
+      setVizPaletteState,
+      VIZ_PALETTE_STORAGE_KEY,
+      (value) => value.label,
+    ),
+    trendColor: makeLocalStorageState(trendColor, setTrendColorState, TREND_COLOR_STORAGE_KEY),
     primaryTitleStyle: makeLocalStorageState<TitleStyle>(
       primaryTitleStyle,
       setPrimaryTitleStyleState,
@@ -232,6 +309,12 @@ export function useThemePreferences(): ThemePreferences {
       setSecondaryTitleStyleState,
       SECONDARY_TITLE_STYLE_STORAGE_KEY,
       (value) => value.label,
+    ),
+    chartAnimationsEnabled: makeLocalStorageState<boolean>(
+      chartAnimationsEnabled,
+      setChartAnimationsEnabledState,
+      CHART_ANIMATIONS_ENABLED_STORAGE_KEY,
+      (value) => String(value),
     ),
   };
 }

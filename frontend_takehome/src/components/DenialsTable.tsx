@@ -7,7 +7,9 @@ import {
 	flexRender,
 	SortingState,
 } from '@tanstack/react-table';
+import { LucideIcon } from 'lucide-react';
 import { Denial } from '../types';
+import { DEPARTMENT_ICONS, REASON_ICONS } from '../categoryIcons';
 
 interface DenialsTableProps {
 	data: Denial[];
@@ -57,16 +59,40 @@ function useCappedTableHeight(rowCount: number): CappedTableHeight {
 const currency = (value: number) =>
 	`$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
+// Renders a table cell's value with its matching icon from `icons` (the
+// same DEPARTMENT_ICONS/REASON_ICONS lookups the filter-bar selects use)
+// in front of it -- falls back to plain text if the value isn't a known
+// key, since `department`/`reason` are typed as plain `string` on Denial,
+// not narrowed to the same literal unions the icon lookups are keyed by.
+function iconCell(icons: Record<string, LucideIcon>) {
+	return (info: { getValue: () => string }) => {
+		const value = info.getValue();
+		const Icon = icons[value];
+		return (
+			<span className="denial-records-cell-value">
+				{Icon && <Icon className="denial-records-cell-icon" size={14} aria-hidden="true" />}
+				{value}
+			</span>
+		);
+	};
+}
+
 const columnHelper = createColumnHelper<Denial>();
 
 const columns = [
 	columnHelper.accessor('id', { header: 'ID' }),
-	columnHelper.accessor('department', { header: 'Dept' }),
+	columnHelper.accessor('department', {
+		header: 'Dept',
+		cell: iconCell(DEPARTMENT_ICONS),
+	}),
 	columnHelper.accessor('amount', {
 		header: 'Amount',
 		cell: (info) => currency(info.getValue()),
 	}),
-	columnHelper.accessor('reason', { header: 'Reason' }),
+	columnHelper.accessor('reason', {
+		header: 'Reason',
+		cell: iconCell(REASON_ICONS),
+	}),
 	columnHelper.accessor('date', { header: 'Date' }),
 	columnHelper.accessor('payer', { header: 'Payer' }),
 ];

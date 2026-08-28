@@ -675,7 +675,7 @@ h2 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 16px 0;
 }
 
 table {
@@ -731,6 +731,22 @@ td {
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-muted);
   padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+/* Department/Reason cells pair their value with the same icon the
+   Department/Reason filter selects use (DEPARTMENT_ICONS/REASON_ICONS in
+   categoryIcons.ts) -- same flex-row + icon-color pattern as
+   .department-select-item, reused here rather than duplicated. */
+.denial-records-cell-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.denial-records-cell-icon {
+  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 tbody tr:nth-child(even) {
@@ -847,7 +863,7 @@ tbody tr:nth-child(even) {
    ancestor to grow within, instead of every tab needing its own
    viewport-relative height hack. */
 .dashboard-content {
-  margin: 24px 24px;
+  /* margin: 24px 24px; */
   padding: 24px 32px;
   background-color: var(--surface-light);
   border-radius: var(--radius) 0 0 0;
@@ -880,10 +896,51 @@ tbody tr:nth-child(even) {
   flex: 0 0 220px;
   background-color: var(--surface-accent);
   margin: 0 0 0 24px;
-  padding: 24px 32px 24px 16px;
+  padding: 16px 0px 24px 16px;
   border-radius: var(--radius) var(--radius) 0 0;
   position: relative;
   z-index: 0;
+}
+
+/* Icons Only: a narrow, fixed-width rail -- collapsed permanently, not
+   just by default. Padding (all four sides, including top/bottom) must
+   match .sidebar-flyout's own collapsed padding exactly -- the two are
+   meant to look identical while collapsed (Sidebar.tsx shares this same
+   rail width between them), and any mismatch here visibly diverges from
+   what the Flyout's own collapsed state renders. Past instances of this
+   drifting apart: the right padding was tuned without updating both
+   rules together, and .sidebar-flyout's collapsed state was initially
+   missing padding-top/padding-bottom entirely (silently inheriting
+   .sidebar's own 16px top / 24px bottom instead of matching Icons
+   Only's 12px/12px), which made the icon sit visibly lower in Flyout
+   than in Icons Only despite the horizontal padding already matching. */
+.sidebar-icons-only {
+  flex-basis: 56px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 31px;
+}
+
+/* Flyout: unlike earlier versions of this mode, the sidebar itself is a
+   fixed 220px at all times -- it never resizes, and .sidebar-tab/its
+   icon never switch box models between states, so none of Icons Only's
+   centered-square/dual-padding machinery applies here at all. What
+   changes on hover/focus instead is .dashboard-content sliding left to
+   cover the label column while collapsed (revealing only the icon
+   column) and back to its resting position while expanded -- see the
+   .sidebar-flyout + .dashboard-content rules near the bottom of this
+   file -- plus the label itself fading in via opacity (below), rather
+   than the sidebar's own width or padding doing anything. This avoids
+   the whole class of bugs the previous width-animation design kept
+   hitting (icon repositioning math that had to be hand-derived and
+   re-derived per padding tweak, padding drifting out of sync between
+   Icons Only and Flyout, label wrapping mid-transition) by removing the
+   thing that caused them -- the sidebar was never the part that needed
+   to visually change size; only how much of it .dashboard-content was
+   covering did. */
+.sidebar-flyout {
+  flex-basis: 220px;
 }
 
 .sidebar-list {
@@ -912,8 +969,63 @@ tbody tr:nth-child(even) {
   cursor: pointer;
 }
 
+/* Square, not just centered -- .sidebar-tab is normally `width: 100%`
+   (it fills whatever the sidebar's own content-box width happens to be:
+   56px for Icons Only's collapsed rail, see .sidebar-icons-only above)
+   with height driven by its padding, so without an explicit square size
+   here the icon just sits centered inside a rectangle that only becomes
+   visible once something paints its full box, e.g. the hover background
+   below. 40px comfortably fits within that 56px content-box; `margin: 0
+   auto` centers the now-fixed-width button within its <li>, which still
+   stretches to the full 56px (.sidebar-list's flex column defaults to
+   `align-items: stretch`) -- without it the square would sit flush left
+   rather than centered in the rail. Icons Only only now -- Flyout's
+   sidebar is a fixed 220px at all times (see .sidebar-flyout above), so
+   .sidebar-tab there just uses this same base rule unconditionally,
+   with no centered-square variant needed at all. */
+.sidebar-icons-only .sidebar-tab {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin: 0 auto;
+}
+
 .sidebar-tab-icon {
   flex-shrink: 0;
+}
+
+/* white-space: nowrap + overflow: hidden keep the label from ever
+   wrapping regardless of state -- with the sidebar now a fixed 220px at
+   all times (see .sidebar-flyout above), there's plenty of room for
+   every label, so this is just a safety net rather than something load-
+   bearing for the transition the way it was in the old width-animation
+   design. */
+.sidebar-tab-label {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Fades the label in/out instead of the old display: none toggle --
+   opacity is animatable (display isn't), and the sidebar's own layout
+   never changes size here (unlike the old design), so there's nothing
+   for the label's appearance/disappearance to desync from. Collapsed,
+   the label sits fully opaque *underneath* .dashboard-content, which is
+   what's actually covering it (see the .sidebar-flyout +
+   .dashboard-content rules near the bottom of this file) -- opacity: 0
+   here is a belt-and-suspenders measure (screen-reader-only exposure
+   still comes from the label staying in the DOM regardless, per
+   Sidebar.tsx) in case content's covering shifts by even a pixel, not
+   the primary hiding mechanism. */
+.sidebar-flyout:not(.sidebar-flyout-hovered):not(:focus-within) .sidebar-tab-label {
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.sidebar-flyout.sidebar-flyout-hovered .sidebar-tab-label,
+.sidebar-flyout:focus-within .sidebar-tab-label {
+  opacity: 1;
+  transition: opacity 0.4s ease-in-out;
 }
 
 .sidebar-tab:hover {
@@ -928,8 +1040,54 @@ tbody tr:nth-child(even) {
 .dashboard-layout .dashboard-content {
   flex: 1;
   min-width: 0;
-  margin: 0 0px 0 -24px;
   box-shadow: -2px 0 6px rgba(44, 66, 63, 0.12);
+}
+
+/* The -24px overlap applies to Expanded and Icons Only, giving a small
+   peek of the sidebar's rounded top-right corner under
+   .dashboard-content. Flyout's own rules just below override this value
+   in both its states, but only its *expanded* state actually reuses
+   this same -24px (since expanded is meant to read like Expanded mode
+   exactly) -- its collapsed state uses an unrelated value of its own,
+   since it's positioning .dashboard-content against a point inside the
+   sidebar's real box rather than against an edge/padding region the way
+   this -24px overlap and Icons Only's are. See that rule's own comment
+   for why they aren't the same kind of offset and shouldn't be added
+   together. */
+.sidebar + .dashboard-content {
+  margin-left: -24px;
+}
+
+/* Flyout: .dashboard-content is what moves now, not the sidebar --
+   collapsed, it slides left by 164px (220px fixed sidebar minus a 56px
+   icon rail, matching Icons Only's own rail width so the icon sits at
+   the same place in both modes) to sit right at the icon-column/
+   label-column boundary inside the sidebar's real 220px box; hovered/
+   focused, it slides back to margin-left: -24px -- Expanded's own
+   resting position exactly, not 0, since Flyout's *expanded* state is
+   meant to read like Expanded mode (see .sidebar-tab-label's opacity
+   transition above for how the labels themselves reveal in step with
+   this). An earlier version added the same 24px corner-overlap Icons
+   Only gets on top of the 164px here too (for -188px total), reasoning
+   that Flyout's collapsed rail should match Icons Only's overlap as
+   well as its width -- wrong: Icons Only's -24px overlaps onto the
+   padding-right of its own real 56px sidebar box, but this 164px is
+   positioning .dashboard-content against an arbitrary point *inside*
+   the sidebar's real 220px box (the icon/label boundary), not against
+   any edge or padding region -- there's no equivalent overlap to stack
+   on top of, and doing so just pushed .dashboard-content 24px further
+   left than the icon rail's actual right edge. transition (not the
+   general -24px rule above, which never animates) is scoped to Flyout
+   only, so Expanded/Icons Only's overlap stays the static, non-animating
+   value it's always been. */
+.sidebar-flyout + .dashboard-content {
+  margin-left: -164px;
+  transition: margin-left 0.4s ease-in-out;
+}
+
+.sidebar-flyout.sidebar-flyout-hovered + .dashboard-content,
+.sidebar-flyout:focus-within + .dashboard-content {
+  margin-left: -24px;
 }
 
 .coming-soon {
@@ -996,6 +1154,15 @@ tbody tr:nth-child(even) {
   border-color: var(--border-accent);
 }
 
+.settings-option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.settings-option:disabled:hover {
+  border-color: var(--border-muted);
+}
+
 .settings-option[aria-pressed='true'] {
   background-color: var(--surface-primary);
   border-color: var(--surface-primary);
@@ -1009,6 +1176,54 @@ tbody tr:nth-child(even) {
   height: 14px;
   border-radius: var(--radius-xs);
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* Unlike .settings-palette-swatch's single gradient bar (representing a
+   continuous UI theme), the viz palette's colors need to read as
+   individually distinguishable categorical swatches -- one small square
+   per color, laid out in a row -- since the whole point of this setting
+   is how different two adjacent chart categories look next to each
+   other. */
+.settings-viz-palette-swatches {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+}
+
+.settings-viz-palette-swatch {
+  width: 12px;
+  height: 14px;
+  border-radius: var(--radius-xs);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* A single free-form color, unlike every other setting here (which picks
+   between a small fixed set of options) -- native <input type="color">
+   rather than a row of .settings-option buttons, since there's no
+   preset list to render as buttons. Styled to sit at the same visual
+   weight as .settings-option even though it isn't one. */
+.settings-color-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-family: monospace;
+  color: var(--text-primary);
+  background-color: var(--surface-light);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px 6px 6px;
+  cursor: pointer;
+}
+
+.settings-color-picker-input {
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-xs);
+  background: none;
+  cursor: pointer;
 }
 
 .settings-radius-swatch {

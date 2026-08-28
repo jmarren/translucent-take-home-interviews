@@ -1,22 +1,9 @@
-import { HeartPulse, Brain, Ribbon, Bone, Baby, Radiation } from 'lucide-react';
 import LabeledSelect from './LabeledSelect';
 import { DEPARTMENTS } from '../../types';
+import { DEPARTMENT_ICONS } from '../../categoryIcons';
 import { DashboardFilters } from '../../hooks/useDashboardFilters';
 
 const ALL_DEPARTMENTS = '__all__';
-
-// One representative icon per department, purely a visual scanning aid in
-// the dropdown list -- not tied to any other department-color/identity
-// system in the app (see DEPARTMENT_COLORS in BreakdownPage.tsx, which
-// exists for chart legibility and is independent of this).
-const DEPARTMENT_ICONS: Record<(typeof DEPARTMENTS)[number], typeof HeartPulse> = {
-	Cardiology: HeartPulse,
-	Neurology: Brain,
-	Oncology: Ribbon,
-	Orthopedics: Bone,
-	Pediatrics: Baby,
-	Radiology: Radiation,
-};
 
 export default function DepartmentSelect({ filters }: { filters: DashboardFilters }) {
 	return (
