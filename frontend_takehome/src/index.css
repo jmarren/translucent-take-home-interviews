@@ -129,6 +129,26 @@ body {
   flex-grow: 1;
 }
 
+/* While a card is expanded (.charts-row.has-expanded-card, a descendant
+   several levels down), .dashboard's own min-height: 100vh floor above is
+   never actually a ceiling -- nothing stops the page from growing taller
+   to fit whatever height an expanded chart asks for, so the "fill down to
+   the bottom of the viewport" flex chain has no real bound to fill. Using
+   :has() to react to the expanded descendant, rather than threading
+   expand state up through SidebarShell/Layout (several components above
+   BreakdownPage, and shared by every tab), keeps this scoped to plain CSS.
+   height (not min-height) makes 100vh a hard cap here specifically; the
+   min-height: 0 additions on .dashboard-layout/.dashboard-content below
+   let that cap actually propagate down instead of being ignored by flex
+   items that otherwise refuse to shrink below their content's natural
+   size. overflow: hidden keeps anything below the expanded card (Denial-
+   Level Detail, etc.) out of view instead of pushing the page taller. */
+.dashboard:has(.has-expanded-card) {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
 h2 {
   color: var(--text-primary);
 }
@@ -881,6 +901,13 @@ tbody tr:nth-child(even) {
      the same flex: 1 alongside the margin/shadow suited to sitting beside
      the sidebar specifically. */
   flex: 1;
+  /* Only matters once .dashboard:has(.has-expanded-card) gives the chain
+     an actual height cap above -- without this, a flex item's default
+     min-height: auto refuses to shrink below its content's natural size,
+     which would make an expanded card's chart keep growing the page
+     taller instead of stopping at that cap. Harmless in the normal case,
+     since nothing above is constraining height there to begin with. */
+  min-height: 0;
 }
 
 /* Wraps the sidebar + content area side by side. */
@@ -889,6 +916,7 @@ tbody tr:nth-child(even) {
   align-items: stretch;
   margin-top: 24px;
   flex-grow: 1;
+  min-height: 0;
   min-width: fit-content;
 }
 
