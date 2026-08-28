@@ -1,7 +1,6 @@
-import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { PeriodId, isValidPeriodId, DEFAULT_PERIOD, PERIODS } from "../periods";
-import { MetricId, isValidMetricId, DEFAULT_METRIC, METRICS } from "../types";
+import { PeriodId, isValidPeriodId, DEFAULT_PERIOD } from "../periods";
+import { MetricId, isValidMetricId, DEFAULT_METRIC } from "../types";
 import { State, makeState, ValuesOf } from "./state";
 
 export interface DashboardFilters {
@@ -10,7 +9,6 @@ export interface DashboardFilters {
   reason: State<string>;
   period: State<PeriodId>;
   metric: State<MetricId>;
-  summary: string | null;
 }
 
 function makeFilterSetter<T extends string>(
@@ -49,24 +47,6 @@ function getParams(searchParams: URLSearchParams): DashboardFilterParams {
   };
 }
 
-function buildSummary(params: DashboardFilterParams): string | null {
-  const parts: string[] = [];
-  if (params.department) parts.push(params.department);
-  if (params.payer) parts.push(params.payer);
-  if (params.reason) parts.push(params.reason);
-  if (params.period !== DEFAULT_PERIOD) {
-    parts.push(
-      PERIODS.find((p) => p.id === params.period)?.label ?? params.period,
-    );
-  }
-  if (params.metric !== DEFAULT_METRIC) {
-    parts.push(
-      METRICS.find((m) => m.id === params.metric)?.label ?? params.metric,
-    );
-  }
-  return parts.length > 0 ? parts.join(" · ") : null;
-}
-
 // Department/period are URL search params rather than route state, since
 // they layer on top of whichever tab route is active rather than selecting
 // between tabs themselves (that's handled by React Router's own route
@@ -76,17 +56,6 @@ export function useDashboardFilters(): DashboardFilters {
   const searchParams = searchParamsState[0];
 
   const params = getParams(searchParams);
-
-  const summary = useMemo(
-    () => buildSummary(params),
-    [
-      params.department,
-      params.payer,
-      params.reason,
-      params.period,
-      params.metric,
-    ],
-  );
 
   return {
     department: makeState<string>(
@@ -109,6 +78,5 @@ export function useDashboardFilters(): DashboardFilters {
       params.metric,
       makeFilterSetter<MetricId>("metric", searchParamsState),
     ),
-    summary,
   };
 }
