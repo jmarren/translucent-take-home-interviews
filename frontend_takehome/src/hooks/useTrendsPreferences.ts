@@ -52,7 +52,8 @@ const loadStoredGranularity = makeLoader<TrendGranularity>(
 
 const loadStoredPopEnabled = makeLoader<boolean>(
   POP_ENABLED_STORAGE_KEY,
-  (stored) => (stored === "true" ? true : stored === "false" ? false : undefined),
+  (stored) =>
+    stored === "true" ? true : stored === "false" ? false : undefined,
   false,
 );
 
@@ -79,7 +80,9 @@ export function useTrendsPreferences(): TrendsPreferences {
   const dimensionState = useState<TrendDimension>(loadStoredDimension);
   const granularityState = useState<TrendGranularity>(loadStoredGranularity);
   const popEnabledState = useState<boolean>(loadStoredPopEnabled);
-  const movingAverageState = useState<MovingAverageWindow>(loadStoredMovingAverage);
+  const movingAverageState = useState<MovingAverageWindow>(
+    loadStoredMovingAverage,
+  );
 
   return {
     dimension: makeLocalStorageState<TrendDimension>(

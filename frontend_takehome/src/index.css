@@ -20,6 +20,13 @@
   --radius: 8px;
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-xs: calc(var(--radius) * 0.25);
+  /* --shadow-card is the resting elevation for cards sitting directly on
+     the page background (chart cards, the summary panel's own container);
+     --shadow-elevated is for content that floats above other content
+     (dropdown menus, the denial records table) and needs to read as
+     clearly on top rather than just gently raised. */
+  --shadow-card: 0 2px 8px rgba(44, 66, 63, 0.1);
+  --shadow-elevated: 0 4px 12px rgba(44, 66, 63, 0.2);
   /* Two independently-settable title styles (Settings' "Title Style"
      section, theme/titleStyles.ts) -- "primary" is used by the summary
      panel's stat labels, "secondary" by chart-card titles and the
@@ -172,7 +179,9 @@ h2 {
   border-color: var(--border-emphasis);
 }
 
-.department-select-trigger:focus-visible {
+.department-select-trigger:focus-visible,
+.chart-type-select-trigger:focus-visible,
+.command-trigger:focus-visible {
   outline: 2px solid var(--surface-primary);
   outline-offset: 1px;
 }
@@ -181,11 +190,12 @@ h2 {
   color: var(--text-secondary);
 }
 
-.department-select-content {
+.department-select-content,
+.chart-type-select-content {
   background-color: var(--surface-light);
   border: 1px solid var(--border-accent);
   border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
+  box-shadow: var(--shadow-elevated);
   overflow: hidden;
   z-index: 10;
 }
@@ -265,7 +275,7 @@ h2 {
   flex-direction: column;
   border: 1px solid var(--border-muted);
   border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
+  box-shadow: var(--shadow-card);
   /* CategoryCard sets max-width (pie) / min-width (vertical-bar) inline,
      both derived from the filtered data (category count, label length) --
      without this, changing filters snaps the card to its new width instead
@@ -356,22 +366,8 @@ h2 {
   color: var(--text-primary);
 }
 
-.chart-type-select-trigger:focus-visible {
-  outline: 2px solid var(--surface-primary);
-  outline-offset: 1px;
-}
-
 .chart-type-select-icon {
   color: inherit;
-}
-
-.chart-type-select-content {
-  background-color: var(--surface-light);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
-  overflow: hidden;
-  z-index: 10;
 }
 
 .chart-type-select-item {
@@ -501,10 +497,9 @@ h2 {
   border-radius: var(--radius);
   padding: 20px 24px;
   border: 1px solid var(--border-muted);
-  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
+  box-shadow: var(--shadow-elevated);
   display: flex;
   flex-direction: column;
-  /* min-height: 500px; */
 }
 
 .denial-records-heading {
@@ -553,7 +548,7 @@ h2 {
   border-radius: var(--radius);
   overflow: hidden;
   min-width: 300px;
-  box-shadow: 0 4px 12px rgba(44, 66, 63, 0.2);
+  box-shadow: var(--shadow-elevated);
 }
 
 .summary-card {
@@ -617,7 +612,7 @@ h2 {
   flex-direction: column;
   border: 1px solid var(--border-muted);
   border-radius: var(--radius);
-  box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
+  box-shadow: var(--shadow-card);
   background-color: white;
 }
 
@@ -861,12 +856,8 @@ tbody tr:nth-child(even) {
   border-color: var(--border-emphasis);
 }
 
-.command-trigger:focus-visible {
-  outline: 2px solid var(--surface-primary);
-  outline-offset: 1px;
-}
-
-.command-trigger-kbd {
+.command-trigger-kbd,
+.command-palette-esc-hint {
   flex-shrink: 0;
   font-family: inherit;
   font-size: 0.72rem;
@@ -886,11 +877,10 @@ tbody tr:nth-child(even) {
    ancestor to grow within, instead of every tab needing its own
    viewport-relative height hack. */
 .dashboard-content {
-  /* margin: 24px 24px; */
   padding: 24px 32px;
   background-color: var(--surface-light);
   border-radius: var(--radius) 0 0 0;
-  box-shadow: 0 2px 8px rgba(44, 66, 63, 0.1);
+  box-shadow: var(--shadow-card);
   position: relative;
   z-index: 1;
   display: flex;
@@ -1355,17 +1345,6 @@ tbody tr:nth-child(even) {
 
 [cmdk-input]::placeholder {
   color: var(--border-accent);
-}
-
-.command-palette-esc-hint {
-  flex-shrink: 0;
-  font-family: inherit;
-  font-size: 0.72rem;
-  color: var(--text-secondary);
-  background-color: rgba(44, 66, 63, 0.08);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-xs);
-  padding: 2px 6px;
 }
 
 [cmdk-list] {
