@@ -288,21 +288,21 @@ export default function MultiSeriesTrendCard({
 	animationsEnabled,
 }: MultiSeriesTrendCardProps) {
 	const { points, seriesNames } = useMultiSeriesTrend(data, {
-		granularity: prefs.granularity,
-		dimension: prefs.dimension,
+		granularity: prefs.granularity.value,
+		dimension: prefs.dimension.value,
 		metric,
 	});
 	const colors = useMemo(() => colorsFor(seriesNames, vizColors), [seriesNames, vizColors]);
 
 	const popBuckets = useMemo(() => {
-		if (!prefs.popEnabled) return null;
+		if (!prefs.popEnabled.value) return null;
 		return buildPopBuckets(
 			unfilteredByPeriod,
 			periodId,
 			referenceDate,
-			prefs.granularity,
+			prefs.granularity.value,
 			(denial) => {
-				switch (prefs.dimension) {
+				switch (prefs.dimension.value) {
 					case "department":
 						return denial.department;
 					case "payer":
@@ -313,7 +313,7 @@ export default function MultiSeriesTrendCard({
 			},
 			metric
 		);
-	}, [unfilteredByPeriod, periodId, referenceDate, prefs.popEnabled, prefs.granularity, prefs.dimension, metric]);
+	}, [unfilteredByPeriod, periodId, referenceDate, prefs.popEnabled.value, prefs.granularity.value, prefs.dimension.value, metric]);
 
 	const popPoints = useMemo(
 		() => (popBuckets ? buildPopPoints(popBuckets.currentBuckets, popBuckets.previousBuckets, seriesNames) : null),
@@ -343,18 +343,18 @@ export default function MultiSeriesTrendCard({
 						seriesNames={seriesNames}
 						colors={colors}
 						chartType={chartType}
-						movingAverage={prefs.popEnabled ? "off" : prefs.movingAverage}
+						movingAverage={prefs.popEnabled.value ? "off" : prefs.movingAverage.value}
 						metric={metric}
 						animationsEnabled={animationsEnabled}
 					/>
 				)}
 			</div>
 			<p className="chart-card-caption">
-				{metric === "count" ? "Denial count" : "Total denied dollars"} over time, split by {prefs.dimension}
+				{metric === "count" ? "Denial count" : "Total denied dollars"} over time, split by {prefs.dimension.value}
 				{popPoints
 					? " — solid lines are the current period, dashed are the previous period."
-					: !prefs.popEnabled && prefs.movingAverage !== "off"
-						? ` — smoothed as a ${prefs.movingAverage}-period moving average.`
+					: !prefs.popEnabled.value && prefs.movingAverage.value !== "off"
+						? ` — smoothed as a ${prefs.movingAverage.value}-period moving average.`
 						: "."}
 			</p>
 		</section>
