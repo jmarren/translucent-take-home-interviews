@@ -367,7 +367,7 @@ h2 {
    those differ (or deliberately don't) between the wide charts-row cards
    and the narrower trend card. */
 .chart-card-exhibit {
-  padding: 16px 16px 12px;
+  padding: 14px 24px 18px;
 }
 
 .chart-card-title {
@@ -406,7 +406,7 @@ h2 {
   justify-content: space-between;
   gap: 12px;
   margin: 0 0 12px;
-  padding: 0 0 10px;
+  padding: 0 0 8px;
   border-bottom: 1px solid var(--border-accent);
 }
 
@@ -439,8 +439,7 @@ h2 {
   height: var(--chart-card-control-height);
   color: var(--text-secondary);
   background-color: transparent;
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-sm);
+  border: none;
   padding: 0 5px;
   cursor: pointer;
 }
@@ -461,8 +460,7 @@ h2 {
   font-size: 0.8rem;
   color: var(--text-secondary);
   background-color: transparent;
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-sm);
+  border: none;
   padding: 0 8px;
   cursor: pointer;
 }

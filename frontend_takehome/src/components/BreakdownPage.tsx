@@ -75,7 +75,6 @@ export default function BreakdownPage() {
 	const denials = useDenials(filters);
 	const { filteredDenials, isInitialLoad, error } = denials;
 	const categoryCardData: CategoryCardData = { denials, metric: filters.metric.value, theme };
-	const vizColors = theme.vizPalette.value.colors;
 	const animationsEnabled = theme.chartAnimationsEnabled.value;
 	const captionsEnabled = theme.chartCaptionsEnabled.value;
 	// Which card (identified by its own config.chartTypeKey) is expanded to
