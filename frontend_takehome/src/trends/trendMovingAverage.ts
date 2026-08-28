@@ -1,4 +1,4 @@
-import { MultiSeriesPoint } from "./hooks/useMultiSeriesTrend";
+import { MultiSeriesPoint } from "../hooks/useMultiSeriesTrend";
 
 export type MovingAverageWindow = "off" | 3 | 6;
 

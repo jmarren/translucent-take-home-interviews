@@ -1,4 +1,4 @@
-import { computeDeltaStats } from "../trendDeltaStats";
+import { computeDeltaStats } from "../trends/trendDeltaStats";
 
 describe("computeDeltaStats", () => {
   it("computes the headline total and percent change across all series", () => {

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TrendDimension, TrendGranularity } from "./hooks/useMultiSeriesTrend";
-import { MovingAverageWindow } from "./trendMovingAverage";
+import { TrendDimension, TrendGranularity } from "./useMultiSeriesTrend";
+import { MovingAverageWindow } from "../trends/trendMovingAverage";
 
 export interface TrendsPreferences {
   dimension: TrendDimension;

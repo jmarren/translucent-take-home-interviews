@@ -7,7 +7,7 @@ import {
   MetricId,
   metricValue,
 } from "../types";
-import { Bucket, bucketByMonth, bucketByQuarter, bucketByWeek } from "../trendBuckets";
+import { Bucket, bucketByMonth, bucketByQuarter, bucketByWeek } from "../trends/trendBuckets";
 
 export type TrendDimension = "department" | "reason" | "payer";
 

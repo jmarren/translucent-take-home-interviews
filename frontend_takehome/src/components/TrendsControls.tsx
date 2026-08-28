@@ -1,9 +1,9 @@
 import React from "react";
 import LabeledSelect from "./select/LabeledSelect";
 import ChartTypeSelect from "./select/ChartTypeSelect";
-import { TrendsPreferencesState } from "../trendsPreferences";
+import { TrendsPreferencesState } from "../hooks/useTrendsPreferences";
 import { PeriodId } from "../periods";
-import { hasPreviousPeriod } from "../trendPeriods";
+import { hasPreviousPeriod } from "../trends/trendPeriods";
 import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES } from "../chartTypes";
 
 const DIMENSION_OPTIONS = [

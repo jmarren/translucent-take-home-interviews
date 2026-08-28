@@ -14,11 +14,11 @@ import {
 } from "recharts";
 import { Denial, MetricId } from "../types";
 import { PeriodId } from "../periods";
-import { TrendsPreferences } from "../trendsPreferences";
+import { TrendsPreferences } from "../hooks/useTrendsPreferences";
 import { useMultiSeriesTrend, MultiSeriesPoint } from "../hooks/useMultiSeriesTrend";
-import { buildPopBuckets, PositionBucket } from "../trendPeriods";
-import { computeDeltaStats } from "../trendDeltaStats";
-import { MovingAverageWindow, withMovingAverages } from "../trendMovingAverage";
+import { buildPopBuckets, PositionBucket } from "../trends/trendPeriods";
+import { computeDeltaStats } from "../trends/trendDeltaStats";
+import { MovingAverageWindow, withMovingAverages } from "../trends/trendMovingAverage";
 import { TimeSeriesChartType } from "../chartTypes";
 
 const currency = (value: number) =>

@@ -1,4 +1,4 @@
-import { bucketByMonth, bucketByQuarter, bucketByWeek } from "../trendBuckets";
+import { bucketByMonth, bucketByQuarter, bucketByWeek } from "../trends/trendBuckets";
 
 describe("bucketByMonth", () => {
   it("keys and labels a date by its calendar month", () => {

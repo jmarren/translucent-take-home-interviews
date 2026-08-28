@@ -1,4 +1,4 @@
-import { currentPeriodRange, hasPreviousPeriod, previousPeriodRange, buildPopBuckets } from "../trendPeriods";
+import { currentPeriodRange, hasPreviousPeriod, previousPeriodRange, buildPopBuckets } from "../trends/trendPeriods";
 import { Denial } from "../types";
 
 const REFERENCE = new Date("2025-06-15T00:00:00");

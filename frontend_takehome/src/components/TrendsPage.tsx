@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import { useDenials } from "../hooks/useDenials";
-import { useTrendsPreferences } from "../trendsPreferences";
+import { useTrendsPreferences } from "../hooks/useTrendsPreferences";
 import { TimeSeriesChartType, TIME_SERIES_CHART_TYPES, useChartType } from "../chartTypes";
 import { LayoutState } from "./Layout";
 import TrendsControls from "./TrendsControls";

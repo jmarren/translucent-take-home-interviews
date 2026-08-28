@@ -1,6 +1,6 @@
-import { Denial, MetricId, metricValue } from "./types";
-import { PeriodId, periodStart, startOfDay } from "./periods";
-import { TrendGranularity, bucketForGranularity } from "./hooks/useMultiSeriesTrend";
+import { Denial, MetricId, metricValue } from "../types";
+import { PeriodId, periodStart, startOfDay } from "../periods";
+import { TrendGranularity, bucketForGranularity } from "../hooks/useMultiSeriesTrend";
 
 export interface DateRange {
   start: Date;
