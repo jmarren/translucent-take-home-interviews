@@ -69,7 +69,13 @@ export default function PieView({
 							<Cell key={entry.category} fill={colorFor(index, vizColors)} />
 						))}
 					</Pie>
-					<Tooltip formatter={(value: number, _name, item) => [format(value), item?.payload?.category]} />
+					{/* No name/category in the tooltip -- it's already the on-slice
+					    label's own first line, so repeating it here would just be
+					    noise. Recharts only renders the tooltip's name span when the
+					    formatter's second return value passes isNumOrStr (DataUtils.js)
+					    -- undefined fails that check and drops the name + separator
+					    entirely, leaving just the value. */}
+					<Tooltip formatter={(value: number) => [format(value), undefined]} />
 				</PieChart>
 			</ResponsiveContainer>
 		</div>
